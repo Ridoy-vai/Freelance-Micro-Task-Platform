@@ -1,6 +1,6 @@
-export const { data: session, isPending } = authClient.useSession();
-export const isuser = () => {
-    const user = session?.user;
-    return !!user;
-};
-export const user = session?.user;
+import { authClient } from "./auth-client";
+
+const { data: session, isPending } = authClient.useSession();
+const userstatus = session?.user;
+
+export { userstatus };

@@ -32,11 +32,11 @@ export default function Navbar() {
     // Better-auth এ রোল সাধারণত user.role এ থাকে
     switch (user.role) {
       case "admin":
-        return "/dashboard/Admin";
+        return "/dashboard/admin";
       case "freelancer":
-        return "/dashboard/Freelancer";
+        return "/dashboard/freelancer";
       case "client":
-        return "/dashboard/Client";
+        return "/dashboard/client";
       default:
         return "/dashboard";
     }
