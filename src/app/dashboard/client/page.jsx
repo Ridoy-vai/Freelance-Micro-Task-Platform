@@ -1,11 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import PostTaskForm from "./PostTaskForm/page";
-import { 
-  LayoutDashboard, Plus, Briefcase, List, LogOut, 
-  Edit, Trash2, Menu, X 
+import {
+  LayoutDashboard, Plus, Briefcase, List, LogOut,
+  Edit, Trash2, Menu, X
 } from "lucide-react";
 import MyTasksPage from "./MyTasks/page";
+import DashboardHome from "./DashboardHome/page";
+import ManageProposals from "./ManageProposal/page";
 
 export default function ClientDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -25,11 +27,11 @@ export default function ClientDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50 text-gray-800 overflow-hidden">
-      
+
       {/* --- Mobile Sidebar Overlay --- */}
       {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden" 
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -48,28 +50,27 @@ export default function ClientDashboard() {
 
         <nav className="flex-1 space-y-2">
           {menuItems.map((item) => (
-            <button 
-              key={item.id} 
-              onClick={() => handleTabClick(item.id)} 
-              className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition ${
-                activeTab === item.id ? "bg-orange-500 text-white shadow-md" : "hover:bg-gray-100"
-              }`}
+            <button
+              key={item.id}
+              onClick={() => handleTabClick(item.id)}
+              className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition ${activeTab === item.id ? "bg-orange-500 text-white shadow-md" : "hover:bg-gray-100"
+                }`}
             >
-              <item.icon size={18} /> 
+              <item.icon size={18} />
               <span className="font-medium">{item.name}</span>
             </button>
           ))}
         </nav>
 
         <div className="mt-auto p-4 border-t flex items-center gap-2 text-red-500 cursor-pointer hover:bg-red-50 rounded-lg transition">
-          <LogOut size={18} /> 
+          <LogOut size={18} />
           <span className="font-medium">Logout</span>
         </div>
       </aside>
 
       {/* --- Main Content Area --- */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        
+
         {/* Mobile Header */}
         <header className="bg-white border-b p-4 flex items-center justify-between lg:hidden">
           <h2 className="font-bold text-orange-600">Client Panel</h2>
@@ -80,18 +81,9 @@ export default function ClientDashboard() {
 
         <div className="flex-1 p-4 md:p-8 overflow-y-auto">
           {activeTab === "overview" && (
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold mb-6">Welcome Back, Client</h1>
-              {/* Responsive Grid: Mobile 1, Tablet 2, Desktop 4 */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                  <div className="bg-white p-6 rounded-xl border shadow-sm"> <p className="text-gray-500 text-sm">Total Tasks</p> <h3 className="text-2xl font-bold">12</h3> </div>
-                  <div className="bg-white p-6 rounded-xl border shadow-sm"> <p className="text-gray-500 text-sm">Open Tasks</p> <h3 className="text-2xl font-bold">5</h3> </div>
-                  <div className="bg-white p-6 rounded-xl border shadow-sm"> <p className="text-gray-500 text-sm">In Progress</p> <h3 className="text-2xl font-bold">3</h3> </div>
-                  <div className="bg-white p-6 rounded-xl border shadow-sm"> <p className="text-gray-500 text-sm">Total Spent</p> <h3 className="text-2xl font-bold text-green-600">$1,250</h3> </div>
-              </div>
-            </div>
+            <DashboardHome />
           )}
- 
+
           {activeTab === "post" && (
             <div className="w-full max-w-4xl mx-auto">
               <PostTaskForm />
@@ -99,7 +91,10 @@ export default function ClientDashboard() {
           )}
 
           {activeTab === "tasks" && (
-           <MyTasksPage/>
+            <MyTasksPage />
+          )}
+          {activeTab === "proposals" && (
+            <ManageProposals/>
           )}
         </div>
       </main>

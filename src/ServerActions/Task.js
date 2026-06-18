@@ -16,8 +16,8 @@ export const PostTask = ({ path, taskData }) => {
     });
 };
 
-export const GetAllTasks = async (path) => {
-    const response = await fetch(`${API_URL}/${path}`, {
+export const GetAllTasks = async (path, limit, skip) => {
+    const response = await fetch(`${API_URL}/${path}?limit=${limit}&skip=${skip}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

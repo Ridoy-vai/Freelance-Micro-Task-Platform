@@ -51,7 +51,7 @@ const PostTaskForm = () => {
       status: formData.status,
       ClientId: user.id, // Assuming the API expects a field named ClientId to associate the task with the user
     };
-    PostTask({ path: "/tasks", taskData });
+    PostTask({ path: "tasks", taskData });
   };
 
   return (
