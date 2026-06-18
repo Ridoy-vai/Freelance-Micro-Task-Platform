@@ -1,5 +1,6 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 
 /**
@@ -24,10 +25,12 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     // TODO: replace with Better Auth
-    // const { data, error } = await authClient.signIn.email({
-    //   email: form.email,
-    //   password: form.password,
-    // });
+    const { data, error } = await authClient.signIn.email({
+      email: form.email, // required
+      password: form.password, // required
+      rememberMe: true,
+      callbackURL: "/",
+    });
     console.log("Login submitted:", form);
 
     setIsSubmitting(false);
