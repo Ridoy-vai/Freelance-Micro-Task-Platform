@@ -38,6 +38,18 @@ export const GetTasksByUser = async (path, clientId) => {
     return response.json();
 };
 
+export const GetTasksById = async (path, id) => {
+    const response = await fetch(`${API_URL}/${path}/${id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+            // "Authorization": `Bearer ${token}`
+        }
+    });
+
+    return response.json();
+};
+
 export const UpdateTask = async ({ path, taskData }) => {
     const response = await fetch(`${API_URL}/${path}`, {
         method: "PUT",
