@@ -109,7 +109,7 @@ export default async function TaskDetailsPage({ params }) {
                 only apply once.
               </div>
             ) : (
-              <ProposalForm taskId={task._id} />
+              <ProposalForm task={task} />
             )}
           </div>
         </div>

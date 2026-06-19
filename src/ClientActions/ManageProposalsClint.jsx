@@ -1,85 +1,36 @@
+// src/ClientActions/ManageProposals.jsx
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Calendar, DollarSign, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import React, { useState } from "react";
+import { Calendar, CheckCircle, XCircle } from "lucide-react";
 
-const ManageProposals = () => {
-  const [proposals, setProposals] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+const ManageProposals = ({ proposals:myproposals = [] }) => {
+  const [proposals, setProposals] = useState(myproposals);
 
-  // Fake API (later MongoDB replace)
-  useEffect(() => {
-    const data = [
-      {
-        _id: "1",
-        freelancer: "Rahim Ahmed",
-        title: "Video Editing",
-        category: "Design",
-        budget: 120,
-        deadline: "2026-06-27",
-        message: "I can deliver fast and high quality work",
-        status: "pending",
-      },
-      {
-        _id: "2",
-        freelancer: "Karim Khan",
-        title: "Website Design",
-        category: "Web Dev",
-        budget: 250,
-        deadline: "2026-06-30",
-        message: "React expert with 3 years experience",
-        status: "accepted",
-      },
-      {
-        _id: "3",
-        freelancer: "Nusrat Jahan",
-        title: "Content Writing",
-        category: "Writing",
-        budget: 80,
-        deadline: "2026-07-01",
-        message: "SEO optimized content writer",
-        status: "rejected",
-      },
-    ];
-
-    setTimeout(() => {
-      setProposals(data);
-      setIsLoading(false);
-    }, 500);
-  }, []);
-
-  // Accept
+  // Accept (UI-only for now, backend wiring porer dike)
   const handleAccept = (id) => {
     setProposals((prev) =>
-      prev.map((p) =>
-        p._id === id ? { ...p, status: "accepted" } : p
-      )
+      prev.map((p) => (p._id === id ? { ...p, status: "accepted" } : p))
     );
+
+    // TODO: backend call
+    // await fetch(`${API_URL}/proposals/${id}`, { method: "PATCH", body: JSON.stringify({ status: "accepted" }) });
   };
 
-  // Reject
+  // Reject (UI-only for now, backend wiring porer dike)
   const handleReject = (id) => {
     setProposals((prev) =>
-      prev.map((p) =>
-        p._id === id ? { ...p, status: "rejected" } : p
-      )
+      prev.map((p) => (p._id === id ? { ...p, status: "rejected" } : p))
     );
-  };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="animate-spin text-blue-500" size={40} />
-      </div>
-    );
-  }
+    // TODO: backend call
+    // await fetch(`${API_URL}/proposals/${id}`, { method: "PATCH", body: JSON.stringify({ status: "rejected" }) });
+  };
 
   return (
     <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
       <div className="p-4 border-b">
-        <h2 className="text-lg font-bold text-gray-800">
-          Manage Proposals
-        </h2>
+        <h2 className="text-lg font-bold text-gray-800">Manage Proposals</h2>
       </div>
 
       <div className="overflow-x-auto">
@@ -87,13 +38,16 @@ const ManageProposals = () => {
           <thead className="bg-gray-50 border-b">
             <tr>
               <th className="p-4 text-sm font-semibold text-gray-600">
+                Task
+              </th>
+              <th className="p-4 text-sm font-semibold text-gray-600">
                 Freelancer
               </th>
               <th className="p-4 text-sm font-semibold text-gray-600">
-                Task Info
+                Budget
               </th>
               <th className="p-4 text-sm font-semibold text-gray-600">
-                Budget
+                Est. Days
               </th>
               <th className="p-4 text-sm font-semibold text-gray-600">
                 Deadline
@@ -110,34 +64,38 @@ const ManageProposals = () => {
           <tbody>
             {proposals.length > 0 ? (
               proposals.map((p) => (
-                <tr
-                  key={p._id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
+                <tr key={p._id} className="border-b hover:bg-gray-50 transition">
+                  {/* Task */}
+                  <td className="p-4">
+                    <div className="font-medium text-gray-900">{p.title}</div>
+                    <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                      {p.category}
+                    </span>
+                  </td>
+
                   {/* Freelancer */}
                   <td className="p-4">
                     <div className="font-medium text-gray-900">
-                      {p.freelancer}
+                      {p.Freelancer}
                     </div>
                     <div className="text-xs text-gray-500 truncate w-40">
                       {p.message}
                     </div>
                   </td>
 
-                  {/* Task Info */}
+                  {/* Budget (stacked: Client upore, Freelancer nichey) */}
                   <td className="p-4">
-                    <div className="font-medium">{p.title}</div>
-                    <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                      {p.category}
-                    </span>
+                    <div className="text-sm text-gray-500">
+                      Client: <span className="font-semibold text-gray-700">${p.budget}</span>
+                    </div>
+                    <div className="text-sm text-green-600 mt-1">
+                      Freelancer: <span className="font-semibold">${p.proposedBudget}</span>
+                    </div>
                   </td>
 
-                  {/* Budget */}
-                  <td className="p-4 font-semibold text-gray-800">
-                    <div className="flex items-center gap-1">
-                      <DollarSign size={14} className="text-green-600" />
-                      {p.budget}
-                    </div>
+                  {/* Estimated Days */}
+                  <td className="p-4 text-sm text-gray-600">
+                    {p.estimatedDays} days
                   </td>
 
                   {/* Deadline */}
@@ -185,10 +143,7 @@ const ManageProposals = () => {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="6"
-                  className="text-center py-10 text-gray-500"
-                >
+                <td colSpan="7" className="text-center py-10 text-gray-500">
                   No proposals found.
                 </td>
               </tr>

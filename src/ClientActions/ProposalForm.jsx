@@ -4,7 +4,8 @@ import { authClient } from "@/lib/auth-client";
 import { Postproposals } from "@/ServerActions/proposal";
 import { useState } from "react";
 
-export default function ProposalForm({ taskId }) {
+export default function ProposalForm({ task }) {
+    const taskId = task._id
     const { data: session, isPending } = authClient.useSession();
     const user = session?.user;
 
@@ -28,6 +29,7 @@ export default function ProposalForm({ taskId }) {
 
         try {
             const proposal = {
+                ...task,
                 ...form,
                 status: "pending",
                 Freelancer: user.name,

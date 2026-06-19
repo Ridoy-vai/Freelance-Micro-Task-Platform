@@ -14,6 +14,9 @@ import {
 } from "lucide-react";
 // import MyProposals from "./MyProposals";
 import MyProposals from "@/DashboardActions/MyProposals";
+import MyActiveProjects from "./FreelancerActiveProject";
+import EarningsPage from "@/DashboardActions/FreelancerEarning";
+import EditProfilePage from "@/DashboardActions/EaditProphile";
 
 export default function FreelancerDashboardClient({ data }) {
   const [activeTab, setActiveTab] = useState("overview");
@@ -35,11 +38,10 @@ export default function FreelancerDashboardClient({ data }) {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
-              activeTab === item.id
-                ? "bg-blue-600 text-white shadow-md"
-                : "hover:bg-gray-100"
-            }`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === item.id
+              ? "bg-blue-600 text-white shadow-md"
+              : "hover:bg-gray-100"
+              }`}
           >
             <item.icon size={18} /> {item.name}
           </button>
@@ -60,6 +62,12 @@ export default function FreelancerDashboardClient({ data }) {
               <p className="text-gray-500 font-medium">Accepted</p>
               <h3 className="text-3xl font-bold text-green-600">
                 {stats.acceptedProposals}
+              </h3>
+            </div>
+            <div className="bg-white p-6 rounded-xl border shadow-sm">
+              <p className="text-gray-500 font-medium">Submited</p>
+              <h3 className="text-3xl font-bold text-green-600">
+                {stats.submitedProposals}
               </h3>
             </div>
             <div className="bg-white p-6 rounded-xl border shadow-sm">
@@ -104,28 +112,13 @@ export default function FreelancerDashboardClient({ data }) {
         {activeTab === "proposals" && <MyProposals proposals={proposals} />}
 
         {activeTab === "projects" && (
-          <div className="bg-white p-6 rounded-xl border">
-            <h2 className="font-bold text-lg mb-4">Active Project Tracking</h2>
-            {activeProjects.length === 0 && (
-              <p className="text-gray-400">কোনো active project নেই।</p>
-            )}
-            {activeProjects.map((proj) => (
-              <div
-                key={proj._id}
-                className="flex items-center justify-between border-b pb-4"
-              >
-                <div>
-                  <p className="font-bold">{proj.taskTitle}</p>
-                  <p className="text-xs text-gray-400">
-                    Status: {proj.projectStatus || "In Progress"}
-                  </p>
-                </div>
-                <button className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
-                  <CheckCircle size={14} /> Submit Deliverable
-                </button>
-              </div>
-            ))}
-          </div>
+          <MyActiveProjects proposals={proposals} />
+        )}
+        {activeTab === "earnings" && (
+          <EarningsPage proposals={proposals} />
+        )}
+        {activeTab === "profile" && (
+          <EditProfilePage />
         )}
       </main>
     </div>

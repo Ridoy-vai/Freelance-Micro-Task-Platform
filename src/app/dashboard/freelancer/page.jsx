@@ -20,7 +20,7 @@ export default async function FreelancerDashboardPage() {
 
   // --- Proposals (Express API theke) ---
   const proposals = []
-   const result = await GetProposalById({ path: "myProposals", freelancerId })
+  const result = await GetProposalById({ path: "myProposals", freelancerId })
   // const res = await fetch(`http://localhost:5000/myProposals/${freelancerId}`, {
   //   method: "GET",
   //   headers: {
@@ -46,9 +46,13 @@ export default async function FreelancerDashboardPage() {
   const acceptedProposalsList = proposals.filter(
     (p) => p.status === "accepted"
   );
+  const submitedProposalsList = proposals.filter(
+    (p) => p.status === "submited"
+  );
   const acceptedProposals = acceptedProposalsList.length;
+  const submitedProposals = submitedProposalsList.length;
 
-  const earnings = acceptedProposalsList.reduce(
+  const earnings = submitedProposalsList.reduce(
     (sum, p) => sum + (Number(p.proposedBudget) || 0),
     0
   );
@@ -61,6 +65,7 @@ export default async function FreelancerDashboardPage() {
     stats: {
       totalProposals,
       acceptedProposals,
+      submitedProposals,
       earnings,
     },
     tasks,

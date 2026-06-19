@@ -1,103 +1,45 @@
-"use client";
-import React, { useState } from "react";
-import PostTaskForm from "./PostTaskForm/page";
-import {
-  LayoutDashboard, Plus, Briefcase, List, LogOut,
-  Edit, Trash2, Menu, X
-} from "lucide-react";
-import MyTasksPage from "./MyTasks/page";
-import DashboardHome from "./DashboardHome/page";
-import ManageProposals from "./ManageProposal/page";
+import ClientDashboardShell from "@/ClientActions/ClientDashboardShell";
+import React from "react";
+// import ClientDashboardShell from "./ClientDashboardShell";
 
-export default function ClientDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // মোবাইল মেনুর জন্য স্টেট
+// এই মেনু আইটেমগুলো static data — কোনো state বা event handler নেই,
+// তাই এটা সার্ভারেই রাখা হলো এবং props দিয়ে client component-কে পাঠানো হচ্ছে।
+// NOTE: lucide-react icon component (LayoutDashboard, Plus ইত্যাদি) সরাসরি পাঠানো যায় না,
+// কারণ সেগুলো plain object নয় (render method সহ component object)।
+// Server → Client boundary পার করতে পারে শুধু plain data (string/number/array/object)।
+// তাই এখানে icon-এর বদলে একটা string key পাঠানো হচ্ছে, আসল icon component
+// client component-এর ভেতরে এই key থেকে lookup করা হবে।
+const menuItems = [
+  { id: "overview", name: "Dashboard", icon: "dashboard" },
+  { id: "post", name: "Post a Task", icon: "plus" },
+  { id: "tasks", name: "My Tasks", icon: "tasks" },
+  { id: "proposals", name: "Manage Proposals", icon: "proposals" },
+];
 
-  const menuItems = [
-    { id: "overview", name: "Dashboard", icon: LayoutDashboard },
-    { id: "post", name: "Post a Task", icon: Plus },
-    { id: "tasks", name: "My Tasks", icon: Briefcase },
-    { id: "proposals", name: "Manage Proposals", icon: List },
+const proposals = [
+    {
+      _id: "6a33e62343272fee573fbdf8",
+      title: "Design Web Landing Page",
+      category: "Web Development",
+      description: "we provied 4 years + landing page design survice",
+      budget: "2500",
+      deadline: "2026-06-27",
+      status: "pending",
+      ClientId: "6a338085c3bc3d56145bf98c",
+      taskId: "6a33e62343272fee573fbdf8",
+      freelancerEmail: "mdsahariyarridoy@gmail.com",
+      proposedBudget: "12",
+      estimatedDays: "12",
+      message: "wgfgnb nbvbdf",
+      Freelancer: "Ridoy Vai",
+      FreelancerId: "6a336f78c3bc3d56145bf985",
+    },
   ];
 
-  const handleTabClick = (id) => {
-    setActiveTab(id);
-    setIsSidebarOpen(false); // মোবাইলে অপশন ক্লিক করলে মেনু অটো বন্ধ হবে
-  };
-
-  return (
-    <div className="flex h-screen bg-gray-50 text-gray-800 overflow-hidden">
-
-      {/* --- Mobile Sidebar Overlay --- */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* --- Sidebar --- */}
-      <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r flex flex-col p-4 transition-transform duration-300 ease-in-out
-        lg:relative lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-      `}>
-        <div className="flex items-center justify-between px-4 mb-6">
-          <h2 className="text-xl font-bold text-orange-600">Client Panel</h2>
-          <button className="lg:hidden" onClick={() => setIsSidebarOpen(false)}>
-            <X size={24} />
-          </button>
-        </div>
-
-        <nav className="flex-1 space-y-2">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => handleTabClick(item.id)}
-              className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition ${activeTab === item.id ? "bg-orange-500 text-white shadow-md" : "hover:bg-gray-100"
-                }`}
-            >
-              <item.icon size={18} />
-              <span className="font-medium">{item.name}</span>
-            </button>
-          ))}
-        </nav>
-
-        <div className="mt-auto p-4 border-t flex items-center gap-2 text-red-500 cursor-pointer hover:bg-red-50 rounded-lg transition">
-          <LogOut size={18} />
-          <span className="font-medium">Logout</span>
-        </div>
-      </aside>
-
-      {/* --- Main Content Area --- */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-
-        {/* Mobile Header */}
-        <header className="bg-white border-b p-4 flex items-center justify-between lg:hidden">
-          <h2 className="font-bold text-orange-600">Client Panel</h2>
-          <button onClick={() => setIsSidebarOpen(true)} className="p-2 bg-gray-100 rounded-lg">
-            <Menu size={24} />
-          </button>
-        </header>
-
-        <div className="flex-1 p-4 md:p-8 overflow-y-auto">
-          {activeTab === "overview" && (
-            <DashboardHome />
-          )}
-
-          {activeTab === "post" && (
-            <div className="w-full max-w-4xl mx-auto">
-              <PostTaskForm />
-            </div>
-          )}
-
-          {activeTab === "tasks" && (
-            <MyTasksPage />
-          )}
-          {activeTab === "proposals" && (
-            <ManageProposals/>
-          )}
-        </div>
-      </main>
-    </div>
-  );
+// --- এটি একটি Server Component (ডিফল্ট) ---
+// এখানে কোনো "use client" নেই, কোনো useState/useEffect নেই, কোনো onClick নেই।
+// ভবিষ্যতে এখানে সার্ভার থেকে সরাসরি ডেটা fetch (await fetch(...) / db call) করে
+// সেটাও props হিসেবে ClientDashboardShell-এ পাঠানো যাবে।
+export default function ClientDashboardPage() {
+  return <ClientDashboardShell menuItems={menuItems} proposals={proposals} />;
 }
