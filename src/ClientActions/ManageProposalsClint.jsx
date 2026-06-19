@@ -4,27 +4,85 @@
 import React, { useState } from "react";
 import { Calendar, CheckCircle, XCircle } from "lucide-react";
 
-const ManageProposals = ({ proposals:myproposals = [] }) => {
+const ManageProposals = ({ proposals: myproposals = [] }) => {
   const [proposals, setProposals] = useState(myproposals);
 
   // Accept (UI-only for now, backend wiring porer dike)
-  const handleAccept = (id) => {
-    setProposals((prev) =>
-      prev.map((p) => (p._id === id ? { ...p, status: "accepted" } : p))
-    );
+  const handleAccept = async (id) => {
+    // console.log(id)
+    try {
+      const res = await fetch(`http://localhost:5000/task/proposals/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "accepted" }),
+      });
 
-    // TODO: backend call
-    // await fetch(`${API_URL}/proposals/${id}`, { method: "PATCH", body: JSON.stringify({ status: "accepted" }) });
+      const result = await res.json();
+
+      if (!res.ok) {
+        console.log("Failed to update proposal status:", result.message);
+        return;
+      }
+
+      // UI update
+      setProposals((prev) =>
+        prev.map((p) => (p._id === id ? { ...p, status: "acceepted" } : p))
+      );
+
+
+      // const taskid = result.taskId
+      // console.log("Updated successfully:", result);
+      // console.log("task id successfully:", taskid);
+    } catch (error) {
+      console.log("Error accepting proposal:", error);
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/proposalTaskid/${id}`);
+      const data = await res.json();
+
+      const taskId = data.taskId
+      console.log("task id in task", taskId)
+
+      // console.log("update data", data);
+
+      const respons = await fetch(`http://localhost:5000/updatetaskstatus/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "booked" }),
+      });
+      const taskstatus = await respons.json();
+
+      console.log("resul update task", taskstatus)
+    } catch (error) {
+      console.log(error)
+    }
+
   };
+  // console.log(taskId,"bvccvbnbvc")
+  const handleReject = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:5000/task/proposals/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "rejected" }),
+      });
 
-  // Reject (UI-only for now, backend wiring porer dike)
-  const handleReject = (id) => {
-    setProposals((prev) =>
-      prev.map((p) => (p._id === id ? { ...p, status: "rejected" } : p))
-    );
+      const result = await res.json();
 
-    // TODO: backend call
-    // await fetch(`${API_URL}/proposals/${id}`, { method: "PATCH", body: JSON.stringify({ status: "rejected" }) });
+      if (!res.ok) {
+        console.log("Failed to update proposal status:", result.message);
+        return;
+      }
+
+      // setProposals((prev) =>
+      //   prev.map((p) => (p._id === id ? { ...p, status: "rejected" } : p))
+      // );
+
+      console.log("Rejected successfully:", result);
+    } catch (error) {
+      console.log("Error rejecting proposal:", error);
+    }
   };
 
   return (
@@ -109,13 +167,12 @@ const ManageProposals = ({ proposals:myproposals = [] }) => {
                   {/* Status */}
                   <td className="p-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        p.status === "pending"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : p.status === "accepted"
+                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${p.status === "pending"
+                        ? "bg-yellow-100 text-yellow-600"
+                        : p.status === "accepted"
                           ? "bg-green-100 text-green-600"
                           : "bg-red-100 text-red-600"
-                      }`}
+                        }`}
                     >
                       {p.status}
                     </span>
@@ -124,16 +181,26 @@ const ManageProposals = ({ proposals:myproposals = [] }) => {
                   {/* Actions */}
                   <td className="p-4">
                     <div className="flex justify-center gap-2">
+                      {/* Accept Button */}
                       <button
                         onClick={() => handleAccept(p._id)}
-                        className="text-green-600 hover:bg-green-50 p-2 rounded-lg transition"
+                        disabled={p.status === "rejected"}
+                        className={`text-green-600 hover:bg-green-50 p-2 rounded-lg transition ${p.status === "rejected"
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                          }`}
                       >
                         <CheckCircle size={18} />
                       </button>
 
+                      {/* Reject Button */}
                       <button
                         onClick={() => handleReject(p._id)}
-                        className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition"
+                        disabled={p.status === "accepted"}
+                        className={`text-red-500 hover:bg-red-50 p-2 rounded-lg transition ${p.status === "accepted"
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                          }`}
                       >
                         <XCircle size={18} />
                       </button>

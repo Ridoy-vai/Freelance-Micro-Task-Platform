@@ -43,6 +43,11 @@ const DashboardHome = () => {
             </div>
         );
     }
+    const totalBookedBudget = tasks
+        .filter(task => task.status === "booked")
+        .reduce((sum, task) => sum + Number(task.budget || 0), 0);
+
+
     const stats = [
         {
             title: "Total Tasks",
@@ -60,14 +65,14 @@ const DashboardHome = () => {
         },
         {
             title: "In Progress",
-            value: tasks.filter((task) => task.status === "in-progress").length,
+            value: tasks.filter((task) => task.status === "booked").length,
             icon: Clock,
             color: "yellow",
             note: "Working",
         },
         {
             title: "Total Spent",
-            value: `$: ${tasks.reduce((sum, task) => sum + Number(task.budget || 0), 0)}`,
+            value: `$ ${totalBookedBudget}`,
             icon: DollarSign,
             color: "purple",
             note: "Spent",

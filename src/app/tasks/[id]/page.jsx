@@ -1,4 +1,5 @@
 import ProposalForm from "@/ClientActions/ProposalForm";
+import { authClient } from "@/lib/auth-client";
 import { GetTasksById } from "@/ServerActions/Task";
 // import ProposalForm from "./ProposalForm";
 
@@ -12,6 +13,9 @@ function formatDate(dateStr) {
 }
 
 export default async function TaskDetailsPage({ params }) {
+  const session  = await authClient.getSession();
+  const user = session?.user;
+  console.log("...id page user", session)
   const { id } = await params;
   let task = null;
   let loadError = null;
@@ -103,10 +107,13 @@ export default async function TaskDetailsPage({ params }) {
               Submit a proposal
             </h2>
 
-            {alreadyApplied ? (
+            {user?.role === "client" ? (
+              <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-yellow-300/80">
+                Clients cannot submit proposals. Only freelancers can apply for tasks.
+              </div>
+            ) : alreadyApplied ? (
               <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-paper/60">
-                You have already submitted a proposal for this task. You can
-                only apply once.
+                You have already submitted a proposal for this task. You can only apply once.
               </div>
             ) : (
               <ProposalForm task={task} />
