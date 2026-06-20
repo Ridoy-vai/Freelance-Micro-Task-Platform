@@ -1,9 +1,8 @@
 "use client";
 
 import { deleteProposal } from "@/ServerActions/proposal";
+import { FileText } from "lucide-react";
 import { useState } from "react";
-
-const REACT_APP_PUBLICK_API_URL = process.env.REACT_APP_PUBLICK_API_URL;
 
 export default function MyProposals({ proposals = [] }) {
   const [proposalList, setProposalList] = useState(proposals);
@@ -11,25 +10,17 @@ export default function MyProposals({ proposals = [] }) {
   const handelDelete = async (id) => {
     try {
       console.log("Delete ID:", id);
-      // console.log("api url", API_URL)
-      deleteProposal(id);
-      // const res = await fetch(
-      //   // `http://localhost:5000/deletefreelanceproposal/${id}`,
-      //   `${REACT_APP_PUBLICK_API_URL}deletefreelanceproposal/${id}`,
-      //   {
-      //     method: "DELETE",
-      //   }
-      // );
 
-      // const data = await res.json();
+      const data = await deleteProposal(id);
 
-      // console.log("Delete Response:", data);
+      console.log("Delete Response:", data);
 
-      // if (data.deletedCount > 0) {
-      //   setProposalList((prev) =>
-      //     prev.filter((item) => item._id !== id)
-      //   );
-      // }
+      if (data?.success || data?.deletedCount > 0) {
+        // UI থেকে সাথে সাথে বাদ দেওয়া হচ্ছে
+        setProposalList((prev) => prev.filter((item) => item._id !== id));
+      } else {
+        alert(data?.message || "Proposal delete করা যায়নি");
+      }
     } catch (error) {
       console.error("Delete Error:", error);
     }
@@ -37,8 +28,17 @@ export default function MyProposals({ proposals = [] }) {
 
   if (proposalList.length === 0) {
     return (
-      <div className="bg-white p-8 rounded-2xl border text-center text-gray-400">
-        কোনো proposal পাঠানো হয়নি।
+      <div className="flex flex-col items-center justify-center text-center px-8 py-16 bg-gray-50 rounded-2xl border border-gray-200">
+        <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mb-5">
+          <FileText size={26} className="text-blue-600" />
+        </div>
+        <p className="text-base font-medium text-gray-900 mb-1.5">
+          কোনো proposal পাঠানো হয়নি
+        </p>
+        <p className="text-sm text-gray-500 mb-5 max-w-xs leading-relaxed">
+          আপনি এখনো কোনো task-এ proposal সাবমিট করেননি। কাজ খুঁজে proposal
+          পাঠালে এখানে দেখা যাবে।
+        </p>
       </div>
     );
   }

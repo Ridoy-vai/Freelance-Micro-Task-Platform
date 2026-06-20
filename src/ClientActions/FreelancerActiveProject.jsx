@@ -1,5 +1,5 @@
 "use client";
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 import { updateProposalStatus } from "@/ServerActions/proposal";
 
 const serverurl = process.env.REACT_APP_API_URL
@@ -11,19 +11,18 @@ export default function MyActiveProjects({ proposals = [] }) {
 
   const handleSubmit = async (id) => {
     console.log("submited id for active project", id)
-    updateProposalStatus( id, "submited" )
-    // const res = await fetch(`${serverurl}/task/proposals/${id}`, {
-    //   method: "PATCH",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     status: "submited",
-    //     submitDate: new Date().toISOString().split("T")[0],
-    //   }),
-    // });
+    const taskId = id
+    updateProposalStatus(id, "submited")
+    const respons = await fetch(
+      `${API_URL}/updatetaskstatus/${taskId}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "submited" }),
+      }
+    );
+    const taskstatus = await respons.json();
 
-    // const result = await res.json();
 
   }
 

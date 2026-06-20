@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Briefcase, CheckCircle, Clock, DollarSign, Loader2 } from "lucide-react";
+import { Briefcase, CheckCircle, Clock, DollarSign, FileCheck, Loader2 } from "lucide-react";
 import { GetTasksByUser } from "@/ServerActions/Task";
 import { authClient } from "@/lib/auth-client";
 
@@ -43,10 +43,11 @@ const DashboardHome = () => {
             </div>
         );
     }
-    const totalBookedBudget = tasks
-        .filter(task => task.status === "booked")
-        .reduce((sum, task) => sum + Number(task.budget || 0), 0);
 
+    // booked + submited দুটো status-ই "spent" হিসেবে count হবে
+    const totalBookedBudget = tasks
+        .filter((task) => task.status === "booked" || task.status === "submited")
+        .reduce((sum, task) => sum + Number(task.budget || 0), 0);
 
     const stats = [
         {
@@ -71,6 +72,13 @@ const DashboardHome = () => {
             note: "Working",
         },
         {
+            title: "Submitted",
+            value: tasks.filter((task) => task.status === "submited").length,
+            icon: FileCheck,
+            color: "indigo",
+            note: "Review",
+        },
+        {
             title: "Total Spent",
             value: `$ ${totalBookedBudget}`,
             icon: DollarSign,
@@ -84,6 +92,7 @@ const DashboardHome = () => {
         blue: "from-blue-50",
         green: "from-green-50",
         yellow: "from-yellow-50",
+        indigo: "from-indigo-50",
         purple: "from-purple-50",
     };
 
@@ -91,6 +100,7 @@ const DashboardHome = () => {
         blue: "text-blue-600",
         green: "text-green-600",
         yellow: "text-yellow-600",
+        indigo: "text-indigo-600",
         purple: "text-purple-600",
     };
 
@@ -107,7 +117,7 @@ const DashboardHome = () => {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
                 {stats.map((item, index) => {
                     const Icon = item.icon;
 

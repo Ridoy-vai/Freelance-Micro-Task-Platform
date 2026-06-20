@@ -32,7 +32,7 @@ const TaskCard = ({ task }) => {
                 </h3>
 
                 <p className="mt-2 text-sm text-paper/50">
-                    Posted by <span className="text-paper/80">{task.client}</span>
+                    Posted by <span className="text-paper/80">{task.clientname}</span>
                 </p>
 
                 <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">

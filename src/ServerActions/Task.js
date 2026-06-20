@@ -16,8 +16,34 @@ export const PostTask = ({ path, taskData }) => {
     });
 };
 
-export const GetAllTasks = async (path, limit, skip) => {
-    const response = await fetch(`${API_URL}/${path}?limit=${limit}&skip=${skip}`, {
+// export const GetAllTasks = async (path, limit, skip) => {
+//     const response = await fetch(`${API_URL}/${path}?limit=${limit}&skip=${skip}`, {
+//         method: "GET",
+//         headers: {
+//             "Content-Type": "application/json",
+//             "Authorization": `Bearer ${user?.token}`
+//         }
+//     });
+//     return response.json();
+// };
+
+
+
+
+
+
+
+
+export const GetAllTasks = async (path, limit, skip, search = "", category = "") => {
+    const params = new URLSearchParams({
+        limit,
+        skip,
+    });
+
+    if (search) params.append("search", search);
+    if (category) params.append("category", category);
+
+    const response = await fetch(`${API_URL}/${path}?${params.toString()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -26,6 +52,26 @@ export const GetAllTasks = async (path, limit, skip) => {
     });
     return response.json();
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const GetTasksByUser = async (path, clientId) => {
     const response = await fetch(`${API_URL}/${path}/${clientId}`, {
