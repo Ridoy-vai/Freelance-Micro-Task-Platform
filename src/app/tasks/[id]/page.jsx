@@ -1,6 +1,9 @@
 import ProposalForm from "@/ClientActions/ProposalForm";
+import { auth } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 import { GetTasksById } from "@/ServerActions/Task";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 // import ProposalForm from "./ProposalForm";
 
 function formatDate(dateStr) {
@@ -13,8 +16,14 @@ function formatDate(dateStr) {
 }
 
 export default async function TaskDetailsPage({ params }) {
-  const session  = await authClient.getSession();
+  const session = await auth.api.getSession({
+  headers: await headers(),
+});
   const user = session?.user;
+
+  if(!user){
+    redirect("/")
+  }
   console.log("...id page user", session)
   const { id } = await params;
   let task = null;
