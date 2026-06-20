@@ -2,6 +2,7 @@ import TaskCard from '@/ClientActions/TaskCard';
 import SearchAndFilter from '@/Components/SearchAndFilter';
 // import TaskFilters from '@/ClientActions/TaskFilters';
 import { GetAllTasks } from '@/ServerActions/Task';
+import { ClipboardList } from 'lucide-react';
 import React from 'react';
 
 const TaskPage = async ({ searchParams }) => {
@@ -41,9 +42,17 @@ const TaskPage = async ({ searchParams }) => {
                             <TaskCard key={task._id} task={task} />
                         ))
                     ) : (
-                        <p className="col-span-full text-center text-paper/60 py-10">
-                            কোনো task পাওয়া যায়নি।
-                        </p>
+                        <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+                            <ClipboardList size={60} className="mb-4 text-paper/40" />
+
+                            <h3 className="text-xl font-semibold text-paper">
+                                No Tasks Found
+                            </h3>
+
+                            <p className="mt-2 max-w-md text-paper/60">
+                                There are currently no tasks available. New tasks will appear here once they are posted.
+                            </p>
+                        </div>
                     )}
                 </div>
             </div>

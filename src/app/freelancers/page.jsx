@@ -1,10 +1,24 @@
 import FreelancerCard from '@/ClientActions/FreelancerCard';
+import FreelancerFilters from '@/Components/FreelancerFilters';
+// import FreelancerFilters from '@/ClientActions/FreelancerFilters';
 import React from 'react';
 
-const BrowseFreelancers = async () => {
-    const res = await fetch(`http://localhost:5000/freelancers`, { cache: "no-store" });
-    const user = res.ok ? await res.json() : null;
-    const FREELANCERS = [...user];
+const BrowseFreelancers = async ({ searchParams }) => {
+    const params = await searchParams;
+    const search = params?.search || "";
+    const minBudgetFrom = params?.minBudgetFrom || "";
+    const minBudgetTo = params?.minBudgetTo || "";
+
+    const query = new URLSearchParams();
+    if (search) query.append("search", search);
+    if (minBudgetFrom) query.append("minBudgetFrom", minBudgetFrom);
+    if (minBudgetTo) query.append("minBudgetTo", minBudgetTo);
+
+    const res = await fetch(
+        `http://localhost:5000/freelancers?${query.toString()}`,
+        { cache: "no-store" }
+    );
+    const FREELANCERS = res.ok ? await res.json() : [];
 
     return (
         <section className="bg-ink py-20 sm:py-24">
@@ -23,10 +37,23 @@ const BrowseFreelancers = async () => {
                     </button>
                 </div>
 
+                {/* Search + Budget Range Filter */}
+                <FreelancerFilters
+                    defaultSearch={search}
+                    defaultMinBudgetFrom={minBudgetFrom}
+                    defaultMinBudgetTo={minBudgetTo}
+                />
+
                 <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {FREELANCERS.map((freelancer) => (
-                        <FreelancerCard key={freelancer._id} freelancer={freelancer} />
-                    ))}
+                    {FREELANCERS.length > 0 ? (
+                        FREELANCERS.map((freelancer) => (
+                            <FreelancerCard key={freelancer._id} freelancer={freelancer} />
+                        ))
+                    ) : (
+                        <p className="col-span-full text-center text-paper/60 py-10">
+                            কোনো freelancer পাওয়া যায়নি।
+                        </p>
+                    )}
                 </div>
             </div>
         </section>
