@@ -1,6 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 const { session } = authClient.getSession();
 const user = session?.user;

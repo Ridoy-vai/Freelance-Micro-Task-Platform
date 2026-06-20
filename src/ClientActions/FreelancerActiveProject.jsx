@@ -1,9 +1,31 @@
 "use client";
 
+import { updateProposalStatus } from "@/ServerActions/proposal";
+
+const serverurl = process.env.REACT_APP_API_URL
 export default function MyActiveProjects({ proposals = [] }) {
   const activeProposals = proposals.filter(
-    (p) => p.status === "remove"
+    (p) => p.status === "accepted"
   );
+
+
+  const handleSubmit = async (id) => {
+    console.log("submited id for active project", id)
+    updateProposalStatus( id, "submited" )
+    // const res = await fetch(`${serverurl}/task/proposals/${id}`, {
+    //   method: "PATCH",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     status: "submited",
+    //     submitDate: new Date().toISOString().split("T")[0],
+    //   }),
+    // });
+
+    // const result = await res.json();
+
+  }
 
   if (activeProposals.length === 0) {
     return (
@@ -54,10 +76,10 @@ export default function MyActiveProjects({ proposals = [] }) {
                 {/* Client */}
                 <td className="px-6 py-5">
                   <p className="font-medium">
-                    {p.clientName || "Unknown"}
+                    {p.clientname || "Unknown"}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {p.clientEmail || "No Email"}
+                    {p.clientemail || "No Email"}
                   </p>
                 </td>
 
@@ -80,8 +102,10 @@ export default function MyActiveProjects({ proposals = [] }) {
 
                 {/* Action */}
                 <td className="px-6 py-5 text-right">
-                  <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    View
+                  <button
+                    onClick={() => { handleSubmit(p._id) }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Submit
                   </button>
                 </td>
 

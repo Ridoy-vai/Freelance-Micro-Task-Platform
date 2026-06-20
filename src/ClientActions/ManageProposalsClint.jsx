@@ -7,9 +7,11 @@ import { Calendar, CheckCircle, XCircle } from "lucide-react";
 const ManageProposals = ({ proposals: myproposals = [] }) => {
   const [proposals, setProposals] = useState(myproposals);
 
-  // Accept (UI-only for now, backend wiring porer dike)
+  // শুধু pending proposals filter করা হচ্ছে
+  const pendingProposals = proposals.filter((p) => p.status === "pending");
+
+  // Accept
   const handleAccept = async (id) => {
-    // console.log(id)
     try {
       const res = await fetch(`http://localhost:5000/task/proposals/${id}`, {
         method: "PATCH",
@@ -26,13 +28,8 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
 
       // UI update
       setProposals((prev) =>
-        prev.map((p) => (p._id === id ? { ...p, status: "acceepted" } : p))
+        prev.map((p) => (p._id === id ? { ...p, status: "accepted" } : p))
       );
-
-
-      // const taskid = result.taskId
-      // console.log("Updated successfully:", result);
-      // console.log("task id successfully:", taskid);
     } catch (error) {
       console.log("Error accepting proposal:", error);
     }
@@ -41,25 +38,26 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
       const res = await fetch(`http://localhost:5000/proposalTaskid/${id}`);
       const data = await res.json();
 
-      const taskId = data.taskId
-      console.log("task id in task", taskId)
+      const taskId = data.taskId;
+      console.log("task id in task", taskId);
 
-      // console.log("update data", data);
-
-      const respons = await fetch(`http://localhost:5000/updatetaskstatus/${taskId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "booked" }),
-      });
+      const respons = await fetch(
+        `http://localhost:5000/updatetaskstatus/${taskId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "booked" }),
+        }
+      );
       const taskstatus = await respons.json();
 
-      console.log("resul update task", taskstatus)
+      console.log("resul update task", taskstatus);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-
   };
-  // console.log(taskId,"bvccvbnbvc")
+
+  // Reject
   const handleReject = async (id) => {
     try {
       const res = await fetch(`http://localhost:5000/task/proposals/${id}`, {
@@ -75,9 +73,10 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
         return;
       }
 
-      // setProposals((prev) =>
-      //   prev.map((p) => (p._id === id ? { ...p, status: "rejected" } : p))
-      // );
+      // UI update
+      setProposals((prev) =>
+        prev.map((p) => (p._id === id ? { ...p, status: "rejected" } : p))
+      );
 
       console.log("Rejected successfully:", result);
     } catch (error) {
@@ -95,9 +94,7 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
         <table className="w-full text-left border-collapse min-w-[900px]">
           <thead className="bg-gray-50 border-b">
             <tr>
-              <th className="p-4 text-sm font-semibold text-gray-600">
-                Task
-              </th>
+              <th className="p-4 text-sm font-semibold text-gray-600">Task</th>
               <th className="p-4 text-sm font-semibold text-gray-600">
                 Freelancer
               </th>
@@ -120,9 +117,12 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
           </thead>
 
           <tbody>
-            {proposals.length > 0 ? (
-              proposals.map((p) => (
-                <tr key={p._id} className="border-b hover:bg-gray-50 transition">
+            {pendingProposals.length > 0 ? (
+              pendingProposals.map((p) => (
+                <tr
+                  key={p._id}
+                  className="border-b hover:bg-gray-50 transition"
+                >
                   {/* Task */}
                   <td className="p-4">
                     <div className="font-medium text-gray-900">{p.title}</div>
@@ -141,13 +141,17 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
                     </div>
                   </td>
 
-                  {/* Budget (stacked: Client upore, Freelancer nichey) */}
+                  {/* Budget */}
                   <td className="p-4">
                     <div className="text-sm text-gray-500">
-                      Client: <span className="font-semibold text-gray-700">${p.budget}</span>
+                      Client:{" "}
+                      <span className="font-semibold text-gray-700">
+                        ${p.budget}
+                      </span>
                     </div>
                     <div className="text-sm text-green-600 mt-1">
-                      Freelancer: <span className="font-semibold">${p.proposedBudget}</span>
+                      Freelancer:{" "}
+                      <span className="font-semibold">${p.proposedBudget}</span>
                     </div>
                   </td>
 
@@ -167,12 +171,13 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
                   {/* Status */}
                   <td className="p-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${p.status === "pending"
-                        ? "bg-yellow-100 text-yellow-600"
-                        : p.status === "accepted"
+                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        p.status === "pending"
+                          ? "bg-yellow-100 text-yellow-600"
+                          : p.status === "accepted"
                           ? "bg-green-100 text-green-600"
                           : "bg-red-100 text-red-600"
-                        }`}
+                      }`}
                     >
                       {p.status}
                     </span>
@@ -184,11 +189,7 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
                       {/* Accept Button */}
                       <button
                         onClick={() => handleAccept(p._id)}
-                        disabled={p.status === "rejected"}
-                        className={`text-green-600 hover:bg-green-50 p-2 rounded-lg transition ${p.status === "rejected"
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                          }`}
+                        className="text-green-600 hover:bg-green-50 p-2 rounded-lg transition"
                       >
                         <CheckCircle size={18} />
                       </button>
@@ -196,11 +197,7 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
                       {/* Reject Button */}
                       <button
                         onClick={() => handleReject(p._id)}
-                        disabled={p.status === "accepted"}
-                        className={`text-red-500 hover:bg-red-50 p-2 rounded-lg transition ${p.status === "accepted"
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                          }`}
+                        className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition"
                       >
                         <XCircle size={18} />
                       </button>
@@ -211,7 +208,7 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
             ) : (
               <tr>
                 <td colSpan="7" className="text-center py-10 text-gray-500">
-                  No proposals found.
+                  No pending proposals found.
                 </td>
               </tr>
             )}

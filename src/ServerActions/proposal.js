@@ -1,6 +1,7 @@
 import { authClient } from "@/lib/auth-client";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 const { session } = authClient.getSession();
 const user = session?.user;
 // Get the user from the session data
@@ -25,4 +26,37 @@ export const GetProposalById = async ({ path, freelancerId }) => {
     });
     return res.json()
 
+};
+
+export const updateProposalStatus = async (id, status) => {
+    const res = await fetch(`${API_URL}/task/proposals/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            status,
+            submitDate:
+                status === "submited"
+                    ? new Date().toISOString().split("T")[0]
+                    : null,
+        }),
+    });
+
+    const result = await res.json();
+    console.log("proposal.js", result);
+
+    return result;
+
+};
+
+export const deleteProposal = async (id) => {
+    const res = await fetch(`${API_URL}/proposals/${id}`, {
+        method: "DELETE",
+    });
+
+    const result = await res.json();
+    console.log("proposal.js delete:", result);
+
+    return result;
 };

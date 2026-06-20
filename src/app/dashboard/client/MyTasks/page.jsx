@@ -8,6 +8,7 @@ const MyTasksPage = () => {
     const { data: session, isPending: sessionPending } = authClient.useSession();
     const [tasks, setTasks] = useState([]); // ডাটা রাখার জন্য স্টেট
     const [isLoading, setIsLoading] = useState(true); // লোডিং স্টেট
+    const [deletingId, setDeletingId] = useState(null); // কোন task delete হচ্ছে তা ট্র্যাক করার জন্য
 
     const user = session?.user;
     const clientId = user?.id;
@@ -43,9 +44,18 @@ const MyTasksPage = () => {
     }, [clientId]);
 
     const handleDelete = async (_id) => {
+        // confirm popup
+        const confirmDelete = window.confirm(
+            "আপনি কি নিশ্চিতভাবে এই টাস্কটি ডিলিট করতে চান?"
+        );
+
+        if (!confirmDelete) return;
+
         console.log("delete id", _id);
 
         try {
+            setDeletingId(_id); // এই task-এর জন্য loading শুরু
+
             const res = await fetch(
                 `http://localhost:5000/deleteclinttask/${_id}`,
                 {
@@ -58,10 +68,17 @@ const MyTasksPage = () => {
             console.log(data);
 
             if (data.deletedCount > 0) {
+                // UI থেকে instant বাদ দেওয়া
+                setTasks((prev) => prev.filter((task) => task._id !== _id));
                 alert("Task deleted successfully");
+            } else {
+                alert(data.message || "Task delete করা যায়নি");
             }
         } catch (error) {
             console.log(error);
+            alert("Server error, পরে আবার চেষ্টা করুন");
+        } finally {
+            setDeletingId(null); // loading শেষ
         }
     };
 
@@ -133,13 +150,19 @@ const MyTasksPage = () => {
                                         <div className="flex justify-center gap-2">
                                             <button
                                                 onClick={handleEadit}
-                                                className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition">
+                                                disabled={deletingId === task._id}
+                                                className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
                                                 <Edit size={18} />
                                             </button>
                                             <button
                                                 onClick={() => { handleDelete(task._id) }}
-                                                className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition">
-                                                <Trash2 size={18} />
+                                                disabled={deletingId === task._id}
+                                                className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                                {deletingId === task._id ? (
+                                                    <Loader2 size={18} className="animate-spin" />
+                                                ) : (
+                                                    <Trash2 size={18} />
+                                                )}
                                             </button>
                                         </div>
                                     </td>

@@ -43,7 +43,7 @@ export default function EarningsPage({ proposals = [] }) {
                                     </td>
 
                                     <td className="px-6 py-4">
-                                        {e.date || "NOT SUBMIT"}
+                                        {e.submitDate || "NOT SUBMIT"}
                                     </td>
                                 </tr>
                             ))
