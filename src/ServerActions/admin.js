@@ -1,6 +1,8 @@
 // সব client + freelancer user আনার জন্য
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+
+
 export const GetAllUsers = async (page = 1, limite = 8) => {
     const response = await fetch(`${API_URL}/admin/users?page=${page}&limite=${limite}`, {
         method: "GET",
@@ -25,8 +27,16 @@ export const ToggleUserBlock = async (id, isBlocked) => {
 // const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 // সব task আনার জন্য
-export const GetAllAdminTasks = async () => {
-    const response = await fetch(`${API_URL}/admin/tasks`, {
+export const GetAllAdminTasks = async (page = 1, limite = 3) => {
+    const response = await fetch(`${API_URL}/admin/tasks?page=${page}&limite=${limite}`, {
+        method: "GET",
+        cache: "no-store",
+    });
+    return response.json();
+};
+
+export const GetAllTransactions = async (page = 1, limite = 10) => {
+    const response = await fetch(`${API_URL}/admin/transactions?page=${page}&limite=${limite}`, {
         method: "GET",
         cache: "no-store",
     });
@@ -90,3 +100,13 @@ export const GetOverviewProposals = async () => {
     });
     return response.json();
 };
+
+
+export const GetOverviewTasksRaw = async () => {
+    const response = await fetch(`${API_URL}/alltask`, {
+        method: "GET",
+        cache: "no-store",
+    });
+    return response.json();
+};
+

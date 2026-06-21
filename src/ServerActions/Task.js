@@ -33,26 +33,24 @@ export const PostTask = ({ path, taskData }) => {
 
 
 
-
 export const GetAllTasks = async (path, limit, skip, search = "", category = "") => {
     const params = new URLSearchParams({
         limit,
         skip,
     });
-
     if (search) params.append("search", search);
     if (category) params.append("category", category);
 
     const response = await fetch(`${API_URL}/${path}?${params.toString()}`, {
         method: "GET",
+        cache: "no-store", // always fresh data
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${user?.token}`
         }
     });
-    return response.json();
+    return response.json(); // { tasks, totalCount }
 };
-
 
 
 

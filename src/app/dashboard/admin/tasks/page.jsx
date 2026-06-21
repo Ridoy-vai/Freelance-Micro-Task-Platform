@@ -1,11 +1,24 @@
 import AdminTaskTable from "@/Dashboardaction/adminClientComponent/AdminTaskTable";
 import { GetAllAdminTasks } from "@/ServerActions/admin";
 
-const AdminTasksPage = async () => {
-  const data = await GetAllAdminTasks();
-  const tasks = Array.isArray(data) ? data : [];
+const AdminTasksPage = async ({ searchParams }) => {
+    const params = await searchParams;
+    const currentPage = Number(params?.page) || 1;
 
-  return <AdminTaskTable tasks={tasks} />;
+    const data = await GetAllAdminTasks(currentPage);
+    const tasks = data?.tasks || [];
+    console.log("RAW BACKEND RESPONSE:", data);
+    const totalPages = data?.totalPages || 1;
+    const totalItems = data?.total || 0;
+
+    return (
+        <AdminTaskTable
+            tasks={tasks}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+        />
+    );
 };
 
 export default AdminTasksPage;

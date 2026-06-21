@@ -31,7 +31,6 @@ export default function Navbar() {
   // ৩. ড্যাশবোর্ড পাথ ক্যালকুলেশন (ইউজারের রোলের উপর ভিত্তি করে)
   const getDashboardPath = () => {
     if (!user) return "/login";
-    // Better-auth এ রোল সাধারণত user.role এ থাকে
     switch (user.role) {
       case "admin":
         return "/dashboard/admin";
@@ -51,7 +50,6 @@ export default function Navbar() {
     { name: "Home", path: "/" },
     { name: "Tasks", path: "/tasks" },
     { name: "Freelancers", path: "/freelancers" },
-    // শুধুমাত্র লগইন থাকলে ড্যাশবোর্ড দেখাবে (ঐচ্ছিক)
     ...(user ? [{ name: "Dashboard", path: dashboardPath }] : []),
   ];
 
@@ -68,15 +66,15 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-paper/10 bg-ink/95 backdrop-blur-md z-10">
+    <nav className="sticky top-0 z-50 border-b border-paper/10 bg-ink/95 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-16 items-center justify-between gap-3">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-signal text-lg font-bold text-ink">
+          <Link href="/" className="flex shrink-0 items-center gap-2.5 sm:gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-signal text-base font-bold text-ink sm:h-10 sm:w-10 sm:text-lg">
               T
             </div>
-            <div>
+            <div className="hidden sm:block">
               <h1 className="font-display text-lg leading-none text-paper">TaskNest</h1>
               <p className="text-[10px] uppercase tracking-wider text-paper/40">
                 Micro Task Platform
@@ -85,34 +83,31 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden flex-1 items-center justify-center gap-1.5 lg:flex">
             {navLinks.map((link) => {
               const active = isActive(link.path);
-
               return (
                 <Link
                   key={link.path}
                   href={link.path}
-                  className={`relative px-5 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 ${active
-                    ? "bg-black text-ink shadow-[0_8px_20px_-6px_rgba(var(--signal-rgb),0.4)] translate-y-[-1px]"
-                    : "text-paper/60 hover:bg-paper/5 hover:text-paper"
-                    }`}
+                  className={`relative whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition-all duration-300 lg:px-5 ${
+                    active
+                      ? "bg-signal text-ink shadow-[0_8px_20px_-6px_rgba(var(--signal-rgb),0.5)]"
+                      : "text-paper/60 hover:bg-paper/5 hover:text-paper"
+                  }`}
                 >
                   {link.name}
-                  {/* Active হলে নিচে একটি ছোট ডট যোগ করতে পারেন (Optional) */}
-                  {active && (
-                    <span className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-signal md:hidden" />
-                  )}
                 </Link>
               );
             })}
           </div>
+
           {/* Right Side (Auth/Profile) */}
-          <div className="hidden items-center md:flex">
+          <div className="flex shrink-0 items-center gap-2">
             {isPending ? (
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-signal border-t-transparent" />
             ) : user ? (
-              <div className="relative">
+              <div className="relative hidden md:block">
                 <button
                   onClick={() => setIsProfileOpen((prev) => !prev)}
                   className="flex items-center gap-2 rounded-full transition-colors hover:bg-paper/[0.06] focus:outline-none"
@@ -123,8 +118,9 @@ export default function Navbar() {
                     className="h-9 w-9 rounded-full border-2 border-paper/10 object-cover"
                   />
                   <ChevronDown
-                    className={`mr-1 h-4 w-4 text-paper/40 transition-transform ${isProfileOpen ? "rotate-180" : ""
-                      }`}
+                    className={`mr-1 h-4 w-4 text-paper/40 transition-transform ${
+                      isProfileOpen ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
 
@@ -134,7 +130,7 @@ export default function Navbar() {
                       className="fixed inset-0 z-50"
                       onClick={() => setIsProfileOpen(false)}
                     />
-                    <div className="absolute right-0 z-200 mt-2 w-56 overflow-hidden rounded-xl border border-paper/10 bg-ink shadow-2xl shadow-black/10">
+                    <div className="absolute right-0 z-[200] mt-2 w-56 overflow-hidden rounded-xl border border-paper/10 bg-ink shadow-2xl shadow-black/10">
                       <div className="border-b border-paper/10 bg-paper/[0.03] px-4 py-3">
                         <p className="truncate text-sm font-semibold text-paper">{user.name}</p>
                         <p className="truncate text-xs text-paper/50">{user.email}</p>
@@ -148,10 +144,11 @@ export default function Navbar() {
                           <Link
                             key={link.path}
                             href={link.path}
-                            className={`block px-4 py-2 text-sm transition-colors ${isActive(link.path)
-                              ? "bg-signal/10 text-signal"
-                              : "text-paper/70 hover:bg-paper/[0.06] hover:text-paper"
-                              }`}
+                            className={`block px-4 py-2 text-sm transition-colors ${
+                              isActive(link.path)
+                                ? "bg-signal/10 text-signal"
+                                : "text-paper/70 hover:bg-paper/[0.06] hover:text-paper"
+                            }`}
                             onClick={() => setIsProfileOpen(false)}
                           >
                             {link.name}
@@ -171,37 +168,38 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="hidden items-center gap-2 sm:gap-3 md:flex">
                 <Link
                   href="/login"
-                  className="px-5 py-2 font-medium text-paper/70 transition-colors hover:text-paper"
+                  className="whitespace-nowrap px-3 py-2 text-sm font-medium text-paper/70 transition-colors hover:text-paper sm:px-5"
                 >
                   Login
                 </Link>
                 <Link
                   href="/register"
-                  className="rounded-lg bg-signal px-5 py-2 font-medium text-ink shadow-lg shadow-signal/20 transition-all hover:-translate-y-0.5 hover:shadow-signal/30"
+                  className="whitespace-nowrap rounded-lg bg-signal px-3 py-2 text-sm font-medium text-ink shadow-lg shadow-signal/20 transition-all hover:-translate-y-0.5 hover:shadow-signal/30 sm:px-5"
                 >
                   Register
                 </Link>
               </div>
             )}
-          </div>
 
-          {/* Mobile Button */}
-          <button
-            className="p-2 text-paper/70 transition-colors hover:text-paper md:hidden"
-            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-          >
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+            {/* Mobile Button — md এর নিচে সব breakpoint এ visible */}
+            <button
+              className="shrink-0 rounded-lg p-2 text-paper/70 transition-colors hover:bg-paper/5 hover:text-paper md:hidden"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden transition-all duration-200 ease-out ${isMobileMenuOpen ? "max-h-[32rem] opacity-100" : "max-h-0 opacity-0"
-            } overflow-hidden`}
+          className={`overflow-hidden transition-all duration-200 ease-out md:hidden ${
+            isMobileMenuOpen ? "max-h-[32rem] opacity-100" : "max-h-0 opacity-0"
+          }`}
         >
           <div className="space-y-1 border-t border-paper/10 py-4">
             {navLinks.map((link) => {
@@ -210,10 +208,11 @@ export default function Navbar() {
                 <Link
                   key={link.path}
                   href={link.path}
-                  className={`block rounded-lg px-4 py-2.5 text-base font-medium transition-colors ${active
-                    ? "bg-signal/10 text-signal"
-                    : "text-paper/70 hover:bg-paper/[0.06] hover:text-paper"
-                    }`}
+                  className={`block rounded-lg px-4 py-2.5 text-base font-medium transition-colors ${
+                    active
+                      ? "bg-signal text-ink"
+                      : "text-paper/70 hover:bg-paper/[0.06] hover:text-paper"
+                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {link.name}
@@ -238,10 +237,11 @@ export default function Navbar() {
                   <Link
                     key={link.path}
                     href={link.path}
-                    className={`block px-4 py-2.5 transition-colors ${isActive(link.path)
-                      ? "bg-signal/10 text-signal"
-                      : "text-paper/70 hover:bg-paper/[0.06]"
-                      }`}
+                    className={`block px-4 py-2.5 transition-colors ${
+                      isActive(link.path)
+                        ? "bg-signal/10 text-signal"
+                        : "text-paper/70 hover:bg-paper/[0.06]"
+                    }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {link.name}

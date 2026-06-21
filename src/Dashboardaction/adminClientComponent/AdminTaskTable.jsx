@@ -1,5 +1,6 @@
 "use client";
 
+import { PaginationControlled } from "@/Components/PaginationControlled";
 import ConfirmDeleteDialog from "@/modals/Confirmdeletedialog ";
 import {
   DeleteAdminTask,
@@ -11,7 +12,7 @@ import { useState } from "react";
 
 const STATUS_OPTIONS = ["open", "booked", "submited"];
 
-const AdminTaskTable = ({ tasks: initialTasks }) => {
+const AdminTaskTable = ({ tasks: initialTasks, currentPage, totalPages, totalItems }) => {
   const [tasks, setTasks] = useState(initialTasks);
   const [actionId, setActionId] = useState(null);
   const [taskToDelete, setTaskToDelete] = useState(null);
@@ -149,8 +150,8 @@ const AdminTaskTable = ({ tasks: initialTasks }) => {
                         disabled={actionId === task._id}
                         title={task.isFeatured ? "Unfeature this task" : "Feature this task"}
                         className={`p-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed ${task.isFeatured
-                            ? "text-yellow-500 hover:bg-yellow-50"
-                            : "text-gray-300 hover:bg-gray-50 hover:text-yellow-400"
+                          ? "text-yellow-500 hover:bg-yellow-50"
+                          : "text-gray-300 hover:bg-gray-50 hover:text-yellow-400"
                           }`}
                       >
                         <Star size={18} fill={task.isFeatured ? "currentColor" : "none"} />
@@ -184,6 +185,15 @@ const AdminTaskTable = ({ tasks: initialTasks }) => {
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="p-4 border-t">
+        <PaginationControlled
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={10}
+        />
       </div>
 
       <ConfirmDeleteDialog
