@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from "react";
 import { Briefcase, CheckCircle, Clock, DollarSign, FileCheck, Loader2 } from "lucide-react";
 import { GetTasksByUser } from "@/ServerActions/Task";

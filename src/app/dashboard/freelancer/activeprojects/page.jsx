@@ -1,25 +1,49 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { WithForm } from "@/modals/freelancerSubmissionModal";
-import { updateProposalStatus } from "@/ServerActions/proposal";
+// import { GetProposalById, updateProposalStatus } from "@/ServerActions/proposal";
+import { authClient } from "@/lib/auth-client";
+import { GetProposalById, updateProposalStatus } from "@/ServerActions/proposal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-export default function MyActiveProjects({ proposals = [] }) {
+export default function MyActiveProjects() {
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
   const router = useRouter();
 
-  // local state রাখলাম যাতে modal/button click এর সাথে সাথে optimistic update দেখানো যায়
-  const [localProposals, setLocalProposals] = useState(proposals);
+  const [localProposals, setLocalProposals] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [submittingId, setSubmittingId] = useState(null);
+
+  useEffect(() => {
+    if (isPending) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchProposals = async () => {
+      try {
+        const freelancerId = user.id;
+        const result = await GetProposalById({ path: "myProposals", freelancerId });
+        setLocalProposals(result || []);
+      } catch (error) {
+        console.error("Fetch Proposals Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProposals();
+  }, [isPending, user]);
 
   const activeProposals = localProposals.filter((p) => p.status === "accepted");
 
-  // একটা single helper — যেখান থেকেই update হোক (button বা modal), এটাই কল হবে
   const markAsSubmitted = async (id, extraData = {}) => {
     setSubmittingId(id);
     try {
-      // ১. proposal status update (ServerAction) — link/message সহ পাঠালাম
       await updateProposalStatus(
         id,
         "submited",
@@ -27,7 +51,6 @@ export default function MyActiveProjects({ proposals = [] }) {
         extraData.submitionMessage
       );
 
-      // ২. task status update (Express API)
       const res = await fetch(`${API_URL}/updatetaskstatus/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -42,8 +65,7 @@ export default function MyActiveProjects({ proposals = [] }) {
         throw new Error("Task status update failed");
       }
 
-      const taskStatus = await res.json();
-      console.log("task status updated:", taskStatus);
+      await res.json();
 
       setLocalProposals((prev) =>
         prev.map((p) => (p._id === id ? { ...p, status: "submited" } : p))
@@ -57,6 +79,14 @@ export default function MyActiveProjects({ proposals = [] }) {
       setSubmittingId(null);
     }
   };
+
+  if (isPending || loading) {
+    return (
+      <div className="bg-white p-8 rounded-2xl border text-center text-gray-400">
+        Loading...
+      </div>
+    );
+  }
 
   if (activeProposals.length === 0) {
     return (
@@ -89,36 +119,23 @@ export default function MyActiveProjects({ proposals = [] }) {
           <tbody className="divide-y divide-gray-100">
             {activeProposals.map((p) => (
               <tr key={p._id} className="hover:bg-gray-50">
-                {/* Project */}
                 <td className="px-6 py-5">
                   <p className="font-semibold">{p.title || "Untitled Project"}</p>
                   <p className="text-xs text-gray-500">{p.message}</p>
                 </td>
-                {/* Client */}
                 <td className="px-6 py-5">
                   <p className="font-medium">{p.clientname || "Unknown"}</p>
                   <p className="text-xs text-gray-500">{p.clientemail || "No Email"}</p>
                 </td>
-                {/* Budget */}
                 <td className="px-6 py-5 font-bold">${p.proposedBudget}</td>
-                {/* Days */}
                 <td className="px-6 py-5">{p.estimatedDays} Days</td>
-                {/* Status */}
                 <td className="px-6 py-5">
                   <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
                     Active
                   </span>
                 </td>
-                {/* Action */}
                 <td className="px-6 py-5 text-right">
                   <div className="flex items-center gap-2 justify-end">
-                    {/* <button
-                      onClick={() => markAsSubmitted(p._id)}
-                      disabled={submittingId === p._id}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {submittingId === p._id ? "Submitting..." : "Submit"}
-                    </button> */}
                     <WithForm id={p._id} onSubmitSuccess={markAsSubmitted} />
                   </div>
                 </td>

@@ -1,11 +1,41 @@
 "use client";
 
-import { deleteProposal } from "@/ServerActions/proposal";
+import { authClient } from "@/lib/auth-client";
+import { deleteProposal, GetProposalById } from "@/ServerActions/proposal";
+// import { deleteProposal, GetProposalById } from "@/ServerActions/proposal";
 import { FileText } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function MyProposals({ proposals = [] }) {
-  const [proposalList, setProposalList] = useState(proposals);
+export default function MyProposals() {
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
+
+  const [proposalList, setProposalList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (isPending) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchProposals = async () => {
+      try {
+        const result = await GetProposalById({
+          path: "myProposals",
+          freelancerId: user.id,
+        });
+        setProposalList(result || []);
+      } catch (error) {
+        console.error("Fetch Proposals Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProposals();
+  }, [isPending, user]);
 
   const handelDelete = async (id) => {
     try {
@@ -16,7 +46,6 @@ export default function MyProposals({ proposals = [] }) {
       console.log("Delete Response:", data);
 
       if (data?.success || data?.deletedCount > 0) {
-        // UI থেকে সাথে সাথে বাদ দেওয়া হচ্ছে
         setProposalList((prev) => prev.filter((item) => item._id !== id));
       } else {
         alert(data?.message || "Proposal delete করা যায়নি");
@@ -25,6 +54,14 @@ export default function MyProposals({ proposals = [] }) {
       console.error("Delete Error:", error);
     }
   };
+
+  if (loading || isPending) {
+    return (
+      <div className="flex items-center justify-center py-16 text-gray-500">
+        Loading...
+      </div>
+    );
+  }
 
   if (proposalList.length === 0) {
     return (
@@ -60,6 +97,7 @@ export default function MyProposals({ proposals = [] }) {
               <th className="px-6 py-4">Client</th>
               <th className="px-6 py-4">Budget</th>
               <th className="px-6 py-4">Days</th>
+              <th className="px-6 py-4">Submited</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4 text-right">Action</th>
             </tr>
@@ -75,9 +113,7 @@ export default function MyProposals({ proposals = [] }) {
                   <p className="font-semibold">
                     {p.title || "Untitled Project"}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {p.message}
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">{p.message}</p>
                 </td>
 
                 <td className="px-6 py-5">
@@ -94,8 +130,13 @@ export default function MyProposals({ proposals = [] }) {
                   </p>
                 </td>
 
+                <td className="px-6 py-5">{p.estimatedDays} Days</td>
+
                 <td className="px-6 py-5">
-                  {p.estimatedDays} Days
+                  <p className="font-bold">${p.budget}</p>
+                  <p className="text-xs text-gray-500">
+                    Demand: ${p.proposedBudget}
+                  </p>
                 </td>
 
                 <td className="px-6 py-5">

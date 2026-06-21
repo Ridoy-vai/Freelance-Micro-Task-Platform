@@ -1,13 +1,14 @@
 // সব client + freelancer user আনার জন্য
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-export const GetAllUsers = async () => {
-    const response = await fetch(`${API_URL}/admin/users`, {
+export const GetAllUsers = async (page = 1, limite = 8) => {
+    const response = await fetch(`${API_URL}/admin/users?page=${page}&limite=${limite}`, {
         method: "GET",
         cache: "no-store",
     });
     return response.json();
 };
+
 
 // Block / Unblock টগল করার জন্য
 export const ToggleUserBlock = async (id, isBlocked) => {
