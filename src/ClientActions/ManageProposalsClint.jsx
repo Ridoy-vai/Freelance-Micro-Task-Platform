@@ -172,10 +172,10 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
                   <td className="p-4">
                     <span
                       className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${p.status === "pending"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : p.status === "accepted"
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
+                        ? "bg-yellow-100 text-yellow-600"
+                        : p.status === "accepted"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-red-100 text-red-600"
                         }`}
                     >
                       {p.status}
@@ -187,8 +187,13 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
                     <div className="flex justify-center gap-2">
                       {/* Accept Button */}
                       <form action={'/api/checkout-session'} method="POST">
+                        <input type="hidden" name="price" value={p.proposedBudget} />
+                        <input type="hidden" name="Freelancer" value={p.Freelancer} />
+                        <input type="hidden" name="title" value={p.title} />
+                        <input type="hidden" name="ProposedId" value={p._id} />
+
                         <button
-                        type="submit"
+                          type="submit"
                           // onClick={() => handleAccept(p._id)}
                           className="text-green-600 hover:bg-green-50 p-2 rounded-lg transition"
                         >

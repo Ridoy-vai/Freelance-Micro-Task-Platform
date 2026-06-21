@@ -28,7 +28,7 @@ export const GetProposalById = async ({ path, freelancerId }) => {
 
 };
 
-export const updateProposalStatus = async (id, status) => {
+export const updateProposalStatus = async (id, status, submitionLink, submitionMessage) => {
     const res = await fetch(`${API_URL}/task/proposals/${id}`, {
         method: "PATCH",
         headers: {
@@ -36,6 +36,8 @@ export const updateProposalStatus = async (id, status) => {
         },
         body: JSON.stringify({
             status,
+            submitionLink,
+            submitionMessage,
             submitDate:
                 status === "submited"
                     ? new Date().toISOString().split("T")[0]
@@ -47,7 +49,6 @@ export const updateProposalStatus = async (id, status) => {
     console.log("proposal.js", result);
 
     return result;
-
 };
 
 export const deleteProposal = async (id) => {
