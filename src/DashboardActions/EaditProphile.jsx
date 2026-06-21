@@ -1,8 +1,10 @@
 // app/dashboard/freelancer/profile/page.jsx
 "use client";
 
-import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { useEffect, useState } from "react";
 import { Loader2, Plus, X } from "lucide-react";
+import { GetUserById, UpdateFreelancerProfile } from "@/ServerActions/Freelancer";
 
 const CATEGORIES = [
   "Web Development",
@@ -13,20 +15,61 @@ const CATEGORIES = [
   "Mobile App Development",
 ];
 
-export default function AddFreelancerProfilePage() {
-  const [formData, setFormData] = useState({
-    title: "",
-    bio: "",
-    hourlyRate: "",
-    location: "",
-    skillInput: "",
-    skills: [],
-    category: "",
-  });
+const initialFormData = {
+  image: "",
+  title: "",
+  bio: "",
+  hourlyRate: "",
+  location: "",
+  skillInput: "",
+  skills: [],
+  category: "",
+};
 
+export default function AddFreelancerProfilePage() {
+  const { data: session, isPending: sessionPending } = authClient.useSession();
+  const user = session?.user;
+
+  const [formData, setFormData] = useState(initialFormData);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  // Session থেকে user আসার পর existing data load করে default value বসানো হচ্ছে
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user?.id) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const existing = await GetUserById(user.id);
+
+        // key/value না থাকলে empty string/array থাকবে, ব্যবহারকারী নিজে টাইপ করবে
+        setFormData({
+          image: existing?.image || "",
+          title: existing?.title || "",
+          bio: existing?.bio || "",
+          hourlyRate: existing?.hourlyRate ?? "",
+          location: existing?.location || "",
+          skillInput: "",
+          skills: Array.isArray(existing?.skills) ? existing.skills : [],
+          category: existing?.category || "",
+        });
+      } catch (err) {
+        console.error("Error loading profile:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (!sessionPending) {
+      loadProfile();
+    }
+  }, [user?.id, sessionPending]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -61,15 +104,24 @@ export default function AddFreelancerProfilePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Submit clicked, formData:", formData); // DEBUG
     setError("");
 
     if (!formData.title || !formData.bio || !formData.hourlyRate) {
+      console.log("Validation failed: missing title/bio/hourlyRate"); // DEBUG
       setError("Title, Bio, ar Hourly Rate dewa lagbe.");
       return;
     }
 
     if (formData.skills.length === 0) {
+      console.log("Validation failed: no skills"); // DEBUG
       setError("Kompokkhe ekta skill add korun.");
+      return;
+    }
+
+    if (!user?.id) {
+      console.log("No user id, user object:", user); // DEBUG
+      setError("User session পাওয়া যাচ্ছে না, আবার লগইন করুন।");
       return;
     }
 
@@ -77,6 +129,7 @@ export default function AddFreelancerProfilePage() {
 
     try {
       const payload = {
+        image: formData.image,
         title: formData.title,
         bio: formData.bio,
         hourlyRate: Number(formData.hourlyRate),
@@ -85,17 +138,14 @@ export default function AddFreelancerProfilePage() {
         category: formData.category,
       };
 
-      // TODO: real API call
-      // const res = await fetch(`${API_URL}/freelancers`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(payload),
-      // });
-      // const result = await res.json();
+      const result = await UpdateFreelancerProfile(user.id, payload);
+      console.log("Update result:", result); // DEBUG
 
-      console.log("Submitting freelancer profile:", payload);
-
-      setSuccess(true);
+      if (result?.success) {
+        setSuccess(true);
+      } else {
+        setError(result?.message || "Profile save করতে সমস্যা হয়েছে।");
+      }
     } catch (err) {
       console.error(err);
       setError("Profile save korte problem hoyeche. Abar try korun.");
@@ -104,15 +154,24 @@ export default function AddFreelancerProfilePage() {
     }
   };
 
+  if (sessionPending || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="animate-spin text-orange-500" size={36} />
+      </div>
+    );
+  }
+
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="bg-white p-8 rounded-2xl border shadow-sm text-center max-w-md">
           <h2 className="text-xl font-bold text-gray-900">
-            প্রোফাইল সফলভাবে তৈরি হয়েছে!
+            প্রোফাইল সফলভাবে আপডেট হয়েছে!
           </h2>
           <p className="text-gray-500 mt-2 text-sm">
-            আপনার freelancer profile এখন live, ক্লায়েন্টরা আপনাকে দেখতে পারবে।
+            আপনার freelancer profile এখন live, ক্লায়েন্টরা আপনাকে দেখতে
+            পারবে।
           </p>
         </div>
       </div>
@@ -137,6 +196,20 @@ export default function AddFreelancerProfilePage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Title */}
+            <div>
+              <label className="text-sm font-semibold text-gray-700">
+                Professional Title
+              </label>
+              <input
+                type="url"
+                name="image"
+                value={formData.image}
+                onChange={handleChange}
+                placeholder="Enter image URL"
+                className="mt-1.5 w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
             {/* Title */}
             <div>
               <label className="text-sm font-semibold text-gray-700">

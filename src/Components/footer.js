@@ -1,66 +1,142 @@
-"use client";
-
+// import { Github, Twitter, Linkedin, Mail } from "lucide-react";
 import Link from "next/link";
+import { FaGithub } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { IoIosMail, IoLogoLinkedin } from "react-icons/io";
 
-export default function Footer() {
-  return (
-    <footer className="bg-gray-900 text-gray-300 mt-10">
-      <div className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+const FOOTER_LINKS = {
+    forClients: [
+        { label: "Post a Task", href: "/post-task" },
+        { label: "Browse Freelancers", href: "/freelancers" },
+        { label: "How It Works", href: "/how-it-works" },
+        { label: "Pricing", href: "/pricing" },
+    ],
+    forFreelancers: [
+        { label: "Find Tasks", href: "/tasks" },
+        { label: "Create Profile", href: "/signup" },
+        { label: "Success Stories", href: "/success-stories" },
+        { label: "Resources", href: "/resources" },
+    ],
+    company: [
+        { label: "About Us", href: "/about" },
+        { label: "Contact", href: "/contact" },
+        { label: "Privacy Policy", href: "/privacy" },
+        { label: "Terms of Service", href: "/terms" },
+    ],
+};
 
-        {/* Brand */}
-        <div>
-          <h2 className="text-xl font-bold text-white">
-            MyFreelance
-          </h2>
-          <p className="text-sm mt-3 text-gray-400">
-            Freelance platform for developers & clients. Build, hire and grow together.
-          </p>
-        </div>
+const SOCIAL_LINKS = [
+    { icon: FaGithub, href: "https://github.com", label: "GitHub" },
+    { icon: FaXTwitter, href: "https://twitter.com", label: "Twitter" },
+    { icon: IoLogoLinkedin, href: "https://linkedin.com", label: "LinkedIn" },
+    { icon: IoIosMail, href: "mailto:support@tasknest.com", label: "Email" },
+];
 
-        {/* Links */}
-        <div>
-          <h3 className="text-white font-semibold mb-3">Quick Links</h3>
-          <ul className="space-y-2 text-sm">
-            <li>
-              <Link href="/" className="hover:text-white">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard" className="hover:text-white">
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link href="/projects" className="hover:text-white">
-                Projects
-              </Link>
-            </li>
-            <li>
-              <Link href="/profile" className="hover:text-white">
-                Profile
-              </Link>
-            </li>
-          </ul>
-        </div>
+const Footer = () => {
+    const year = new Date().getFullYear();
 
-        {/* Contact */}
-        <div>
-          <h3 className="text-white font-semibold mb-3">Contact</h3>
-          <p className="text-sm text-gray-400">
-            Email: support@myfreelance.com
-          </p>
-          <p className="text-sm text-gray-400 mt-2">
-            Phone: +880 1XXXXXXXXX
-          </p>
-        </div>
+    return (
+        <footer className="bg-ink border-t border-paper/10">
+            <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12 py-16">
+                <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-5">
+                    {/* Brand Column */}
+                    <div className="lg:col-span-2">
+                        <h3 className="font-display text-2xl text-paper">
+                            Task<span className="text-signal">Nest</span>
+                        </h3>
+                        <p className="mt-3 text-sm text-paper/60 leading-relaxed max-w-xs">
+                            Connecting skilled freelancers with clients for
+                            micro-tasks that get done right, on time, every
+                            time.
+                        </p>
 
-      </div>
+                        {/* Social Icons */}
+                        <div className="mt-6 flex items-center gap-3">
+                            {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
+                                <a
+                                    key={label}
+                                    href={href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={label}
+                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-paper/15 text-paper/60 transition-colors hover:border-signal hover:text-signal"
+                                >
+                                    <Icon size={16} />
+                                </a>
+                            ))}
+                        </div>
+                    </div>
 
-      {/* Bottom */}
-      <div className="border-t border-gray-800 py-4 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} MyFreelance. All rights reserved.
-      </div>
-    </footer>
-  );
-}
+                    {/* For Clients */}
+                    <div>
+                        <span className="font-mono text-[11px] uppercase tracking-widest text-sage">
+                            For Clients
+                        </span>
+                        <ul className="mt-4 space-y-3">
+                            {FOOTER_LINKS.forClients.map((link) => (
+                                <li key={link.label}>
+                                    <Link
+                                        href={link.href}
+                                        className="text-sm text-paper/60 transition-colors hover:text-signal"
+                                    >
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* For Freelancers */}
+                    <div>
+                        <span className="font-mono text-[11px] uppercase tracking-widest text-sage">
+                            For Freelancers
+                        </span>
+                        <ul className="mt-4 space-y-3">
+                            {FOOTER_LINKS.forFreelancers.map((link) => (
+                                <li key={link.label}>
+                                    <Link
+                                        href={link.href}
+                                        className="text-sm text-paper/60 transition-colors hover:text-signal"
+                                    >
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Company */}
+                    <div>
+                        <span className="font-mono text-[11px] uppercase tracking-widest text-sage">
+                            Company
+                        </span>
+                        <ul className="mt-4 space-y-3">
+                            {FOOTER_LINKS.company.map((link) => (
+                                <li key={link.label}>
+                                    <Link
+                                        href={link.href}
+                                        className="text-sm text-paper/60 transition-colors hover:text-signal"
+                                    >
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+
+                {/* Bottom Bar */}
+                <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-paper/10 pt-6 sm:flex-row">
+                    <p className="text-xs text-paper/40">
+                        © {year} TaskNest. All rights reserved.
+                    </p>
+                    <p className="font-mono text-xs text-paper/40">
+                        Built with care in Bangladesh 🇧🇩
+                    </p>
+                </div>
+            </div>
+        </footer>
+    );
+};
+
+export default Footer;

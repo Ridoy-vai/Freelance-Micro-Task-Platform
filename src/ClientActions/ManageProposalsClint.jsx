@@ -171,13 +171,12 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
                   {/* Status */}
                   <td className="p-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        p.status === "pending"
+                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${p.status === "pending"
                           ? "bg-yellow-100 text-yellow-600"
                           : p.status === "accepted"
-                          ? "bg-green-100 text-green-600"
-                          : "bg-red-100 text-red-600"
-                      }`}
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-600"
+                        }`}
                     >
                       {p.status}
                     </span>
@@ -187,12 +186,15 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
                   <td className="p-4">
                     <div className="flex justify-center gap-2">
                       {/* Accept Button */}
-                      <button
-                        onClick={() => handleAccept(p._id)}
-                        className="text-green-600 hover:bg-green-50 p-2 rounded-lg transition"
-                      >
-                        <CheckCircle size={18} />
-                      </button>
+                      <form action={'/api/checkout-session'} method="POST">
+                        <button
+                        type="submit"
+                          // onClick={() => handleAccept(p._id)}
+                          className="text-green-600 hover:bg-green-50 p-2 rounded-lg transition"
+                        >
+                          <CheckCircle size={18} />
+                        </button>
+                      </form>
 
                       {/* Reject Button */}
                       <button
