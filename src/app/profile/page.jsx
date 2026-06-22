@@ -15,6 +15,7 @@ import {
   Globe,
   Sparkles,
 } from "lucide-react";
+import { EditProfileModal } from "@/modals/clientprophilupdate";
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({
@@ -58,20 +59,22 @@ export default async function ProfilePage() {
               <Sparkles className="h-3.5 w-3.5" />
               My account
             </span>
-            <h1 className="mt-2 font-display text-3xl text-paper">My Profile</h1>
+            <h1 className="mt-2 font-display text-3xl text-paper">
+              My Profile
+            </h1>
           </div>
 
-          <Link
-            href={
-              isFreelancer
-                ? "/dashboard/freelancer/profile/edit"
-                : "/dashboard/client/profile/edit"
-            }
-            className="inline-flex items-center gap-2 rounded-xl bg-signal px-5 py-2.5 text-sm font-semibold text-ink shadow-lg shadow-signal/20 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-signal/30"
-          >
-            <Pencil size={16} />
-            Edit Profile
-          </Link>
+          {isFreelancer ? (
+            <Link
+              href="/dashboard/freelancer/eaditprofile"
+              className="inline-flex items-center gap-2 rounded-xl bg-signal px-5 py-2.5 text-sm font-semibold text-ink shadow-lg shadow-signal/20 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-signal/30"
+            >
+              <Pencil size={16} />
+              Edit Profile
+            </Link>
+          ) : (
+            isClient && <EditProfileModal user={user} />
+          )}
         </div>
 
         <div className="mt-8 rounded-3xl border border-paper/10 bg-gradient-to-b from-paper/[0.04] to-transparent p-5 shadow-2xl shadow-black/40 sm:p-8">
@@ -83,6 +86,8 @@ export default async function ProfilePage() {
                   src={user.image}
                   alt={user.name || "Profile photo"}
                   fill
+                  sizes="112px"
+                  unoptimized // 👈 eta add koro
                   className="object-cover"
                 />
               ) : (
@@ -96,11 +101,10 @@ export default async function ProfilePage() {
               <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                 <h2 className="font-display text-xl text-paper">{user.name}</h2>
                 <span
-                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide ${
-                    isFreelancer
-                      ? "bg-sage/15 text-sage"
-                      : "bg-signal/15 text-signal"
-                  }`}
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide ${isFreelancer
+                    ? "bg-sage/15 text-sage"
+                    : "bg-signal/15 text-signal"
+                    }`}
                 >
                   {isFreelancer ? <Briefcase className="h-3 w-3" /> : <Building2 className="h-3 w-3" />}
                   {isFreelancer ? "Freelancer" : "Client"}

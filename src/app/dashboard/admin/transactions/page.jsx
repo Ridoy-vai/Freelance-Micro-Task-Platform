@@ -5,6 +5,7 @@ import { GetAllTransactions } from "@/ServerActions/admin";
 const AdminTransactionsPage = async ({ searchParams }) => {
   const params = await searchParams;
   const currentPage = Number(params?.page) || 1;
+  
 
   const data = await GetAllTransactions(currentPage);
 

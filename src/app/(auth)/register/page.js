@@ -1,26 +1,10 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { Briefcase, Building2, Eye, EyeOff, Sparkles, TriangleAlert } from "lucide-react";
+import { Briefcase, Building2, Eye, EyeOff, Sparkles, TriangleAlert, Upload, X, CheckCircle2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-
-/**
- * app/register/page.jsx
- *
- * Register form built with react-hook-form.
- * - role === "freelancer" -> title, category, hourlyRate, location, skills, bio
- * - role === "client"     -> companyName, industry, companyWebsite
- *
- * Layout: two columns on lg+ (base fields left, role-specific fields right),
- * stacked on mobile. Submit is disabled until the form is valid
- * (mode: "onChange" keeps formState.isValid in sync as the user types).
- * On success, redirects to "/". On failure, shows an inline error banner.
- *
- * Replace the TODO block with the real Google sign-in call when ready:
- *   await authClient.signIn.social({ provider: "google", callbackURL: "/" })
- */
 
 const FREELANCER_CATEGORIES = [
     "Graphic Design",
@@ -36,6 +20,8 @@ const inputClass =
 
 const errorInputClass = "border-rose-500/60 focus:border-rose-500 focus:ring-rose-500/20";
 
+const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+
 function FieldError({ message }) {
     if (!message) return null;
     return <p className="mt-1.5 text-xs text-rose-400">{message}</p>;
@@ -47,11 +33,14 @@ export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formError, setFormError] = useState("");
+    const [imagePreview, setImagePreview] = useState("");
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
 
     const {
         register,
         handleSubmit,
         watch,
+        setValue,
         formState: { errors, isValid },
     } = useForm({
         mode: "onChange",
@@ -77,6 +66,49 @@ export default function RegisterPage() {
     const password = watch("password");
     const isFreelancer = role === "freelancer";
     const isClient = role === "client";
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!IMGBB_API_KEY) {
+            setFormError("Image upload configured nai. NEXT_PUBLIC_IMGBB_API_KEY set koro.");
+            return;
+        }
+
+        setIsUploadingImage(true);
+        setFormError("");
+
+        try {
+            const formData = new FormData();
+            formData.append("image", file);
+
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await res.json();
+
+            if (!data?.success) {
+                throw new Error(data?.error?.message || "Image upload failed");
+            }
+
+            const imageUrl = data.data.url;
+            setValue("image", imageUrl, { shouldValidate: true });
+            setImagePreview(imageUrl);
+        } catch (error) {
+            console.error("Image upload error:", error);
+            setFormError("ছবি আপলোড করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।");
+        } finally {
+            setIsUploadingImage(false);
+        }
+    };
+
+    const removeImage = () => {
+        setValue("image", "");
+        setImagePreview("");
+    };
 
     const onSubmit = async (formValues) => {
         setFormError("");
@@ -125,15 +157,11 @@ export default function RegisterPage() {
     };
 
     const handleGoogleSignup = () => {
-        // TODO: replace with Better Auth
-        // await authClient.signIn.social({ provider: "google", callbackURL: "/" });
-        // Note: Google sign-up should always be saved as role "client" server-side.
         console.log("Google signup clicked — always becomes role: client");
     };
 
     return (
         <section className="relative min-h-screen overflow-hidden bg-ink px-4 py-12 sm:px-6 sm:py-16">
-            {/* Ambient glow accents */}
             <div className="pointer-events-none absolute -top-32 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-signal/20 blur-[120px]" />
             <div className="pointer-events-none absolute bottom-0 right-0 h-64 w-64 rounded-full bg-sage/10 blur-[100px]" />
 
@@ -202,18 +230,59 @@ export default function RegisterPage() {
                                     <FieldError message={errors.email?.message} />
                                 </div>
 
+                                {/* 👇 Image upload — URL input theke file upload e bodla hoyeche */}
                                 <div>
-                                    <label htmlFor="image" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                        Image URL <span className="text-paper/40">(optional)</span>
+                                    <label className="mb-1.5 block text-sm font-medium text-paper/80">
+                                        Profile photo <span className="text-paper/40">(optional)</span>
                                     </label>
-                                    <input
-                                        id="image"
-                                        type="url"
-                                        className={`${inputClass} ${errors.image ? errorInputClass : ""}`}
-                                        placeholder="https://example.com/avatar.jpg"
-                                        {...register("image")}
-                                    />
-                                    <FieldError message={errors.image?.message} />
+
+                                    {imagePreview ? (
+                                        <div className="flex items-center gap-3 rounded-xl border border-paper/10 bg-paper/[0.04] p-3">
+                                            <img
+                                                src={imagePreview}
+                                                alt="Profile preview"
+                                                className="h-12 w-12 rounded-full object-cover"
+                                            />
+                                            <span className="flex-1 truncate text-xs text-paper/50">
+                                                Image uploaded
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={removeImage}
+                                                className="flex h-7 w-7 items-center justify-center rounded-lg text-paper/40 transition-colors hover:bg-rose-500/10 hover:text-rose-400"
+                                                aria-label="Remove image"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <label
+                                            htmlFor="imageUpload"
+                                            className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-paper/15 bg-paper/[0.02] px-4 py-3.5 text-sm text-paper/50 transition-colors hover:border-signal/40 hover:bg-paper/[0.04] hover:text-paper/70"
+                                        >
+                                            {isUploadingImage ? (
+                                                <>
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                    Uploading…
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Upload className="h-4 w-4" />
+                                                    Click to upload an image
+                                                </>
+                                            )}
+                                            <input
+                                                id="imageUpload"
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={handleImageUpload}
+                                                disabled={isUploadingImage}
+                                            />
+                                        </label>
+                                    )}
+                                    {/* hidden field jeta react-hook-form e value hold kore */}
+                                    <input type="hidden" {...register("image")} />
                                 </div>
 
                                 <div>
@@ -275,18 +344,22 @@ export default function RegisterPage() {
                                     )}
                                 </div>
 
+                                {/* 👇 Role select — checkmark icon jukto kora hoyeche selected card e */}
                                 <fieldset>
                                     <legend className="mb-2 block text-sm font-medium text-paper/80">
                                         I want to
                                     </legend>
                                     <div className="grid grid-cols-2 gap-3">
                                         <label
-                                            className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${
+                                            className={`relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${
                                                 role === "client"
                                                     ? "border-signal bg-signal/10 text-paper shadow-[0_0_0_1px_theme(colors.signal/30)]"
                                                     : "border-paper/10 bg-paper/[0.02] text-paper/55 hover:border-paper/20 hover:bg-paper/[0.04]"
                                             }`}
                                         >
+                                            {role === "client" && (
+                                                <CheckCircle2 className="absolute right-2 top-2 h-4 w-4 text-signal" />
+                                            )}
                                             <input type="radio" value="client" className="sr-only" {...register("role")} />
                                             <Building2
                                                 className={`h-4 w-4 ${role === "client" ? "text-signal" : "text-paper/40"}`}
@@ -295,12 +368,15 @@ export default function RegisterPage() {
                                         </label>
 
                                         <label
-                                            className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${
+                                            className={`relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${
                                                 role === "freelancer"
                                                     ? "border-signal bg-signal/10 text-paper shadow-[0_0_0_1px_theme(colors.signal/30)]"
                                                     : "border-paper/10 bg-paper/[0.02] text-paper/55 hover:border-paper/20 hover:bg-paper/[0.04]"
                                             }`}
                                         >
+                                            {role === "freelancer" && (
+                                                <CheckCircle2 className="absolute right-2 top-2 h-4 w-4 text-signal" />
+                                            )}
                                             <input type="radio" value="freelancer" className="sr-only" {...register("role")} />
                                             <Briefcase
                                                 className={`h-4 w-4 ${role === "freelancer" ? "text-signal" : "text-paper/40"}`}
@@ -311,7 +387,7 @@ export default function RegisterPage() {
                                 </fieldset>
                             </div>
 
-                            {/* Right column — role-specific fields */}
+                            {/* Right column — role-specific fields (অপরিবর্তিত) */}
                             <div className="space-y-4">
                                 {isFreelancer && (
                                     <div className="space-y-4 rounded-2xl border border-sage/20 bg-sage/[0.04] p-4 sm:p-5">
@@ -482,7 +558,7 @@ export default function RegisterPage() {
 
                         <button
                             type="submit"
-                            disabled={isSubmitting || !isValid}
+                            disabled={isSubmitting || !isValid || isUploadingImage}
                             className="mt-7 w-full rounded-xl bg-signal py-3 text-sm font-semibold text-ink shadow-lg shadow-signal/20 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-signal/30 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
                         >
                             {isSubmitting ? "Creating account…" : "Create account"}

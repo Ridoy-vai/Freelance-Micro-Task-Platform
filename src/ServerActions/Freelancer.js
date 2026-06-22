@@ -67,3 +67,25 @@ export const IncrementSubmissionCount = async (freelancerId) => {
         return null;
     }
 };
+
+export const UpdateUserProfile = async (userId, payload) => {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}/profile`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error("UpdateUserProfile failed:", data.message);
+            return { success: false, message: data.message };
+        }
+
+        return data;
+    } catch (error) {
+        console.error("UpdateUserProfile error:", error);
+        return { success: false, message: "Server error" };
+    }
+};

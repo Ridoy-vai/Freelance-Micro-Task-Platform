@@ -25,6 +25,7 @@ const MyTasksPage = async ({ searchParams }) => {
     }
 
     const result = await GetTasksByUser('my-tasks', clientId, currentPage, itemsPerPage);
+    console.log("result", result)
     const tasks = Array.isArray(result?.tasks) ? result.tasks : [];
     const totalPages = result?.totalPages || 1;
     const totalItems = result?.totalItems || 0;

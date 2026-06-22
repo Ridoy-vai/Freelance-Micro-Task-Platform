@@ -1,3 +1,6 @@
+import { authClient } from "@/lib/auth-client";
+
+
 // সব client + freelancer user আনার জন্য
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -24,21 +27,28 @@ export const ToggleUserBlock = async (id, isBlocked) => {
     return response.json();
 };
 
-// const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 // সব task আনার জন্য
 export const GetAllAdminTasks = async (page = 1, limite = 3) => {
+    const { data: token } = await authClient.token();
     const response = await fetch(`${API_URL}/admin/tasks?page=${page}&limite=${limite}`, {
         method: "GET",
         cache: "no-store",
+        headers: {
+            Authorization: `Bearer ${token?.token}`,
+        },
     });
     return response.json();
 };
 
 export const GetAllTransactions = async (page = 1, limite = 10) => {
+    const { data: token } = await authClient.token();
     const response = await fetch(`${API_URL}/admin/transactions?page=${page}&limite=${limite}`, {
         method: "GET",
         cache: "no-store",
+        headers: {
+            Authorization: `Bearer ${token?.token}`,
+        },
     });
     return response.json();
 };

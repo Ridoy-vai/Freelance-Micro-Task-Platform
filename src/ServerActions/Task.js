@@ -1,77 +1,54 @@
+import { auth } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-const { session } = authClient.getSession();
-const user = session?.user;
-// Get the user from the session data
-export const PostTask = ({ path, taskData }) => {
-    fetch(`${API_URL}/${path}`, {
+// একটা reusable helper - প্রতিটা ফাংশনে আলাদা করে token নেওয়ার বদলে এটা ব্যবহার করো
+const getAuthHeader = async () => {
+    const { data: token } = await authClient.token();
+    return { "Authorization": `Bearer ${token?.token}` };
+};
+
+export const PostTask = async ({ path, taskData }) => {
+    const authHeader = await getAuthHeader();
+    const response = await fetch(`${API_URL}/${path}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${user?.token}`
+            ...authHeader,
         },
         body: JSON.stringify(taskData)
     });
+    return response.json();
 };
 
-// export const GetAllTasks = async (path, limit, skip) => {
-//     const response = await fetch(`${API_URL}/${path}?limit=${limit}&skip=${skip}`, {
-//         method: "GET",
-//         headers: {
-//             "Content-Type": "application/json",
-//             "Authorization": `Bearer ${user?.token}`
-//         }
-//     });
-//     return response.json();
-// };
-
-
-
-
-
-
-
 export const GetAllTasks = async (path, limit, skip, search = "", category = "") => {
-    const params = new URLSearchParams({
-        limit,
-        skip,
-    });
+    const params = new URLSearchParams({ limit, skip });
     if (search) params.append("search", search);
     if (category) params.append("category", category);
 
+    const authHeader = await getAuthHeader();
     const response = await fetch(`${API_URL}/${path}?${params.toString()}`, {
         method: "GET",
-        cache: "no-store", // always fresh data
+        cache: "no-store",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${user?.token}`
+            ...authHeader,
         }
     });
-    return response.json(); // { tasks, totalCount }
+    return response.json();
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const GetTasksByUser = async (path, clientId, page = 1, limit = 10) => {
+    // "use server"
+    const token = await auth.api.getSession({
+        headers: await headers()
+    })
+    // const tokenResult = await authClient.token();
+    // console.log("Full token result:", tokenResult);
+    // const { data: token } = tokenResult;
+    console.log("token.data:", token);
+    // ...
     try {
         const response = await fetch(
             `${API_URL}/${path}/${clientId}?page=${page}&limit=${limit}`,
@@ -79,10 +56,12 @@ export const GetTasksByUser = async (path, clientId, page = 1, limit = 10) => {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token?.token}`
                 },
                 cache: "no-store",
             }
         );
+        // ...
 
         if (!response.ok) {
             console.error("GetTasksByUser failed:", response.status);
@@ -97,23 +76,24 @@ export const GetTasksByUser = async (path, clientId, page = 1, limit = 10) => {
 };
 
 export const GetTasksById = async (path, id) => {
+    const authHeader = await getAuthHeader();
     const response = await fetch(`${API_URL}/${path}/${id}`, {
         method: "GET",
         headers: {
-            "Content-Type": "application/json"
-            // "Authorization": `Bearer ${token}`
+            "Content-Type": "application/json",
+            ...authHeader,
         }
     });
-
     return response.json();
 };
 
 export const UpdateTask = async ({ path, taskData }) => {
+    const authHeader = await getAuthHeader();
     const response = await fetch(`${API_URL}/${path}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${user?.token}`
+            ...authHeader,
         },
         body: JSON.stringify(taskData)
     });
@@ -121,11 +101,12 @@ export const UpdateTask = async ({ path, taskData }) => {
 };
 
 export const DeleteTask = async (path) => {
+    const authHeader = await getAuthHeader();
     const response = await fetch(`${API_URL}/${path}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${user?.token}`
+            ...authHeader,
         }
     });
     return response.json();
