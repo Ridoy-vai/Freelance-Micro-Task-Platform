@@ -6,6 +6,10 @@ export const GetUserById = async (id) => {
         method: "GET",
         cache: "no-store",
     });
+    if (!response.ok) {
+        console.error("GetUserById failed:", response.status);
+        return { success: false, message: "User not found" };
+    }
     return response.json();
 };
 
@@ -18,6 +22,10 @@ export const UpdateFreelancerProfile = async (id, payload) => {
         },
         body: JSON.stringify(payload),
     });
+    if (!response.ok) {
+        console.error("UpdateFreelancerProfile failed:", response.status);
+        return { success: false, message: "Failed to update profile" };
+    }
     return response.json();
 };
 

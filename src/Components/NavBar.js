@@ -1,99 +1,100 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { Menu, X, ChevronDown, LogOut } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, User, Settings, LayoutDashboard, Bell, Search } from "lucide-react";
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  // ১. সেশন ডাটা গেট করা
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-  // ২. সাইন আউট হ্যান্ডলার
   const handleSignout = async () => {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push("/"); // লগআউট হলে হোমপেজে পাঠাবে
+          router.push("/");
           router.refresh();
         },
       },
     });
   };
 
-  // ৩. ড্যাশবোর্ড পাথ ক্যালকুলেশন (ইউজারের রোলের উপর ভিত্তি করে)
   const getDashboardPath = () => {
     if (!user) return "/login";
-    switch (user.role) {
-      case "admin":
-        return "/dashboard/admin";
-      case "freelancer":
-        return "/dashboard/freelancer";
-      case "client":
-        return "/dashboard/client";
-      default:
-        return "/dashboard";
-    }
+    return `/dashboard/${user.role || "client"}`;
   };
 
   const dashboardPath = getDashboardPath();
 
-  // ৪. নেভিগেশন লিঙ্কসমূহ
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Tasks", path: "/tasks" },
+    { name: "Find Tasks", path: "/tasks" },
     { name: "Freelancers", path: "/freelancers" },
-    ...(user ? [{ name: "Dashboard", path: dashboardPath }] : []),
   ];
 
   const profileLinks = [
-    { name: "Dashboard", path: dashboardPath },
-    { name: "Profile", path: "/profile" },
-    { name: "Settings", path: "/settings" },
+    { name: "Dashboard", path: dashboardPath, icon: LayoutDashboard },
+    { name: "My Profile", path: "/profile", icon: User },
+    { name: "Settings", path: "/settings", icon: Settings },
   ];
 
-  // পাথ একদম match করলে, বা সাব-রুট হলে (root "/" বাদে) active ধরা হচ্ছে
   const isActive = (path) => {
     if (path === "/") return pathname === "/";
     return pathname === path || pathname.startsWith(`${path}/`);
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-paper/10 bg-ink/95 backdrop-blur-md">
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+        scrolled 
+          ? "bg-white border-b border-slate-200 py-2 shadow-sm" 
+          : "bg-white/50 backdrop-blur-sm py-4"
+      }`}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-3">
-          {/* Logo */}
-          <Link href="/" className="flex shrink-0 items-center gap-2.5 sm:gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-signal text-base font-bold text-ink sm:h-10 sm:w-10 sm:text-lg">
-              T
+        <div className="flex h-14 items-center justify-between gap-4">
+          
+          {/* Logo Section */}
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
+            <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-slate-200 bg-white p-0.5 shadow-sm transition-transform group-hover:scale-105">
+              <img 
+                src="https://img.magnific.com/premium-vector/eqh-logo-design-initial-letter-eqh-monogram-logo-using-hexagon-shape_1101554-16445.jpg?semt=ais_hybrid&w=740&q=80" 
+                alt="Logo"
+                className="h-full w-full object-cover rounded-lg"
+              />
             </div>
             <div className="hidden sm:block">
-              <h1 className="font-display text-lg leading-none text-paper">TaskNest</h1>
-              <p className="text-[10px] uppercase tracking-wider text-paper/40">
-                Micro Task Platform
-              </p>
+              <h1 className="text-xl font-black tracking-tighter text-slate-900 leading-none">TaskNest</h1>
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-amber-600">Marketplace</p>
             </div>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden flex-1 items-center justify-center gap-1.5 lg:flex">
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex flex-1 items-center justify-center gap-1">
             {navLinks.map((link) => {
               const active = isActive(link.path);
               return (
                 <Link
                   key={link.path}
                   href={link.path}
-                  className={`relative whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition-all duration-300 lg:px-5 ${
-                    active
-                      ? "bg-signal text-ink shadow-[0_8px_20px_-6px_rgba(var(--signal-rgb),0.5)]"
-                      : "text-paper/60 hover:bg-paper/5 hover:text-paper"
+                  className={`px-5 py-2 text-sm font-bold transition-all duration-200 rounded-full ${
+                    active 
+                      ? "text-slate-900 bg-slate-100" 
+                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                   }`}
                 >
                   {link.name}
@@ -102,175 +103,128 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Right Side (Auth/Profile) */}
-          <div className="flex shrink-0 items-center gap-2">
+          {/* Right Section */}
+          <div className="flex items-center gap-3">
             {isPending ? (
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-signal border-t-transparent" />
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-amber-600" />
             ) : user ? (
-              <div className="relative hidden md:block">
-                <button
-                  onClick={() => setIsProfileOpen((prev) => !prev)}
-                  className="flex items-center gap-2 rounded-full transition-colors hover:bg-paper/[0.06] focus:outline-none"
-                >
-                  <img
-                    src={user.image || `https://ui-avatars.com/api/?name=${user.name}`}
-                    alt={user.name}
-                    className="h-9 w-9 rounded-full border-2 border-paper/10 object-cover"
-                  />
-                  <ChevronDown
-                    className={`mr-1 h-4 w-4 text-paper/40 transition-transform ${
-                      isProfileOpen ? "rotate-180" : ""
-                    }`}
-                  />
+              <div className="flex items-center gap-2 sm:gap-4">
+                {/* Search - Desktop only */}
+                <button className="hidden sm:flex p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors">
+                  <Search size={20} />
                 </button>
 
-                {isProfileOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-50"
-                      onClick={() => setIsProfileOpen(false)}
+                {/* Profile Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="flex items-center gap-2 p-1 pr-2 rounded-full border border-slate-200 bg-white hover:border-slate-300 transition-all shadow-sm active:scale-95"
+                  >
+                    <img
+                      src={user.image || `https://ui-avatars.com/api/?name=${user.name}&background=f8fafc&color=334155`}
+                      alt="User"
+                      className="h-8 w-8 rounded-full object-cover border border-slate-100"
                     />
-                    <div className="absolute right-0 z-[200] mt-2 w-56 overflow-hidden rounded-xl border border-paper/10 bg-ink shadow-2xl shadow-black/10">
-                      <div className="border-b border-paper/10 bg-paper/[0.03] px-4 py-3">
-                        <p className="truncate text-sm font-semibold text-paper">{user.name}</p>
-                        <p className="truncate text-xs text-paper/50">{user.email}</p>
-                        <span className="mt-1.5 inline-block rounded bg-signal/15 px-2 py-0.5 text-[10px] font-bold uppercase text-signal">
-                          {user.role}
-                        </span>
-                      </div>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isProfileOpen ? "rotate-180" : ""}`} />
+                  </button>
 
-                      <div className="py-1">
-                        {profileLinks.map((link) => (
-                          <Link
-                            key={link.path}
-                            href={link.path}
-                            className={`block px-4 py-2 text-sm transition-colors ${
-                              isActive(link.path)
-                                ? "bg-signal/10 text-signal"
-                                : "text-paper/70 hover:bg-paper/[0.06] hover:text-paper"
-                            }`}
-                            onClick={() => setIsProfileOpen(false)}
+                  {isProfileOpen && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setIsProfileOpen(false)} />
+                      <div className="absolute right-0 mt-3 w-64 z-[110] overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-xl shadow-slate-200/50 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="p-4 bg-slate-50/50 border-b border-slate-100">
+                          <p className="text-sm font-bold text-slate-900 truncate">{user.name}</p>
+                          <p className="text-[11px] font-medium text-slate-500 truncate mb-2">{user.email}</p>
+                          <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-black uppercase tracking-widest border border-amber-200">
+                            {user.role}
+                          </span>
+                        </div>
+                        <div className="p-1.5">
+                          {profileLinks.map((link) => (
+                            <Link
+                              key={link.path}
+                              href={link.path}
+                              onClick={() => setIsProfileOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2 text-sm font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all"
+                            >
+                              <link.icon size={16} className="text-slate-400" />
+                              {link.name}
+                            </Link>
+                          ))}
+                          <div className="h-px bg-slate-100 my-1 mx-2" />
+                          <button
+                            onClick={handleSignout}
+                            className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
                           >
-                            {link.name}
-                          </Link>
-                        ))}
+                            <LogOut size={16} />
+                            Log Out
+                          </button>
+                        </div>
                       </div>
-
-                      <button
-                        onClick={handleSignout}
-                        className="flex w-full items-center gap-2 border-t border-paper/10 px-4 py-3 text-left text-sm font-medium text-rose-400 transition-colors hover:bg-rose-500/10"
-                      >
-                        <LogOut className="h-4 w-4" />
-                        Logout
-                      </button>
-                    </div>
-                  </>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
             ) : (
-              <div className="hidden items-center gap-2 sm:gap-3 md:flex">
-                <Link
-                  href="/login"
-                  className="whitespace-nowrap px-3 py-2 text-sm font-medium text-paper/70 transition-colors hover:text-paper sm:px-5"
-                >
+              <div className="hidden md:flex items-center gap-2">
+                <Link href="/login" className="px-5 py-2 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
                   Login
                 </Link>
-                <Link
-                  href="/register"
-                  className="whitespace-nowrap rounded-lg bg-signal px-3 py-2 text-sm font-medium text-ink shadow-lg shadow-signal/20 transition-all hover:-translate-y-0.5 hover:shadow-signal/30 sm:px-5"
-                >
-                  Register
+                <Link href="/register" className="px-6 py-2.5 text-sm font-black bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-lg shadow-slate-200 active:scale-95 transition-all">
+                  Join Now
                 </Link>
               </div>
             )}
 
-            {/* Mobile Button — md এর নিচে সব breakpoint এ visible */}
+            {/* Mobile Menu Button */}
             <button
-              className="shrink-0 rounded-lg p-2 text-paper/70 transition-colors hover:bg-paper/5 hover:text-paper md:hidden"
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        <div
-          className={`overflow-hidden transition-all duration-200 ease-out md:hidden ${
-            isMobileMenuOpen ? "max-h-[32rem] opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="space-y-1 border-t border-paper/10 py-4">
-            {navLinks.map((link) => {
-              const active = isActive(link.path);
-              return (
+        {/* Mobile Menu Content */}
+        <div className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${isMobileMenuOpen ? "max-h-[500px] opacity-100 mb-6" : "max-h-0 opacity-0"}`}>
+          <div className="bg-white border border-slate-200 rounded-3xl p-3 shadow-xl mt-4">
+            <div className="space-y-1">
+              {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   href={link.path}
-                  className={`block rounded-lg px-4 py-2.5 text-base font-medium transition-colors ${
-                    active
-                      ? "bg-signal text-ink"
-                      : "text-paper/70 hover:bg-paper/[0.06] hover:text-paper"
-                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
+                    isActive(link.path) ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
+                  }`}
                 >
                   {link.name}
                 </Link>
-              );
-            })}
+              ))}
+            </div>
 
-            {user ? (
-              <div className="mt-4 border-t border-paper/10 pt-4">
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <img
-                    src={user.image || `https://ui-avatars.com/api/?name=${user.name}`}
-                    className="h-10 w-10 rounded-full border-2 border-paper/10 object-cover"
-                    alt=""
-                  />
-                  <div>
-                    <p className="font-bold text-paper">{user.name}</p>
-                    <p className="text-sm text-paper/50">{user.email}</p>
-                  </div>
-                </div>
-                {profileLinks.map((link) => (
-                  <Link
-                    key={link.path}
-                    href={link.path}
-                    className={`block px-4 py-2.5 transition-colors ${
-                      isActive(link.path)
-                        ? "bg-signal/10 text-signal"
-                        : "text-paper/70 hover:bg-paper/[0.06]"
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-                <button
-                  onClick={handleSignout}
-                  className="mt-2 flex w-full items-center gap-2 px-4 py-3 text-left font-medium text-rose-400 hover:bg-rose-500/10"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </button>
+            {!user ? (
+              <div className="mt-4 flex flex-col gap-2 pt-4 border-t border-slate-100 px-1">
+                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="py-3 text-center text-slate-900 font-bold">Login</Link>
+                <Link href="/register" onClick={() => setIsMobileMenuOpen(false)} className="py-3 bg-slate-900 text-white rounded-2xl text-center font-black">Join Marketplace</Link>
               </div>
             ) : (
-              <div className="mt-4 flex flex-col gap-2 px-4">
-                <Link
-                  href="/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="rounded-lg border border-paper/15 py-2.5 text-center font-medium text-paper/80 hover:border-paper/25"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="rounded-lg bg-signal py-2.5 text-center font-medium text-ink"
-                >
-                  Register
-                </Link>
+              <div className="mt-4 pt-4 border-t border-slate-100 space-y-1 px-1">
+                 {profileLinks.map((link) => (
+                    <Link
+                      key={link.path}
+                      href={link.path}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-2xl transition-all"
+                    >
+                      <link.icon size={18} />
+                      {link.name}
+                    </Link>
+                  ))}
+                  <button onClick={handleSignout} className="w-full flex items-center gap-3 px-4 py-3 text-rose-500 font-bold rounded-2xl hover:bg-rose-50">
+                    <LogOut size={18} /> Logout
+                  </button>
               </div>
             )}
           </div>

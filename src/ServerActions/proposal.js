@@ -14,6 +14,11 @@ export const Postproposals = async ({ path, proposal }) => {
         },
         body: JSON.stringify(proposal)
     });
+    if (!res.ok) {
+        console.error("Postproposals failed:", res.status);
+        return { success: false, message: "Failed to post proposal" };
+    }
+    return res.json();
 };
 
 export const GetProposalById = async ({ path, freelancerId, page = 1, limit = 2 }) => {
@@ -83,6 +88,11 @@ export const updateProposalStatus = async (id, status, submitionLink, submitionM
         }),
     });
 
+    if (!res.ok) {
+        console.error("updateProposalStatus failed:", res.status);
+        return { success: false, message: "Failed to update proposal status" };
+    }
+
     const result = await res.json();
     console.log("proposal.js", result);
 
@@ -93,6 +103,11 @@ export const deleteProposal = async (id) => {
     const res = await fetch(`${API_URL}/proposals/${id}`, {
         method: "DELETE",
     });
+
+    if (!res.ok) {
+        console.error("deleteProposal failed:", res.status);
+        return { success: false, message: "Failed to delete proposal" };
+    }
 
     const result = await res.json();
     console.log("proposal.js delete:", result);

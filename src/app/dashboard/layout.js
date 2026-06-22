@@ -3,261 +3,156 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  Users,
-  FileText,
-  DollarSign,
-  Plus,
-  ClipboardList,
-  Send,
-  Briefcase,
-  Clock,
-  User,
-  Menu,
-  X,
+  LayoutDashboard, Users, FileText, DollarSign, Plus, 
+  ClipboardList, Send, Briefcase, Clock, User, Menu, X, ChevronRight
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
 const menuConfig = {
   admin: [
     { id: "overview", name: "Overview", icon: LayoutDashboard, href: "/dashboard/admin/overview" },
-    { id: "users", name: "Manage Users", icon: Users, href: "/dashboard/admin/users" },
-    { id: "tasks", name: "Manage Tasks", icon: FileText, href: "/dashboard/admin/tasks" },
-    { id: "transactions", name: "Transactions", icon: DollarSign, href: "/dashboard/admin/transactions" },
+    { id: "users", name: "Users", icon: Users, href: "/dashboard/admin/users" },
+    { id: "tasks", name: "Tasks", icon: FileText, href: "/dashboard/admin/tasks" },
+    { id: "transactions", name: "Finance", icon: DollarSign, href: "/dashboard/admin/transactions" },
   ],
   client: [
     { id: "overview", name: "Dashboard", icon: LayoutDashboard, href: "/dashboard/client/DashboardHome" },
-    { id: "post", name: "Post a Task", icon: Plus, href: "/dashboard/client/PostTaskForm" },
+    { id: "post", name: "Post Task", icon: Plus, href: "/dashboard/client/PostTaskForm" },
     { id: "tasks", name: "My Tasks", icon: ClipboardList, href: "/dashboard/client/MyTasks" },
-    { id: "proposals", name: "Manage Proposals", icon: FileText, href: "/dashboard/client/manazeproposals" },
+    { id: "proposals", name: "Proposals", icon: FileText, href: "/dashboard/client/manazeproposals" },
   ],
   freelancer: [
     { id: "overview", name: "Overview", icon: LayoutDashboard, href: "/dashboard/freelancer/overview" },
-    { id: "browse", name: "Browse Tasks", icon: Briefcase, href: "/dashboard/freelancer/browse" },
+    { id: "browse", name: "Browse", icon: Briefcase, href: "/dashboard/freelancer/browse" },
+    { id: "active", name: "active", icon: Briefcase, href: "/dashboard/freelancer/activeprojects" },
     { id: "proposals", name: "My Proposals", icon: Send, href: "/dashboard/freelancer/myproposals" },
-    { id: "projects", name: "Active Projects", icon: Clock, href: "/dashboard/freelancer/activeprojects" },
-    { id: "earnings", name: "My Earnings", icon: DollarSign, href: "/dashboard/freelancer/myearnings" },
-    { id: "profile", name: "Edit Profile", icon: User, href: "/dashboard/freelancer/eaditprofile" },
+    { id: "earnings", name: "Earnings", icon: DollarSign, href: "/dashboard/freelancer/myearnings" },
   ],
 };
 
 const themeConfig = {
-  admin: {
-    title: "ADMIN HUB",
-    bg: "bg-red-600",
-    text: "text-red-600",
-    hoverBg: "hover:bg-red-50",
-    activeText: "text-red-700",
-    activeBorder: "border-red-600",
-    iconBg: "bg-red-100",
-  },
-  client: {
-    title: "CLIENT HUB",
-    bg: "bg-blue-600",
-    text: "text-blue-600",
-    hoverBg: "hover:bg-blue-50",
-    activeText: "text-blue-700",
-    activeBorder: "border-blue-600",
-    iconBg: "bg-blue-100",
-  },
-  freelancer: {
-    title: "FREELANCER HUB",
-    bg: "bg-green-600",
-    text: "text-green-600",
-    hoverBg: "hover:bg-green-50",
-    activeText: "text-green-700",
-    activeBorder: "border-green-600",
-    iconBg: "bg-green-100",
-  },
+  admin: { bg: "bg-red-600", text: "text-red-600", light: "bg-red-50", border: "border-red-600" },
+  client: { bg: "bg-blue-600", text: "text-blue-600", light: "bg-blue-50", border: "border-blue-600" },
+  freelancer: { bg: "bg-emerald-600", text: "text-emerald-600", light: "bg-emerald-50", border: "border-emerald-600" },
 };
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // tablet/desktop toggle
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchSession = async () => {
       const { data } = await authClient.getSession();
-      setRole(data?.user?.role || null);
+      setRole(data?.user?.role || "client"); // Fallback for testing
       setLoading(false);
     };
     fetchSession();
   }, []);
 
-  // route change hole tablet/mobile e sidebar auto close
-  useEffect(() => {
-    setSidebarOpen(false);
-  }, [pathname]);
+  if (loading) return (
+    <div className="h-screen flex items-center justify-center bg-white">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-slate-900"></div>
+    </div>
+  );
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-3 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
-          <p className="text-sm text-gray-400">লোড হচ্ছে...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!role || !menuConfig[role]) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
-        <p className="text-gray-500 font-medium">Unauthorized</p>
-      </div>
-    );
-  }
-
-  const menu = menuConfig[role];
-  const theme = themeConfig[role];
+  const menu = menuConfig[role] || [];
+  const theme = themeConfig[role] || themeConfig.client;
 
   return (
-    <div className="flex h-screen bg-gray-50 relative">
-      {/* Tablet/Desktop Sidebar */}
-      <aside
-        className={`hidden md:flex flex-col bg-white border-r shadow-sm transition-all duration-200 overflow-hidden
-          ${sidebarOpen ? "md:w-64 p-4" : "md:w-0 md:p-0 lg:w-64 lg:p-4"}
-        `}
-      >
-        <div className="px-3 py-4 mb-4 border-b flex items-center justify-between">
-          <h2 className={`text-xl font-black tracking-tight whitespace-nowrap ${theme.text}`}>
-            {theme.title}
-          </h2>
-          {/* Tablet e e toggle close button, desktop e hidden */}
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-1 text-gray-400 hover:text-gray-700"
-          >
-            <X size={18} />
+    <div className="h-screen flex flex-col md:flex-row bg-[#F9FAFB] overflow-hidden">
+      
+      {/* --- SMALL DEVICE: TOP NAV --- */}
+      <div className="md:hidden bg-white border-b z-50">
+        <div className="flex items-center justify-between px-4 py-3">
+          <span className={`font-black tracking-tighter ${theme.text}`}>HUB.</span>
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 bg-slate-100 rounded-lg">
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
-
-        <nav className="flex flex-col gap-1.5">
+        {/* Mobile Horizontal Menu */}
+        <div className="flex overflow-x-auto no-scrollbar px-4 pb-2 gap-2">
           {menu.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <Link
-                key={item.id}
-                href={item.href}
-                className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 border-l-4 whitespace-nowrap ${
-                  isActive
-                    ? `${theme.activeBorder} ${theme.activeText} bg-gray-50 font-semibold`
-                    : `border-transparent text-gray-500 ${theme.hoverBg} hover:text-gray-800`
-                }`}
-              >
-                <span
-                  className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors shrink-0 ${
-                    isActive ? theme.iconBg : "bg-gray-100 group-hover:bg-gray-200"
-                  }`}
-                >
-                  <item.icon size={16} className={isActive ? theme.activeText : "text-gray-500"} />
-                </span>
-                {item.name}
+              <Link key={item.id} href={item.href} className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-xs font-bold transition-all ${isActive ? `${theme.bg} text-white shadow-md` : "bg-white text-slate-500 border"}`}>
+                <item.icon size={14} /> {item.name}
               </Link>
             );
           })}
-        </nav>
-      </aside>
+        </div>
+      </div>
 
-      {/* Tablet e sidebar close korar jonno backdrop (jokhon open thake) */}
+      {/* --- MID DEVICE: OVERLAY SIDEBAR (TABLET) --- */}
       {sidebarOpen && (
-        <div
-          onClick={() => setSidebarOpen(false)}
-          className="hidden md:block lg:hidden fixed inset-0 bg-black/30 z-30"
-        />
+        <div className="md:fixed lg:hidden inset-0 bg-slate-900/40 backdrop-blur-sm z-40" onClick={() => setSidebarOpen(false)} />
       )}
-
-      {/* Tablet e absolute positioned sidebar (jokhon toggle kore khola hoy) */}
-      {sidebarOpen && (
-        <aside className="hidden md:flex lg:hidden flex-col w-64 bg-white border-r shadow-lg p-4 fixed left-0 top-0 h-full z-40">
-          <div className="px-3 py-4 mb-4 border-b flex items-center justify-between">
-            <h2 className={`text-xl font-black tracking-tight ${theme.text}`}>
-              {theme.title}
-            </h2>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="p-1 text-gray-400 hover:text-gray-700"
-            >
-              <X size={18} />
-            </button>
+      
+      {/* --- BIG DEVICE & MID DEVICE SIDEBAR --- */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-72 bg-white border-r transform transition-transform duration-300 ease-in-out
+        lg:translate-x-0 lg:static lg:block
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
+        <div className="h-full flex flex-col p-6">
+          <div className="flex items-center gap-3 mb-10 px-2">
+            <div className={`w-10 h-10 rounded-xl ${theme.bg} flex items-center justify-center text-white font-bold`}>H</div>
+            <h2 className="text-xl font-black text-slate-800 tracking-tight">DASHBOARD</h2>
           </div>
 
-          <nav className="flex flex-col gap-1.5">
+          <nav className="flex-1 space-y-1.5">
             {menu.map((item) => {
               const isActive = pathname === item.href;
               return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 border-l-4 ${
-                    isActive
-                      ? `${theme.activeBorder} ${theme.activeText} bg-gray-50 font-semibold`
-                      : `border-transparent text-gray-500 ${theme.hoverBg} hover:text-gray-800`
+                <Link key={item.id} href={item.href} onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center justify-between px-4 py-3.5 rounded-2xl group transition-all ${
+                    isActive ? `${theme.light} ${theme.text} font-bold` : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
                   }`}
                 >
-                  <span
-                    className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors shrink-0 ${
-                      isActive ? theme.iconBg : "bg-gray-100 group-hover:bg-gray-200"
-                    }`}
-                  >
-                    <item.icon size={16} className={isActive ? theme.activeText : "text-gray-500"} />
-                  </span>
-                  {item.name}
+                  <div className="flex items-center gap-3">
+                    <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                    <span className="text-[15px]">{item.name}</span>
+                  </div>
+                  {isActive && <ChevronRight size={16} />}
                 </Link>
               );
             })}
           </nav>
-        </aside>
-      )}
 
-      {/* Mobile Top Bar (hamburger shoho) - tablet/desktop e toggle button */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b flex items-center justify-between px-4 z-30">
-        <h2 className={`text-lg font-black tracking-tight ${theme.text}`}>{theme.title}</h2>
-      </div>
+          <div className="mt-auto p-4 bg-slate-50 rounded-3xl border border-slate-100">
+             <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden text-[10px] flex items-center justify-center">User</div>
+                <div className="overflow-hidden">
+                  <p className="text-sm font-bold text-slate-800 truncate">Account</p>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-widest">{role}</p>
+                </div>
+             </div>
+          </div>
+        </div>
+      </aside>
 
-      {/* Tablet e top bar e hamburger toggle button */}
-      <div className="hidden md:flex lg:hidden fixed top-4 left-4 z-30">
-        {!sidebarOpen && (
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 bg-white border rounded-lg shadow-sm text-gray-600 hover:bg-gray-50"
-          >
+      {/* --- MAIN CONTENT AREA --- */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative">
+        {/* Tablet Menu Trigger */}
+        <div className="hidden md:flex lg:hidden absolute top-6 left-6 z-30">
+          <button onClick={() => setSidebarOpen(true)} className="p-3 bg-white shadow-xl rounded-2xl border border-slate-100 text-slate-600">
             <Menu size={20} />
           </button>
-        )}
-      </div>
+        </div>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-y-auto pt-14 pb-16 md:pt-0 md:pb-0">
-        <div className="p-4 md:p-8">{children}</div>
+        {/* Content Container with Max-Width 7xl */}
+        <div className="flex-1 overflow-y-auto px-4 py-6 md:p-8 lg:p-12">
+          <div className="max-w-7xl mx-auto h-full">
+            {children}
+          </div>
+        </div>
       </main>
 
-      {/* Mobile Bottom Navbar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t flex items-center justify-around z-30">
-        {menu.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.id}
-              href={item.href}
-              className={`flex flex-col items-center justify-center gap-1 flex-1 h-full text-[10px] font-medium transition-colors ${
-                isActive ? theme.activeText : "text-gray-400"
-              }`}
-            >
-              <span
-                className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
-                  isActive ? theme.iconBg : ""
-                }`}
-              >
-                <item.icon size={18} />
-              </span>
-              <span className="truncate w-full text-center px-0.5">{item.name}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </div>
   );
 }

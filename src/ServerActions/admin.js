@@ -11,6 +11,10 @@ export const GetAllUsers = async (page = 1, limite = 8) => {
         method: "GET",
         cache: "no-store",
     });
+    if (!response.ok) {
+        console.error("GetAllUsers failed:", response.status);
+        return { users: [], total: 0, pages: 1 };
+    }
     return response.json();
 };
 
@@ -24,6 +28,10 @@ export const ToggleUserBlock = async (id, isBlocked) => {
         },
         body: JSON.stringify({ isBlocked }),
     });
+    if (!response.ok) {
+        console.error("ToggleUserBlock failed:", response.status);
+        return { success: false, message: "Failed to toggle user block" };
+    }
     return response.json();
 };
 
@@ -38,6 +46,10 @@ export const GetAllAdminTasks = async (page = 1, limite = 3) => {
             Authorization: `Bearer ${token?.token}`,
         },
     });
+    if (!response.ok) {
+        console.error("GetAllAdminTasks failed:", response.status);
+        return { tasks: [], total: 0, pages: 1 };
+    }
     return response.json();
 };
 
@@ -50,6 +62,10 @@ export const GetAllTransactions = async (page = 1, limite = 10) => {
             Authorization: `Bearer ${token?.token}`,
         },
     });
+    if (!response.ok) {
+        console.error("GetAllTransactions failed:", response.status);
+        return { transactions: [], total: 0, pages: 1 };
+    }
     return response.json();
 };
 
@@ -58,6 +74,10 @@ export const DeleteAdminTask = async (id) => {
     const response = await fetch(`${API_URL}/admin/tasks/${id}`, {
         method: "DELETE",
     });
+    if (!response.ok) {
+        console.error("DeleteAdminTask failed:", response.status);
+        return { success: false, message: "Failed to delete task" };
+    }
     return response.json();
 };
 
@@ -70,6 +90,10 @@ export const UpdateAdminTaskStatus = async (id, status) => {
         },
         body: JSON.stringify({ status }),
     });
+    if (!response.ok) {
+        console.error("UpdateAdminTaskStatus failed:", response.status);
+        return { success: false, message: "Failed to update task status" };
+    }
     return response.json();
 };
 
@@ -82,6 +106,10 @@ export const ToggleAdminTaskFeature = async (id, isFeatured) => {
         },
         body: JSON.stringify({ isFeatured }),
     });
+    if (!response.ok) {
+        console.error("ToggleAdminTaskFeature failed:", response.status);
+        return { success: false, message: "Failed to toggle feature" };
+    }
     return response.json();
 };
 
@@ -92,6 +120,10 @@ export const GetOverviewUsers = async () => {
         method: "GET",
         cache: "no-store",
     });
+    if (!response.ok) {
+        console.error("GetOverviewUsers failed:", response.status);
+        return { users: [] };
+    }
     return response.json();
 };
 
@@ -100,6 +132,10 @@ export const GetOverviewTasks = async () => {
         method: "GET",
         cache: "no-store",
     });
+    if (!response.ok) {
+        console.error("GetOverviewTasks failed:", response.status);
+        return { tasks: [] };
+    }
     return response.json();
 };
 
@@ -108,6 +144,10 @@ export const GetOverviewProposals = async () => {
         method: "GET",
         cache: "no-store",
     });
+    if (!response.ok) {
+        console.error("GetOverviewProposals failed:", response.status);
+        return { proposals: [] };
+    }
     return response.json();
 };
 
@@ -117,6 +157,27 @@ export const GetOverviewTasksRaw = async () => {
         method: "GET",
         cache: "no-store",
     });
+    if (!response.ok) {
+        console.error("GetOverviewTasksRaw failed:", response.status);
+        return { tasks: [] };
+    }
     return response.json();
 };
 
+
+
+// ServerActions/admin.js
+export const DeleteUser = async (id) => {
+  try {
+    const response = await fetch(`${process.env.BACKEND_URL}/api/admin/users/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    return await response.json(); // এটি সরাসরি {success, message} রিটার্ন করবে
+  } catch (error) {
+    return { success: false, message: "Network error" };
+  }
+}

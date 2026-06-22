@@ -4,14 +4,17 @@ import { Calendar, DollarSign } from 'lucide-react';
 import TaskActions from "@/Dashboardaction/clientcomponent/TaskActions";
 import { PaginationControlled } from "@/Components/PaginationControlled";
 import { GetTasksByUser } from "@/ServerActions/Task";
+// import { clienttaskeadit } from "@/modals/clienttaskeadit";
 
 const MyTasksPage = async ({ searchParams }) => {
     const params = await searchParams;
     const currentPage = Number(params?.page) || 1;
     const itemsPerPage = 10;
 
+    const reqHeaders = await headers();
+
     const session = await auth.api.getSession({
-        headers: await headers(),
+        headers: reqHeaders,
     });
 
     const clientId = session?.user?.id;
@@ -24,7 +27,13 @@ const MyTasksPage = async ({ searchParams }) => {
         );
     }
 
-    const result = await GetTasksByUser('my-tasks', clientId, currentPage, itemsPerPage);
+    // Get the JWT token server-side via the jwt plugin API
+    const tokenResponse = await auth.api.getToken({
+        headers: reqHeaders,
+    });
+    const jwtToken = tokenResponse?.token;
+
+    const result = await GetTasksByUser('my-tasks', clientId, currentPage, itemsPerPage, jwtToken);
     console.log("result", result)
     const tasks = Array.isArray(result?.tasks) ? result.tasks : [];
     const totalPages = result?.totalPages || 1;
@@ -81,9 +90,11 @@ const MyTasksPage = async ({ searchParams }) => {
                                             }`}>
                                             {task.status}
                                         </span>
+                                        
+                                        
                                     </td>
                                     <td className="p-4">
-                                        <TaskActions taskId={task._id} />
+                                        <TaskActions task={task} />
                                     </td>
                                 </tr>
                             ))

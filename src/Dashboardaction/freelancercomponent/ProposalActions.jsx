@@ -3,47 +3,83 @@
 import { deleteProposal } from "@/ServerActions/proposal";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react"; // Added Trash icon
+import { AlertDialog, Button } from "@heroui/react";
 
 const ProposalActions = ({ proposalId }) => {
-    const [deleting, setDeleting] = useState(false);
-    const router = useRouter();
+  const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
 
-    const handleDelete = async () => {
-        const confirmDelete = window.confirm(
-            "আপনি কি নিশ্চিতভাবে এই proposal টি ডিলিট করতে চান?"
-        );
+  const handleDelete = async () => {
+    try {
+      setDeleting(true);
+      const data = await deleteProposal(proposalId);
 
-        if (!confirmDelete) return;
+      if (data?.success || data?.deletedCount > 0) {
+        router.refresh();
+      } else {
+        alert(data?.message || "Could not delete the proposal.");
+      }
+    } catch (error) {
+      console.error("Delete Error:", error);
+      alert("Server error, please try again.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
-        try {
-            setDeleting(true);
+  return (
+    <AlertDialog>
+      {/* TRIGGER BUTTON */}
+      <Button 
+        variant="light" 
+        color="danger" 
+        isIconOnly 
+        className="hover:bg-red-50"
+        title="Delete Proposal"
+      >
+        <Trash2 size={18} />
+      </Button>
 
-            const data = await deleteProposal(proposalId);
+      <AlertDialog.Backdrop>
+        <AlertDialog.Container>
+          <AlertDialog.Dialog className="sm:max-w-[420px]">
+            <AlertDialog.CloseTrigger />
+            
+            <AlertDialog.Header>
+              <AlertDialog.Icon status="danger" />
+              <AlertDialog.Heading>Withdraw Proposal?</AlertDialog.Heading>
+            </AlertDialog.Header>
 
-            if (data?.success || data?.deletedCount > 0) {
-                router.refresh();
-            } else {
-                alert(data?.message || "Proposal delete করা যায়নি");
-            }
-        } catch (error) {
-            console.error("Delete Error:", error);
-            alert("Server error, আবার চেষ্টা করুন");
-        } finally {
-            setDeleting(false);
-        }
-    };
+            <AlertDialog.Body>
+              <p className="text-gray-600">
+                Are you sure you want to delete this proposal? This action 
+                will permanently remove your application and cannot be undone.
+              </p>
+            </AlertDialog.Body>
 
-    return (
-        <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-1.5"
-        >
-            {deleting ? <Loader2 size={14} className="animate-spin" /> : null}
-            Delete
-        </button>
-    );
+            <AlertDialog.Footer>
+              {/* CANCEL BUTTON */}
+              <Button slot="close" variant="tertiary">
+                Keep Proposal
+              </Button>
+
+              {/* CONFIRM DELETE BUTTON */}
+              <Button 
+                onPress={handleDelete} // Triggers the delete function
+                variant="danger"
+                isLoading={deleting}
+                disabled={deleting}
+                className="min-w-[120px]"
+              >
+                {deleting ? "Deleting..." : "Yes, Delete"}
+              </Button>
+            </AlertDialog.Footer>
+          </AlertDialog.Dialog>
+        </AlertDialog.Container>
+      </AlertDialog.Backdrop>
+    </AlertDialog>
+  );
 };
 
 export default ProposalActions;

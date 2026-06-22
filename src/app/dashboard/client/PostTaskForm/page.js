@@ -1,9 +1,14 @@
 "use client";
 
-// import { userstatus } from "@/lib/Action";
 import { authClient } from "@/lib/auth-client";
 import { PostTask } from "@/ServerActions/Task";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
+import { 
+  ClipboardList, DollarSign, Calendar, Tag, 
+  Sparkles, Send, Info, ChevronDown, CheckCircle2, ArrowRight
+} from "lucide-react";
+import { Button, Dropdown, Label } from "@heroui/react";
 
 const initialFormData = {
   title: "",
@@ -11,7 +16,7 @@ const initialFormData = {
   description: "",
   budget: "",
   deadline: "",
-  status: "open", // default state text: open
+  status: "open",
 };
 
 const PostTaskForm = () => {
@@ -20,208 +25,246 @@ const PostTaskForm = () => {
 
   const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+
+  const categories = [
+    "Web Development",
+    "Graphic Design",
+    "Digital Marketing",
+    "Content Writing",
+    "Video Editing"
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCategoryChange = (key) => {
+    setFormData(prev => ({ ...prev, category: key }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // ডাটা কনসোলে দেখানোর জন্য
-    console.log("New Task Data Submitted:", formData);
-
-    const taskData = {
-      title: formData.title,
-      category: formData.category,
-      description: formData.description,
-      budget: formData.budget,
-      deadline: formData.deadline,
-      status: formData.status,
-      ClientId: user.id,
-      clientname: user.name,
-      clientemail: user.email,
-      // Assuming the API expects a field named ClientId to associate the task with the user
-    };
+    if (!user) return toast.error("Please log in first.");
+    if (!formData.category) return toast.error("Please select a category.");
 
     try {
       setIsSubmitting(true);
-      await PostTask({ path: "tasks", taskData });
-
-      // ফর্ম রিসেট করা হচ্ছে
+      const taskData = { ...formData, ClientId: user.id, clientname: user.name, clientemail: user.email };
+      const result = await PostTask({ path: "tasks", taskData });
+      if (result?.error) throw new Error(result.error);
+      toast.success("Task Published! 🚀");
       setFormData(initialFormData);
-
-      // সাকসেস মেসেজ দেখানো হচ্ছে
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 4000);
     } catch (error) {
-      console.error("Error posting task:", error);
-      alert("Task post করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।");
+      toast.error("Failed to post task.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleCancel = () => {
-    setFormData(initialFormData);
-  };
-
-  if (isPending) {
-    return (
-      <div className="max-w-3xl mx-auto p-4">
-        <p className="text-gray-500">লোড হচ্ছে...</p>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="max-w-3xl mx-auto p-4">
-        <h1 className="text-3xl font-bold text-gray-900">Please Log In</h1>
-        <p className="text-gray-500 mt-1">
-          You must be logged in to post a new task.
-        </p>
-      </div>
-    );
-  }
+  if (isPending) return (
+    <div className="h-screen flex items-center justify-center bg-white">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-slate-900"></div>
+    </div>
+  );
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Post a New Task</h1>
-        <p className="text-gray-500 mt-1">
-          Describe your task and set a budget to find freelancers
-        </p>
-      </div>
-
-      {/* Success Message */}
-      {showSuccess && (
-        <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl flex items-center gap-2">
-          <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <span className="font-medium">Task সফলভাবে পোস্ট হয়েছে!</span>
-        </div>
-      )}
-
-      {/* Form Card */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm space-y-6"
-      >
-        {/* Task Title */}
-        <div>
-          <label className="block text-sm font-bold text-gray-700 mb-2">
-            Task Title
-          </label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="e.g., Design a landing page for my startup"
-            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 ring-orange-100 transition"
-            required
-          />
-        </div>
-
-        {/* Category */}
-        <div>
-          <label className="block text-sm font-bold text-gray-700 mb-2">
-            Category
-          </label>
-          <div className="relative">
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 appearance-none outline-none focus:ring-2 ring-orange-100 transition text-gray-600"
-              required
-            >
-              <option value="">Select a category</option>
-              <option value="Web Development">Web Development</option>
-              <option value="Graphic Design">Graphic Design</option>
-              <option value="Digital Marketing">Digital Marketing</option>
-              <option value="Content Writing">Content Writing</option>
-            </select>
-            <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
+    <div className="h-screen w-full bg-[#f9fafb] overflow-hidden flex flex-col font-sans p-4 md:p-8">
+      
+      <div className="max-w-7xl mx-auto w-full h-full flex flex-col">
+        
+        {/* Header - Balanced */}
+        <header className="flex items-center justify-between mb-6 shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center shadow-lg shadow-slate-200">
+              <ClipboardList className="text-white w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Post a New Project</h1>
+              <p className="text-slate-500 text-sm font-medium">Connect with top freelancers worldwide</p>
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-bold text-gray-700 mb-2">
-            Description
-          </label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Provide a detailed description of the task..."
-            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 h-32 outline-none focus:ring-2 ring-orange-100 transition resize-none"
-            required
-          ></textarea>
-        </div>
+        {/* Main Content Area */}
+        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Form Side */}
+          <form onSubmit={handleSubmit} className="lg:col-span-8 h-full flex flex-col bg-white border border-slate-200 rounded-[2rem] shadow-xl shadow-slate-100/50 overflow-hidden">
+            <div className="flex-1 p-8 md:p-10 space-y-6 overflow-y-auto custom-scrollbar">
+              
+              {/* Task Title */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Project Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  placeholder="e.g. Design a modern landing page for a SaaS"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-slate-900 focus:bg-white rounded-xl px-5 py-3.5 outline-none transition-all text-slate-800 font-medium placeholder:text-slate-400"
+                  required
+                />
+              </div>
 
-        {/* Budget & Deadline Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Budget (USD)
-            </label>
-            <input
-              type="number"
-              name="budget"
-              value={formData.budget}
-              onChange={handleChange}
-              placeholder="500"
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 ring-orange-100 transition"
-              required
-            />
+              {/* Category & Budget Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* HeroUI Category Dropdown */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Category</label>
+                  <Dropdown>
+                    <Button 
+                      variant="secondary" 
+                      className="w-full justify-between bg-slate-50 border-slate-200 text-sm h-[52px] rounded-xl font-medium text-slate-700 hover:bg-slate-100"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Tag size={16} className="text-slate-400" />
+                        {formData.category || "Select Category"}
+                      </div>
+                      <ChevronDown size={16} className="text-slate-400" />
+                    </Button>
+                    <Dropdown.Popover className="min-w-[280px] rounded-2xl shadow-2xl border-slate-100">
+                      <Dropdown.Menu 
+                        selectionMode="single" 
+                        onAction={(key) => handleCategoryChange(key.toString())}
+                        className="p-2"
+                      >
+                        {categories.map((cat) => (
+                          <Dropdown.Item key={cat} id={cat} textValue={cat} className="rounded-xl py-3">
+                            <div className="flex items-center justify-between w-full">
+                              <Label className="text-sm font-medium cursor-pointer">{cat}</Label>
+                              {formData.category === cat && <CheckCircle2 size={16} className="text-slate-900" />}
+                            </div>
+                          </Dropdown.Item>
+                        ))}
+                      </Dropdown.Menu>
+                    </Dropdown.Popover>
+                  </Dropdown>
+                </div>
+
+                {/* Budget Input */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Budget (USD)</label>
+                  <div className="relative group">
+                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
+                    <input
+                      type="number"
+                      name="budget"
+                      value={formData.budget}
+                      onChange={handleChange}
+                      placeholder="500"
+                      className="w-full bg-slate-50 border border-slate-200 focus:border-slate-900 focus:bg-white rounded-xl pl-11 pr-4 py-3.5 outline-none transition-all text-slate-800 font-medium"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2 flex-1 flex flex-col">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Project Description</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Provide a detailed brief of your requirements..."
+                  className="w-full flex-1 bg-slate-50 border border-slate-200 focus:border-slate-900 focus:bg-white rounded-xl px-5 py-4 outline-none transition-all text-slate-800 font-medium resize-none min-h-[120px] leading-relaxed"
+                  required
+                ></textarea>
+              </div>
+
+              {/* Deadline */}
+              <div className="space-y-2 max-w-[240px]">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Deadline</label>
+                <div className="relative group">
+                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
+                  <input
+                    type="date"
+                    name="deadline"
+                    value={formData.deadline}
+                    onChange={handleChange}
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-slate-900 focus:bg-white rounded-xl pl-11 pr-4 py-3.5 outline-none transition-all text-slate-700 font-medium"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Actions */}
+            <div className="p-8 bg-slate-50/50 border-t border-slate-100 flex gap-4 items-center shrink-0">
+              <button
+                type="button"
+                onClick={() => setFormData(initialFormData)}
+                className="px-6 py-4 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-red-500 transition-all"
+              >
+                Clear Form
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex-1 bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-[0.2em] py-4 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-200 active:scale-[0.98] disabled:opacity-50"
+              >
+                {isSubmitting ? "Processing..." : (
+                  <>Publish Project <ArrowRight size={16} /></>
+                )}
+              </button>
+            </div>
+          </form>
+
+          {/* Sidebar - Balanced Content */}
+          <div className="lg:col-span-4 hidden lg:flex flex-col gap-6 h-full overflow-hidden">
+            <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white flex flex-col h-full relative overflow-hidden shadow-2xl">
+              <Sparkles className="absolute top-6 right-6 text-amber-400 opacity-40 w-8 h-8" />
+              
+              <div className="mb-10">
+                <h3 className="text-lg font-bold mb-2">Tips for Success</h3>
+                <p className="text-slate-400 text-sm">Follow these steps to get high-quality proposals quickly.</p>
+              </div>
+
+              <div className="space-y-8 flex-1">
+                <div className="flex gap-4">
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-xs font-bold text-amber-400 border border-white/10">01</div>
+                  <div>
+                    <h4 className="text-sm font-bold mb-1">Clear Goals</h4>
+                    <p className="text-slate-400 text-xs leading-relaxed">Be specific about the deliverables you expect from the freelancer.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-xs font-bold text-amber-400 border border-white/10">02</div>
+                  <div>
+                    <h4 className="text-sm font-bold mb-1">Market Budget</h4>
+                    <p className="text-slate-400 text-xs leading-relaxed">A competitive budget attracts senior experts and ensures quality results.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-xs font-bold text-amber-400 border border-white/10">03</div>
+                  <div>
+                    <h4 className="text-sm font-bold mb-1">Deadline</h4>
+                    <p className="text-slate-400 text-xs leading-relaxed">Set a realistic timeline that allows for research, execution, and reviews.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-auto bg-white/5 rounded-[1.5rem] p-6 border border-white/10 flex items-start gap-3">
+                <Info size={18} className="text-amber-400 shrink-0" />
+                <p className="text-[11px] text-slate-300 leading-normal font-medium italic">
+                  "Projects with detailed descriptions get 40% more proposals on average."
+                </p>
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Deadline
-            </label>
-            <input
-              type="date"
-              name="deadline"
-              value={formData.deadline}
-              onChange={handleChange}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 ring-orange-100 transition text-gray-500"
-              required
-            />
-          </div>
-        </div>
 
-        {/* Buttons */}
-        <div className="flex items-center gap-4 pt-2">
-          <button
-            type="button"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-            className="px-6 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition disabled:opacity-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="flex-1 px-6 py-3 bg-[#d97706] text-white font-bold rounded-xl hover:bg-orange-700 transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? "Posting..." : "Post Task"}
-          </button>
         </div>
-      </form>
+      </div>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+      `}</style>
     </div>
   );
 };
