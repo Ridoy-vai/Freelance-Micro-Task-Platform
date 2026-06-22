@@ -1,104 +1,39 @@
-"use client"; // যেহেতু আপনি হুক ব্যবহার করছেন
-import { authClient } from '@/lib/auth-client';
-import { GetTasksByUser } from '@/ServerActions/Task';
-import { Calendar, DollarSign, Edit, Trash2, Loader2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { Calendar, DollarSign } from 'lucide-react';
+import TaskActions from "@/Dashboardaction/clientcomponent/TaskActions";
+import { PaginationControlled } from "@/Components/PaginationControlled";
+import { GetTasksByUser } from "@/ServerActions/Task";
 
-const MyTasksPage = () => {
-    const { data: session, isPending: sessionPending } = authClient.useSession();
-    const [tasks, setTasks] = useState([]); // ডাটা রাখার জন্য স্টেট
-    const [isLoading, setIsLoading] = useState(true); // লোডিং স্টেট
-    const [deletingId, setDeletingId] = useState(null); // কোন task delete হচ্ছে তা ট্র্যাক করার জন্য
+const MyTasksPage = async ({ searchParams }) => {
+    const params = await searchParams;
+    const currentPage = Number(params?.page) || 1;
+    const itemsPerPage = 10;
 
-    const user = session?.user;
-    const clientId = user?.id;
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
 
-    useEffect(() => {
-        const fetchTasks = async () => {
-            if (clientId) {
-                try {
-                    setIsLoading(true);
+    const clientId = session?.user?.id;
 
-                    const fetchedTasks = await GetTasksByUser(
-                        'my-tasks',
-                        clientId
-                    );
-
-                    console.log("client my tasks", fetchedTasks);
-
-                    setTasks(
-                        Array.isArray(fetchedTasks)
-                            ? fetchedTasks
-                            : []
-                    );
-                } catch (error) {
-                    console.error("Error fetching tasks:", error);
-                    setTasks([]);
-                } finally {
-                    setIsLoading(false);
-                }
-            }
-        };
-
-        fetchTasks();
-    }, [clientId]);
-
-    const handleDelete = async (_id) => {
-        // confirm popup
-        const confirmDelete = window.confirm(
-            "আপনি কি নিশ্চিতভাবে এই টাস্কটি ডিলিট করতে চান?"
-        );
-
-        if (!confirmDelete) return;
-
-        console.log("delete id", _id);
-
-        try {
-            setDeletingId(_id); // এই task-এর জন্য loading শুরু
-
-            const res = await fetch(
-                `http://localhost:5000/deleteclinttask/${_id}`,
-                {
-                    method: "DELETE",
-                }
-            );
-
-            const data = await res.json();
-
-            console.log(data);
-
-            if (data.deletedCount > 0) {
-                // UI থেকে instant বাদ দেওয়া
-                setTasks((prev) => prev.filter((task) => task._id !== _id));
-                alert("Task deleted successfully");
-            } else {
-                alert(data.message || "Task delete করা যায়নি");
-            }
-        } catch (error) {
-            console.log(error);
-            alert("Server error, পরে আবার চেষ্টা করুন");
-        } finally {
-            setDeletingId(null); // loading শেষ
-        }
-    };
-
-    const handleEadit = () => {
-        console.log("clicked")
-    }
-
-
-    if (isLoading || sessionPending) {
+    if (!clientId) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <Loader2 className="animate-spin text-blue-500" size={40} />
+            <div className="bg-white border rounded-xl shadow-sm p-10 text-center text-gray-500">
+                Please login to view your tasks.
             </div>
         );
     }
 
+    const result = await GetTasksByUser('my-tasks', clientId, currentPage, itemsPerPage);
+    const tasks = Array.isArray(result?.tasks) ? result.tasks : [];
+    const totalPages = result?.totalPages || 1;
+    const totalItems = result?.totalItems || 0;
+
     return (
         <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
-            <div className="p-4 border-b">
+            <div className="p-4 border-b flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-800">My Tasks</h2>
+                <p className="text-sm text-gray-500">{totalItems} টি task</p>
             </div>
 
             <div className="overflow-x-auto">
@@ -147,24 +82,7 @@ const MyTasksPage = () => {
                                         </span>
                                     </td>
                                     <td className="p-4">
-                                        <div className="flex justify-center gap-2">
-                                            <button
-                                                onClick={handleEadit}
-                                                disabled={deletingId === task._id}
-                                                className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                                <Edit size={18} />
-                                            </button>
-                                            <button
-                                                onClick={() => { handleDelete(task._id) }}
-                                                disabled={deletingId === task._id}
-                                                className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                                {deletingId === task._id ? (
-                                                    <Loader2 size={18} className="animate-spin" />
-                                                ) : (
-                                                    <Trash2 size={18} />
-                                                )}
-                                            </button>
-                                        </div>
+                                        <TaskActions taskId={task._id} />
                                     </td>
                                 </tr>
                             ))
@@ -177,6 +95,15 @@ const MyTasksPage = () => {
                         )}
                     </tbody>
                 </table>
+            </div>
+
+            <div className="p-4 border-t">
+                <PaginationControlled
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={totalItems}
+                    itemsPerPage={itemsPerPage}
+                />
             </div>
         </div>
     );

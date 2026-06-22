@@ -1,4 +1,4 @@
-import ProposalForm from "@/ClientActions/ProposalForm";
+import ProposalForm from "@/Components/ProposalForm";
 import { auth } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 import { GetTasksById } from "@/ServerActions/Task";

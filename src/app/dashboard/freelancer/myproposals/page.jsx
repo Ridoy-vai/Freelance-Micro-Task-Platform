@@ -1,67 +1,41 @@
-"use client";
-
-import { authClient } from "@/lib/auth-client";
-import { deleteProposal, GetProposalById } from "@/ServerActions/proposal";
-// import { deleteProposal, GetProposalById } from "@/ServerActions/proposal";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { FileText } from "lucide-react";
-import { useEffect, useState } from "react";
+import { GetProposalById } from "@/ServerActions/proposal";
+import ProposalActions from "@/Dashboardaction/freelancercomponent/ProposalActions";
+import { PaginationControlled } from "@/Components/PaginationControlled";
 
-export default function MyProposals() {
-  const { data: session, isPending } = authClient.useSession();
+const MyProposals = async ({ searchParams }) => {
+  const params = await searchParams;
+  const currentPage = Number(params?.page) || 1;
+  const itemsPerPage = 2;
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
   const user = session?.user;
 
-  const [proposalList, setProposalList] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (isPending) return;
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchProposals = async () => {
-      try {
-        const result = await GetProposalById({
-          path: "myProposals",
-          freelancerId: user.id,
-        });
-        setProposalList(result || []);
-      } catch (error) {
-        console.error("Fetch Proposals Error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProposals();
-  }, [isPending, user]);
-
-  const handelDelete = async (id) => {
-    try {
-      console.log("Delete ID:", id);
-
-      const data = await deleteProposal(id);
-
-      console.log("Delete Response:", data);
-
-      if (data?.success || data?.deletedCount > 0) {
-        setProposalList((prev) => prev.filter((item) => item._id !== id));
-      } else {
-        alert(data?.message || "Proposal delete করা যায়নি");
-      }
-    } catch (error) {
-      console.error("Delete Error:", error);
-    }
-  };
-
-  if (loading || isPending) {
+  if (!user) {
     return (
-      <div className="flex items-center justify-center py-16 text-gray-500">
-        Loading...
+      <div className="flex flex-col items-center justify-center text-center px-8 py-16 bg-gray-50 rounded-2xl border border-gray-200">
+        <p className="text-base font-medium text-gray-900">
+          Please login to view your proposals.
+        </p>
       </div>
     );
   }
+
+  const result = await GetProposalById({
+    path: "myProposals",
+    freelancerId: user.id,
+    page: currentPage,
+    limit: itemsPerPage,
+  });
+
+  const proposalList = Array.isArray(result?.proposals) ? result.proposals : [];
+  const totalPages = result?.totalPages || 1;
+  const totalItems = result?.totalItems || 0;
 
   if (proposalList.length === 0) {
     return (
@@ -85,7 +59,7 @@ export default function MyProposals() {
       <div className="p-6 border-b flex items-center justify-between">
         <h2 className="font-bold text-xl text-gray-800">My Proposals</h2>
         <p className="text-sm text-gray-500">
-          {proposalList.length} টি প্রপোজাল
+          {totalItems} টি প্রপোজাল
         </p>
       </div>
 
@@ -146,18 +120,24 @@ export default function MyProposals() {
                 </td>
 
                 <td className="px-6 py-5 text-right">
-                  <button
-                    onClick={() => handelDelete(p._id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
+                  <ProposalActions proposalId={p._id} />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <div className="p-4 border-t">
+        <PaginationControlled
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+        />
+      </div>
     </div>
   );
-}
+};
+
+export default MyProposals;

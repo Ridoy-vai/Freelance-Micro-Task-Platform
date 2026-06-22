@@ -20,3 +20,50 @@ export const UpdateFreelancerProfile = async (id, payload) => {
     });
     return response.json();
 };
+
+export const GetFreelancerTransactions = async ({ freelancerId, page = 1, limit = 10 }) => {
+    try {
+        const res = await fetch(
+            `${API_URL}/myFreelancerTransactions/${freelancerId}?page=${page}&limit=${limit}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                cache: "no-store",
+            }
+        );
+
+        if (!res.ok) {
+            console.error("GetFreelancerTransactions failed:", res.status);
+            return { transactions: [], totalItems: 0, totalPages: 1, currentPage: page };
+        }
+
+        return res.json();
+    } catch (error) {
+        console.error("GetFreelancerTransactions error:", error);
+        return { transactions: [], totalItems: 0, totalPages: 1, currentPage: page };
+    }
+};
+
+export const IncrementSubmissionCount = async (freelancerId) => {
+    try {
+        const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/users/${freelancerId}/increment-submission`,
+            {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+            }
+        );
+
+        if (!res.ok) {
+            console.error("IncrementSubmissionCount failed:", res.status);
+            return null;
+        }
+
+        return res.json();
+    } catch (error) {
+        console.error("IncrementSubmissionCount error:", error);
+        return null;
+    }
+};

@@ -1,6 +1,6 @@
-import FreelancerCard from '@/ClientActions/FreelancerCard';
+import FreelancerCard from '@/Components/FreelancerCard';
 import FreelancerFilters from '@/Components/FreelancerFilters';
-// import FreelancerFilters from '@/ClientActions/FreelancerFilters';
+import { PaginationControlled } from '@/Components/PaginationControlled';
 import React from 'react';
 
 const BrowseFreelancers = async ({ searchParams }) => {
@@ -8,17 +8,23 @@ const BrowseFreelancers = async ({ searchParams }) => {
     const search = params?.search || "";
     const minBudgetFrom = params?.minBudgetFrom || "";
     const minBudgetTo = params?.minBudgetTo || "";
+    const page = Number(params?.page) || 1;
+    const limit = 9; // grid 3 column hisebe 9 valo lagbe, change korte parba
 
     const query = new URLSearchParams();
     if (search) query.append("search", search);
     if (minBudgetFrom) query.append("minBudgetFrom", minBudgetFrom);
     if (minBudgetTo) query.append("minBudgetTo", minBudgetTo);
+    query.append("page", page);
+    query.append("limit", limit);
 
     const res = await fetch(
         `http://localhost:5000/freelancers?${query.toString()}`,
         { cache: "no-store" }
     );
-    const FREELANCERS = res.ok ? await res.json() : [];
+    const data = res.ok ? await res.json() : { freelancers: [], totalItems: 0, totalPages: 1 };
+
+    const FREELANCERS = data.freelancers || [];
 
     return (
         <section className="bg-ink py-20 sm:py-24">
@@ -33,11 +39,10 @@ const BrowseFreelancers = async ({ searchParams }) => {
                         </h2>
                     </div>
                     <button className="text-sm font-semibold text-paper/60 transition-colors hover:text-signal">
-                        Total freelancers : {FREELANCERS.length}
+                        Total freelancers : {data.totalItems}
                     </button>
                 </div>
 
-                {/* Search + Budget Range Filter */}
                 <FreelancerFilters
                     defaultSearch={search}
                     defaultMinBudgetFrom={minBudgetFrom}
@@ -54,6 +59,15 @@ const BrowseFreelancers = async ({ searchParams }) => {
                             কোনো freelancer পাওয়া যায়নি।
                         </p>
                     )}
+                </div>
+
+                <div className="mt-10">
+                    <PaginationControlled
+                        currentPage={data.currentPage}
+                        totalPages={data.totalPages}
+                        totalItems={data.totalItems}
+                        itemsPerPage={data.itemsPerPage}
+                    />
                 </div>
             </div>
         </section>

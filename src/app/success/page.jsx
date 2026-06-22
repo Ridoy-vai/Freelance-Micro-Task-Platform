@@ -59,6 +59,7 @@ async function savePaymentRecord(sessionId, metadata, customerEmail) {
         ProposedId: metadata.ProposedId,
         price: metadata.price,
         title: metadata.title,
+        FreelancerId:metadata.FreelancerId
       }),
     })
     const result = await res.json()
@@ -89,7 +90,7 @@ export default async function Success({ searchParams }) {
   }
 
   if (status === 'complete') {
-    const { title, Freelancer, price, ProposedId } = metadata
+    const { title, Freelancer, price, ProposedId,FreelancerId } = metadata
 
     // Payment confirmed -> mark proposal as accepted + task as booked
     await acceptProposalAfterPayment(ProposedId)

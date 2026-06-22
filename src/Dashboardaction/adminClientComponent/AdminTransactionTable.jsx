@@ -36,7 +36,12 @@ const AdminTransactionTable = ({ transactions, currentPage, totalPages, totalIte
     <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
       <div className="p-4 border-b flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-800">Transactions</h2>
-        <p className="text-sm text-gray-500">{totalItems} টি transaction</p>
+        <div className="text-right">
+          <p className="text-sm text-gray-500">{totalItems} টি transaction</p>
+          <p className="text-sm font-semibold text-green-600">
+            এই পেজের মোট: ${totalRevenue.toLocaleString()}
+          </p>
+        </div>
       </div>
 
       {transactions.length > 0 ? (
@@ -96,18 +101,6 @@ const AdminTransactionTable = ({ transactions, currentPage, totalPages, totalIte
                   </tr>
                 ))}
               </tbody>
-
-              <tfoot>
-                <tr className="bg-gray-50 border-t">
-                  <td colSpan="3" className="p-4 font-semibold text-right text-gray-700">
-                    এই পেজের মোট
-                  </td>
-                  <td className="p-4 font-bold text-green-600">
-                    ${totalRevenue.toLocaleString()}
-                  </td>
-                  <td colSpan="2"></td>
-                </tr>
-              </tfoot>
             </table>
           </div>
 

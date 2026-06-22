@@ -111,7 +111,7 @@ export default async function ProfilePage() {
               {isFreelancer && (
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-4 text-sm text-paper/70 sm:justify-start">
                   {user.title && (
-                    <span className="font-medium text-paper">{user.title}</span>
+                    <span className="font-medium text-paper">{user.totalJobsSubmitted}</span>
                   )}
                   {typeof user.hourlyRate !== "undefined" && user.hourlyRate !== null && (
                     <span className="inline-flex items-center gap-1 text-sage">

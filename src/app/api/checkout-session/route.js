@@ -27,8 +27,9 @@ export async function POST(request) {
         const title = formData.get('title')
         const ProposedId = formData.get('ProposedId')
         const Freelancer = formData.get('Freelancer')
+        const FreelancerId = formData.get('FreelancerId')
 
-        console.log({ price, title, ProposedId, Freelancer })
+        console.log({ price, title, ProposedId, Freelancer, })
 
         const session = await stripe.checkout.sessions.create({
             customer_email: client.email,
@@ -50,7 +51,8 @@ export async function POST(request) {
                 Clintemail: client.email,
                 title: title || 'Untitled',
                 Freelancer,
-                ProposedId
+                ProposedId,
+                FreelancerId
             },
             mode: 'payment',
             success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,

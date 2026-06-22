@@ -8,7 +8,7 @@ import {
   ToggleAdminTaskFeature,
 } from "@/ServerActions/admin";
 import { Loader2, Star, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const STATUS_OPTIONS = ["open", "booked", "submited"];
 
@@ -16,6 +16,11 @@ const AdminTaskTable = ({ tasks: initialTasks, currentPage, totalPages, totalIte
   const [tasks, setTasks] = useState(initialTasks);
   const [actionId, setActionId] = useState(null);
   const [taskToDelete, setTaskToDelete] = useState(null);
+
+  // 👇 eta add koro — page change hole prop er sathe local state sync hobe
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, [initialTasks]);
 
   const handleDelete = async (id) => {
     try {

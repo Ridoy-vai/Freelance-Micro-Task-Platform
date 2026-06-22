@@ -1,65 +1,19 @@
-// src/ClientActions/ManageProposals.jsx
 "use client";
 
 import React, { useState } from "react";
-import { Calendar, CheckCircle, XCircle } from "lucide-react";
+import { Calendar, CheckCircle, XCircle, Loader2 } from "lucide-react";
 
 const ManageProposals = ({ proposals: myproposals = [] }) => {
   const [proposals, setProposals] = useState(myproposals);
+  const [actionId, setActionId] = useState(null);
 
-  // শুধু pending proposals filter করা হচ্ছে
-  const pendingProposals = proposals.filter((p) => p.status === "pending");
-
-  // Accept
-  const handleAccept = async (id) => {
-    try {
-      const res = await fetch(`http://localhost:5000/task/proposals/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "accepted" }),
-      });
-
-      const result = await res.json();
-
-      if (!res.ok) {
-        console.log("Failed to update proposal status:", result.message);
-        return;
-      }
-
-      // UI update
-      setProposals((prev) =>
-        prev.map((p) => (p._id === id ? { ...p, status: "accepted" } : p))
-      );
-    } catch (error) {
-      console.log("Error accepting proposal:", error);
-    }
-
-    try {
-      const res = await fetch(`http://localhost:5000/proposalTaskid/${id}`);
-      const data = await res.json();
-
-      const taskId = data.taskId;
-      console.log("task id in task", taskId);
-
-      const respons = await fetch(
-        `http://localhost:5000/updatetaskstatus/${taskId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: "booked" }),
-        }
-      );
-      const taskstatus = await respons.json();
-
-      console.log("resul update task", taskstatus);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // Backend already status: "pending" diye filter kore dicche, tai extra filter lagbe na
 
   // Reject
   const handleReject = async (id) => {
     try {
+      setActionId(id);
+
       const res = await fetch(`http://localhost:5000/task/proposals/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -73,14 +27,14 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
         return;
       }
 
-      // UI update
-      setProposals((prev) =>
-        prev.map((p) => (p._id === id ? { ...p, status: "rejected" } : p))
-      );
+      // UI theke instant baad dewa
+      setProposals((prev) => prev.filter((p) => p._id !== id));
 
       console.log("Rejected successfully:", result);
     } catch (error) {
       console.log("Error rejecting proposal:", error);
+    } finally {
+      setActionId(null);
     }
   };
 
@@ -117,8 +71,8 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
           </thead>
 
           <tbody>
-            {pendingProposals.length > 0 ? (
-              pendingProposals.map((p) => (
+            {proposals.length > 0 ? (
+              proposals.map((p) => (
                 <tr
                   key={p._id}
                   className="border-b hover:bg-gray-50 transition"
@@ -189,13 +143,14 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
                       <form action={'/api/checkout-session'} method="POST">
                         <input type="hidden" name="price" value={p.proposedBudget} />
                         <input type="hidden" name="Freelancer" value={p.Freelancer} />
+                        <input type="hidden" name="FreelancerId" value={p.FreelancerId} />
                         <input type="hidden" name="title" value={p.title} />
                         <input type="hidden" name="ProposedId" value={p._id} />
 
                         <button
                           type="submit"
-                          // onClick={() => handleAccept(p._id)}
-                          className="text-green-600 hover:bg-green-50 p-2 rounded-lg transition"
+                          disabled={actionId === p._id}
+                          className="text-green-600 hover:bg-green-50 p-2 rounded-lg transition disabled:opacity-50"
                         >
                           <CheckCircle size={18} />
                         </button>
@@ -204,9 +159,14 @@ const ManageProposals = ({ proposals: myproposals = [] }) => {
                       {/* Reject Button */}
                       <button
                         onClick={() => handleReject(p._id)}
-                        className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition"
+                        disabled={actionId === p._id}
+                        className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition disabled:opacity-50"
                       >
-                        <XCircle size={18} />
+                        {actionId === p._id ? (
+                          <Loader2 size={18} className="animate-spin" />
+                        ) : (
+                          <XCircle size={18} />
+                        )}
                       </button>
                     </div>
                   </td>

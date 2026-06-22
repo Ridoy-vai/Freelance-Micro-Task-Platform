@@ -1,4 +1,4 @@
-import TaskCard from '@/ClientActions/TaskCard';
+import TaskCard from '@/Components/TaskCard';
 import { PaginationControlled } from '@/Components/PaginationControlled';
 import SearchAndFilter from '@/Components/SearchAndFilter';
 // import PaginationControlled from '@/Components/PaginationControlled';

@@ -1,149 +1,105 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { WithForm } from "@/modals/freelancerSubmissionModal";
-// import { GetProposalById, updateProposalStatus } from "@/ServerActions/proposal";
-import { authClient } from "@/lib/auth-client";
-import { GetProposalById, updateProposalStatus } from "@/ServerActions/proposal";
+import { PaginationControlled } from "@/Components/PaginationControlled";
+import ActiveProjectActions from "@/Dashboardaction/freelancercomponent/ActiveProjectActions";
+import { auth } from "@/lib/auth";
+import { GetActiveProposals } from "@/ServerActions/proposal";
+import { headers } from "next/headers";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const MyActiveProjects = async ({ searchParams }) => {
+    const params = await searchParams;
+    const currentPage = Number(params?.page) || 1;
+    const itemsPerPage = 10;
 
-export default function MyActiveProjects() {
-  const { data: session, isPending } = authClient.useSession();
-  const user = session?.user;
-  const router = useRouter();
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
 
-  const [localProposals, setLocalProposals] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [submittingId, setSubmittingId] = useState(null);
+    const user = session?.user;
 
-  useEffect(() => {
-    if (isPending) return;
     if (!user) {
-      setLoading(false);
-      return;
+        return (
+            <div className="bg-white p-8 rounded-2xl border text-center text-gray-400">
+                Please login to view your active proposals.
+            </div>
+        );
     }
 
-    const fetchProposals = async () => {
-      try {
-        const freelancerId = user.id;
-        const result = await GetProposalById({ path: "myProposals", freelancerId });
-        setLocalProposals(result || []);
-      } catch (error) {
-        console.error("Fetch Proposals Error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const result = await GetActiveProposals({
+        freelancerId: user.id,
+        page: currentPage,
+        limit: itemsPerPage,
+    });
 
-    fetchProposals();
-  }, [isPending, user]);
+    const activeProposals = Array.isArray(result?.proposals) ? result.proposals : [];
+    const totalPages = result?.totalPages || 1;
+    const totalItems = result?.totalItems || 0;
 
-  const activeProposals = localProposals.filter((p) => p.status === "accepted");
-
-  const markAsSubmitted = async (id, extraData = {}) => {
-    setSubmittingId(id);
-    try {
-      await updateProposalStatus(
-        id,
-        "submited",
-        extraData.submitionLink,
-        extraData.submitionMessage
-      );
-
-      const res = await fetch(`${API_URL}/updatetaskstatus/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          status: "submited",
-          isSubmit: true,
-          ...extraData,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Task status update failed");
-      }
-
-      await res.json();
-
-      setLocalProposals((prev) =>
-        prev.map((p) => (p._id === id ? { ...p, status: "submited" } : p))
-      );
-
-      router.refresh();
-    } catch (error) {
-      console.log("submit failed:", error);
-      alert("Submit করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।");
-    } finally {
-      setSubmittingId(null);
+    if (activeProposals.length === 0) {
+        return (
+            <div className="bg-white p-8 rounded-2xl border text-center text-gray-400">
+                কোনো active proposal নেই।
+            </div>
+        );
     }
-  };
 
-  if (isPending || loading) {
     return (
-      <div className="bg-white p-8 rounded-2xl border text-center text-gray-400">
-        Loading...
-      </div>
-    );
-  }
+        <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+            <div className="p-6 border-b flex items-center justify-between">
+                <h2 className="font-bold text-xl text-gray-800">Active Proposals</h2>
+                <p className="text-sm text-gray-500">
+                    {totalItems} টি active proposal
+                </p>
+            </div>
+            <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                    <thead>
+                        <tr className="bg-gray-50 border-b">
+                            <th className="px-6 py-4">Project</th>
+                            <th className="px-6 py-4">Client</th>
+                            <th className="px-6 py-4">Budget</th>
+                            <th className="px-6 py-4">Days</th>
+                            <th className="px-6 py-4">Status</th>
+                            <th className="px-6 py-4 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {activeProposals.map((p) => (
+                            <tr key={p._id} className="hover:bg-gray-50">
+                                <td className="px-6 py-5">
+                                    <p className="font-semibold">{p.title || "Untitled Project"}</p>
+                                    <p className="text-xs text-gray-500">{p.message}</p>
+                                </td>
+                                <td className="px-6 py-5">
+                                    <p className="font-medium">{p.clientname || "Unknown"}</p>
+                                    <p className="text-xs text-gray-500">{p.clientemail || "No Email"}</p>
+                                </td>
+                                <td className="px-6 py-5 font-bold">${p.proposedBudget}</td>
+                                <td className="px-6 py-5">{p.estimatedDays} Days</td>
+                                <td className="px-6 py-5">
+                                    <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                                        Active
+                                    </span>
+                                </td>
+                                <td className="px-6 py-5 text-right">
+                                    <div className="flex items-center gap-2 justify-end">
+                                        <ActiveProjectActions proposalId={p._id} freelancerId={p.FreelancerId} />
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
-  if (activeProposals.length === 0) {
-    return (
-      <div className="bg-white p-8 rounded-2xl border text-center text-gray-400">
-        কোনো active proposal নেই।
-      </div>
+            <div className="p-4 border-t">
+                <PaginationControlled
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={totalItems}
+                    itemsPerPage={itemsPerPage}
+                />
+            </div>
+        </div>
     );
-  }
+};
 
-  return (
-    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-      <div className="p-6 border-b flex items-center justify-between">
-        <h2 className="font-bold text-xl text-gray-800">Active Proposals</h2>
-        <p className="text-sm text-gray-500">
-          {activeProposals.length} টি active proposal
-        </p>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="bg-gray-50 border-b">
-              <th className="px-6 py-4">Project</th>
-              <th className="px-6 py-4">Client</th>
-              <th className="px-6 py-4">Budget</th>
-              <th className="px-6 py-4">Days</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4 text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {activeProposals.map((p) => (
-              <tr key={p._id} className="hover:bg-gray-50">
-                <td className="px-6 py-5">
-                  <p className="font-semibold">{p.title || "Untitled Project"}</p>
-                  <p className="text-xs text-gray-500">{p.message}</p>
-                </td>
-                <td className="px-6 py-5">
-                  <p className="font-medium">{p.clientname || "Unknown"}</p>
-                  <p className="text-xs text-gray-500">{p.clientemail || "No Email"}</p>
-                </td>
-                <td className="px-6 py-5 font-bold">${p.proposedBudget}</td>
-                <td className="px-6 py-5">{p.estimatedDays} Days</td>
-                <td className="px-6 py-5">
-                  <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                    Active
-                  </span>
-                </td>
-                <td className="px-6 py-5 text-right">
-                  <div className="flex items-center gap-2 justify-end">
-                    <WithForm id={p._id} onSubmitSuccess={markAsSubmitted} />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
+export default MyActiveProjects;

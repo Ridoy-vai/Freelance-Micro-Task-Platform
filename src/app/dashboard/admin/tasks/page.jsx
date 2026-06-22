@@ -7,7 +7,6 @@ const AdminTasksPage = async ({ searchParams }) => {
 
     const data = await GetAllAdminTasks(currentPage);
     const tasks = data?.tasks || [];
-    console.log("RAW BACKEND RESPONSE:", data);
     const totalPages = data?.totalPages || 1;
     const totalItems = data?.total || 0;
 

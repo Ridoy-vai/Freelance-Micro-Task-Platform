@@ -4,12 +4,17 @@ import { PaginationControlled } from "@/Components/PaginationControlled";
 import ConfirmBlockDialog from "@/modals/ConfirmBlockDialog";
 import { ToggleUserBlock } from "@/ServerActions/admin";
 import { Loader2, ShieldBan, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const AdminUserTable = ({ users: initialUsers, currentPage, totalPages, totalItems }) => {
   const [users, setUsers] = useState(initialUsers);
   const [actionId, setActionId] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  // 👇 eta add koro
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
 
   const handleToggleBlock = async (id, currentStatus) => {
     const nextStatus = !currentStatus;
@@ -68,11 +73,10 @@ const AdminUserTable = ({ users: initialUsers, currentPage, totalPages, totalIte
                   </td>
                   <td className="p-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        u.isBlocked
+                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${u.isBlocked
                           ? "bg-red-100 text-red-600"
                           : "bg-green-100 text-green-600"
-                      }`}
+                        }`}
                     >
                       {u.isBlocked ? "Blocked" : "Active"}
                     </span>
@@ -82,11 +86,10 @@ const AdminUserTable = ({ users: initialUsers, currentPage, totalPages, totalIte
                       <button
                         onClick={() => setSelectedUser(u)}
                         disabled={actionId === u._id}
-                        className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed ${
-                          u.isBlocked
+                        className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed ${u.isBlocked
                             ? "bg-green-50 text-green-600 hover:bg-green-100"
                             : "bg-red-50 text-red-500 hover:bg-red-100"
-                        }`}
+                          }`}
                       >
                         {actionId === u._id ? (
                           <Loader2 size={14} className="animate-spin" />

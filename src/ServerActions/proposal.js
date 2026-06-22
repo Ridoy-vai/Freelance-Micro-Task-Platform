@@ -16,16 +16,54 @@ export const Postproposals = async ({ path, proposal }) => {
     });
 };
 
-export const GetProposalById = async ({ path, freelancerId }) => {
-    const res = await fetch(`${API_URL}/${path}/${freelancerId}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        cache: "no-store",
-    });
-    return res.json()
+export const GetProposalById = async ({ path, freelancerId, page = 1, limit = 2 }) => {
+    try {
+        const res = await fetch(
+            `${API_URL}/${path}/${freelancerId}?page=${page}&limit=${limit}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                cache: "no-store",
+            }
+        );
 
+        if (!res.ok) {
+            console.error("GetProposalById failed:", res.status);
+            return { proposals: [], totalItems: 0, totalPages: 1, currentPage: page };
+        }
+
+        return res.json();
+    } catch (error) {
+        console.error("GetProposalById error:", error);
+        return { proposals: [], totalItems: 0, totalPages: 1, currentPage: page };
+    }
+};
+
+export const GetActiveProposals = async ({ freelancerId, page = 1, limit = 10 }) => {
+    try {
+        const res = await fetch(
+            `${API_URL}/myActiveProposals/${freelancerId}?page=${page}&limit=${limit}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                cache: "no-store",
+            }
+        );
+
+        if (!res.ok) {
+            console.error("GetActiveProposals failed:", res.status);
+            return { proposals: [], totalItems: 0, totalPages: 1, currentPage: page };
+        }
+
+        return res.json();
+    } catch (error) {
+        console.error("GetActiveProposals error:", error);
+        return { proposals: [], totalItems: 0, totalPages: 1, currentPage: page };
+    }
 };
 
 export const updateProposalStatus = async (id, status, submitionLink, submitionMessage) => {
@@ -60,4 +98,52 @@ export const deleteProposal = async (id) => {
     console.log("proposal.js delete:", result);
 
     return result;
+};
+
+export const GetProposalDetails = async (proposalId) => {
+    try {
+        const res = await fetch(`${API_URL}/proposal-details/${proposalId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cache: "no-store",
+        });
+
+        if (!res.ok) {
+            console.error("GetProposalDetails failed:", res.status);
+            return null;
+        }
+
+        return res.json();
+    } catch (error) {
+        console.error("GetProposalDetails error:", error);
+        return null;
+    }
+};
+
+
+export const GetPendingProposalsByClient = async ({ clientId, page = 1, limit = 10 }) => {
+    try {
+        const res = await fetch(
+            `${API_URL}/pendingProposalsByClient/${clientId}?page=${page}&limit=${limit}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                cache: "no-store",
+            }
+        );
+
+        if (!res.ok) {
+            console.error("GetPendingProposalsByClient failed:", res.status);
+            return { proposals: [], totalItems: 0, totalPages: 1, currentPage: page };
+        }
+
+        return res.json();
+    } catch (error) {
+        console.error("GetPendingProposalsByClient error:", error);
+        return { proposals: [], totalItems: 0, totalPages: 1, currentPage: page };
+    }
 };

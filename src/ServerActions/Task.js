@@ -71,15 +71,29 @@ export const GetAllTasks = async (path, limit, skip, search = "", category = "")
 
 
 
-export const GetTasksByUser = async (path, clientId) => {
-    const response = await fetch(`${API_URL}/${path}/${clientId}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${user?.token}`
+export const GetTasksByUser = async (path, clientId, page = 1, limit = 10) => {
+    try {
+        const response = await fetch(
+            `${API_URL}/${path}/${clientId}?page=${page}&limit=${limit}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                cache: "no-store",
+            }
+        );
+
+        if (!response.ok) {
+            console.error("GetTasksByUser failed:", response.status);
+            return { tasks: [], totalItems: 0, totalPages: 1, currentPage: page };
         }
-    });
-    return response.json();
+
+        return response.json();
+    } catch (error) {
+        console.error("GetTasksByUser error:", error);
+        return { tasks: [], totalItems: 0, totalPages: 1, currentPage: page };
+    }
 };
 
 export const GetTasksById = async (path, id) => {
