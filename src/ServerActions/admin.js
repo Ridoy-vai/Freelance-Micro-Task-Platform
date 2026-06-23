@@ -2,12 +2,12 @@ import { authClient } from "@/lib/auth-client";
 
 
 // সব client + freelancer user আনার জন্য
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 
 
 export const GetAllUsers = async (page = 1, limite = 8) => {
-    const response = await fetch(`${API_URL}/admin/users?page=${page}&limite=${limite}`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/users?page=${page}&limite=${limite}`, {
         method: "GET",
         cache: "no-store",
     });
@@ -21,7 +21,7 @@ export const GetAllUsers = async (page = 1, limite = 8) => {
 
 // Block / Unblock টগল করার জন্য
 export const ToggleUserBlock = async (id, isBlocked) => {
-    const response = await fetch(`${API_URL}/admin/users/${id}/block`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/users/${id}/block`, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export const ToggleUserBlock = async (id, isBlocked) => {
 // সব task আনার জন্য
 export const GetAllAdminTasks = async (page = 1, limite = 3) => {
     const { data: token } = await authClient.token();
-    const response = await fetch(`${API_URL}/admin/tasks?page=${page}&limite=${limite}`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/tasks?page=${page}&limite=${limite}`, {
         method: "GET",
         cache: "no-store",
         headers: {
@@ -55,7 +55,7 @@ export const GetAllAdminTasks = async (page = 1, limite = 3) => {
 
 export const GetAllTransactions = async (page = 1, limite = 10) => {
     const { data: token } = await authClient.token();
-    const response = await fetch(`${API_URL}/admin/transactions?page=${page}&limite=${limite}`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/transactions?page=${page}&limite=${limite}`, {
         method: "GET",
         cache: "no-store",
         headers: {
@@ -71,7 +71,7 @@ export const GetAllTransactions = async (page = 1, limite = 10) => {
 
 // Task delete করার জন্য
 export const DeleteAdminTask = async (id) => {
-    const response = await fetch(`${API_URL}/admin/tasks/${id}`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/tasks/${id}`, {
         method: "DELETE",
     });
     if (!response.ok) {
@@ -83,7 +83,7 @@ export const DeleteAdminTask = async (id) => {
 
 // Status পরিবর্তন করার জন্য
 export const UpdateAdminTaskStatus = async (id, status) => {
-    const response = await fetch(`${API_URL}/admin/tasks/${id}/status`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/tasks/${id}/status`, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
@@ -99,7 +99,7 @@ export const UpdateAdminTaskStatus = async (id, status) => {
 
 // Feature / Unfeature টগল করার জন্য
 export const ToggleAdminTaskFeature = async (id, isFeatured) => {
-    const response = await fetch(`${API_URL}/admin/tasks/${id}/feature`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/tasks/${id}/feature`, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
