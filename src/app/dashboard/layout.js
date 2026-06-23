@@ -17,7 +17,7 @@ const menuConfig = {
     { id: "transactions", name: "Finance", icon: DollarSign, href: "/dashboard/admin/transactions" },
   ],
   client: [
-    { id: "overview", name: "Dashboard", icon: LayoutDashboard, href: "/dashboard/client/DashboardHome" },
+    { id: "overview", name: "Dashboard", icon: LayoutDashboard, href: "/dashboard/client" },
     { id: "post", name: "Post Task", icon: Plus, href: "/dashboard/client/PostTaskForm" },
     { id: "tasks", name: "My Tasks", icon: ClipboardList, href: "/dashboard/client/MyTasks" },
     { id: "proposals", name: "Proposals", icon: FileText, href: "/dashboard/client/manazeproposals" },
