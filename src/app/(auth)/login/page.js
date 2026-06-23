@@ -1,22 +1,11 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { GetUserById } from "@/ServerActions/Freelancer"; // তোমার আসল path অনুযায়ী বদলে নিও
+import { GetUserById } from "@/ServerActions/Freelancer";
 import { Eye, EyeOff, Sparkles, TriangleAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-
-/**
- * app/login/page.jsx
- *
- * Login form built with react-hook-form.
- * - mode: "onChange" keeps formState.isValid in sync so the submit
- *   button is disabled until both fields are filled in correctly.
- * - Password field has a show/hide toggle.
- * - On success, checks isBlocked via GetUserById; blocked users get
- *   signed out and redirected to /blocked, everyone else goes to /.
- */
 
 const inputClass =
     "w-full rounded-xl border border-paper/10 bg-paper/[0.04] px-4 py-3 text-sm text-paper placeholder:text-paper/30 transition-colors duration-150 focus:border-signal focus:bg-paper/[0.06] focus:outline-none focus:ring-2 focus:ring-signal/20";
@@ -47,12 +36,17 @@ export default function LoginPage() {
         setError("");
         setIsSubmitting(true);
 
+        // ✅ callback URL added (only this part added)
+        const callbackUrl =
+            typeof window !== "undefined"
+                ? new URLSearchParams(window.location.search).get("callbackUrl")
+                : null;
+
         try {
             const { data, error: loginError } = await authClient.signIn.email({
                 email: formValues.email,
                 password: formValues.password,
                 rememberMe: true,
-                // callbackURL: "/",
             });
 
             if (loginError) {
@@ -61,24 +55,23 @@ export default function LoginPage() {
                 return;
             }
 
-            // লগইন সফল হলে user-টি ব্লক কিনা চেক করা হচ্ছে
             const userId = data?.user?.id;
 
             if (userId) {
                 const userDoc = await GetUserById(userId);
 
                 if (userDoc?.isBlocked) {
-                    // ব্লক হলে session বাতিল করে /blocked-এ পাঠানো হচ্ছে
                     await authClient.signOut();
                     router.push("/blocked");
                     return;
                 } else {
-                    router.push("/");
+                    router.push(callbackUrl || "/"); // ✅ changed
                     return;
                 }
             }
 
-            router.push("/");
+            router.push(callbackUrl || "/"); // ✅ changed
+
         } catch (err) {
             console.error(err);
             setError("কিছু একটা সমস্যা হয়েছে, আবার চেষ্টা করুন।");
@@ -88,10 +81,9 @@ export default function LoginPage() {
     };
 
     const handleGoogleLogin = () => {
-        // TODO: replace with Better Auth
-        // await authClient.signIn.social({ provider: "google", callbackURL: "/auth/redirect" });
         console.log("Google login clicked");
     };
+
 
     return (
         <section className="relative min-h-screen overflow-hidden bg-ink px-4 py-12 sm:px-6 sm:py-16">

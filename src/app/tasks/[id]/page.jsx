@@ -6,8 +6,6 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 // import ProposalForm from "./ProposalForm";
 
-export const dynamic = 'force-dynamic';
-
 function formatDate(dateStr) {
   if (!dateStr) return "—";
   return new Date(dateStr).toLocaleDateString("en-US", {

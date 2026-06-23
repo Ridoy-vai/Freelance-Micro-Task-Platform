@@ -11,6 +11,8 @@ import {
   Tag,
 } from "lucide-react";
 import RatingWidget from "@/Components/RatingWidget";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -18,6 +20,11 @@ export const dynamic = "force-dynamic";
 
 export default async function FreelancerProfilePage({ params }) {
   const { id } = await params;
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const user = session?.user;
 
   const res = await fetch(`${API_URL}/users/${id}`, {
     cache: "no-store",
@@ -57,7 +64,7 @@ export default async function FreelancerProfilePage({ params }) {
     },
     {
       label: "Rating",
-      value: "5.0",
+      value: freelancer.rating,
       icon: Star,
       color: "text-amber-500",
       bg: "bg-amber-50",
@@ -68,10 +75,10 @@ export default async function FreelancerProfilePage({ params }) {
     <div className="min-h-screen bg-slate-50/50 py-12">
       <div className="mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          
+
           {/* Main Content (Left) */}
           <div className="space-y-6 lg:col-span-8">
-            
+
             {/* Header Card */}
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md">
               <div className="h-32 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
@@ -178,8 +185,8 @@ export default async function FreelancerProfilePage({ params }) {
           {/* Sidebar (Right) */}
           <div className="lg:col-span-4">
             <div className="sticky top-6 space-y-6">
-              <RatingWidget freelancerId={id} />
-              
+              <RatingWidget freelancerId={id} user={user} />
+
               {/* Additional Info Box */}
               <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-white">
                 <h3 className="text-lg font-bold">Ready to start?</h3>
