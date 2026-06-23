@@ -23,7 +23,7 @@ const menuConfig = {
     { id: "proposals", name: "Proposals", icon: FileText, href: "/dashboard/client/manazeproposals" },
   ],
   freelancer: [
-    { id: "overview", name: "Overview", icon: LayoutDashboard, href: "/dashboard/freelancer/overview" },
+    { id: "overview", name: "Overview", icon: LayoutDashboard, href: "/dashboard/freelancer" },
     { id: "browse", name: "Browse", icon: Briefcase, href: "/dashboard/freelancer/browse" },
     { id: "active", name: "active", icon: Briefcase, href: "/dashboard/freelancer/activeprojects" },
     { id: "proposals", name: "My Proposals", icon: Send, href: "/dashboard/freelancer/myproposals" },

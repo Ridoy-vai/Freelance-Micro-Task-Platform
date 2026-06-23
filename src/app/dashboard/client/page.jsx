@@ -4,7 +4,8 @@ import { headers } from "next/headers";
 import { GetTasksByUser } from "@/ServerActions/Task";
 // import DashboardHome from "./page";
 import { redirect } from "next/navigation"; // redirect ইম্পোর্ট করুন
-import DashboardHome from "@/Dashboardoverview/page";
+import DashboardHome from "@/Dashboardoverview/DashboardHome";
+// import DashboardHome from "@/app/dashboard/freelancer/overview/page";
 
 const ClientDashboardPage = async () => {
     const session = await auth.api.getSession({ headers: await headers() });
