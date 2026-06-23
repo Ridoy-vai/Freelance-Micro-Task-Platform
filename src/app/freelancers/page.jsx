@@ -3,6 +3,8 @@ import FreelancerFilters from '@/Components/FreelancerFilters';
 import { PaginationControlled } from '@/Components/PaginationControlled';
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 const BrowseFreelancers = async ({ searchParams }) => {
     const params = await searchParams;
     const search = params?.search || "";

@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 import { Briefcase, Zap, ArrowRight } from "lucide-react"; // Added modern icons
 import Link from "next/link";
 
+export const dynamic = 'force-dynamic';
+
 const MyActiveProjects = async ({ searchParams }) => {
   const params = await searchParams;
   const currentPage = Number(params?.page) || 1;

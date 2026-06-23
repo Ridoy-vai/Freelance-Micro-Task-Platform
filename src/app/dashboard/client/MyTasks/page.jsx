@@ -4,6 +4,8 @@ import { Calendar, DollarSign } from 'lucide-react';
 import TaskActions from "@/Dashboardaction/clientcomponent/TaskActions";
 import { PaginationControlled } from "@/Components/PaginationControlled";
 import { GetTasksByUser } from "@/ServerActions/Task";
+
+export const dynamic = 'force-dynamic';
 // import { clienttaskeadit } from "@/modals/clienttaskeadit";
 
 const MyTasksPage = async ({ searchParams }) => {

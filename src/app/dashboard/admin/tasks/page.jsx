@@ -1,6 +1,8 @@
 import AdminTaskTable from "@/Dashboardaction/adminClientComponent/AdminTaskTable";
 import { GetAllAdminTasks } from "@/ServerActions/admin";
 
+export const dynamic = 'force-dynamic';
+
 const AdminTasksPage = async ({ searchParams }) => {
     const params = await searchParams;
     const currentPage = Number(params?.page) || 1;

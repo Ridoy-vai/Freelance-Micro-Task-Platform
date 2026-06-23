@@ -1,6 +1,8 @@
 import AdminUserTable from "@/Dashboardaction/adminClientComponent/AdminUserTable";
 import { GetAllUsers } from "@/ServerActions/admin";
 
+export const dynamic = 'force-dynamic';
+
 const AdminUsersPage = async ({ searchParams }) => {
   const params = await searchParams;
   const currentPage = Number(params?.page) || 1;

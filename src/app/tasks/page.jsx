@@ -6,6 +6,8 @@ import { GetAllTasks } from '@/ServerActions/Task';
 import { ClipboardList } from 'lucide-react';
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 const TASKS_PER_PAGE = 9;
 
 const TaskPage = async ({ searchParams }) => {

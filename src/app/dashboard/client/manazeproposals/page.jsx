@@ -4,6 +4,8 @@ import { GetPendingProposalsByClient } from '@/ServerActions/proposal';
 import { headers } from 'next/headers';
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 const page = async () => {
     const session = await auth.api.getSession({
         headers: await headers(),

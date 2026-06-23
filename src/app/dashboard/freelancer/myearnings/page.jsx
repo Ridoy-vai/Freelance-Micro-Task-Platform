@@ -4,6 +4,8 @@ import { Receipt } from "lucide-react";
 import { GetFreelancerTransactions } from "@/ServerActions/Freelancer";
 import { PaginationControlled } from "@/Components/PaginationControlled";
 
+export const dynamic = 'force-dynamic';
+
 const page = async ({ searchParams }) => {
     const params = await searchParams;
     const currentPage = Number(params?.page) || 1;

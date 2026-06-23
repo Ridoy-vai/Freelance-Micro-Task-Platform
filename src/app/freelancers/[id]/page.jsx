@@ -5,11 +5,12 @@ import { Star, Briefcase, CheckCircle2, Mail } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
 
-  const res = await fetch(`${NEXT_PUBLIC_API_URL}/users/${id}`, { cache: "no-store" });
+  const res = await fetch(`${API_URL}/users/${id}`, { cache: "no-store" });
 
   if (!res.ok) {
     return null;
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }) {
 
 export default async function FreelancerProfilePage({ params }) {
   const { id } = await params;
-  const res = await fetch(`${NEXT_PUBLIC_API_URL}/users/${id}`, { cache: "no-store" });
+  const res = await fetch(`${API_URL}/users/${id}`, { cache: "no-store" });
 
   if (!res.ok) {
     return null;

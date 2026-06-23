@@ -6,6 +6,8 @@ import ProposalActions from "@/Dashboardaction/freelancercomponent/ProposalActio
 import { PaginationControlled } from "@/Components/PaginationControlled";
 import Link from "next/link";
 
+export const dynamic = 'force-dynamic';
+
 const MyProposals = async ({ searchParams }) => {
   const params = await searchParams;
   const currentPage = Number(params?.page) || 1;

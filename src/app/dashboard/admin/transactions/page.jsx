@@ -2,6 +2,8 @@
 import AdminTransactionTable from "@/Dashboardaction/adminClientComponent/AdminTransactionTable";
 import { GetAllTransactions } from "@/ServerActions/admin";
 
+export const dynamic = 'force-dynamic';
+
 const AdminTransactionsPage = async ({ searchParams }) => {
   const params = await searchParams;
   const currentPage = Number(params?.page) || 1;
