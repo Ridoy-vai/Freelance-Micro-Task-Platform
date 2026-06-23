@@ -23,6 +23,7 @@ export default async function TaskDetailsPage({ params }) {
 
     const { id } = await params;
     let task = await GetTasksById("tasksid", id);
+    console.log(task)
 
     if (!task) {
         return (
@@ -73,7 +74,7 @@ export default async function TaskDetailsPage({ params }) {
                             <div className="flex items-center gap-2">
 
                                 <img
-                                    src={task.companyLogo || "/user.png"}
+                                    src={task.claintimage || "/user.png"}
                                     alt={clientname}
                                     className="h-9 w-9 rounded-full object-cover border border-gray-200"
                                 />
@@ -93,15 +94,35 @@ export default async function TaskDetailsPage({ params }) {
                                         rel="noopener noreferrer"
                                         className="text-xs text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
                                     >
-                                        {task.companyName || "Company Name"}
+                                        {task.companyName || "Not Found Company"}
                                     </a>
                                 </div>
 
                             </div>
-                            <div className="flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1">
-                                <ShieldCheck size={14} className="text-blue-500" />
-                                <span className="text-xs font-medium text-blue-700">
-                                    Verified
+                            <div
+                                className={`flex items-center gap-1 rounded-full px-3 py-1 ${task.companyName && task.companyWebsite
+                                    ? "bg-green-50"
+                                    : "bg-red-50"
+                                    }`}
+                            >
+                                <ShieldCheck
+                                    size={14}
+                                    className={
+                                        task.companyName && task.companyWebsite
+                                            ? "text-green-500"
+                                            : "text-red-500"
+                                    }
+                                />
+
+                                <span
+                                    className={`text-xs font-medium ${task.companyName && task.companyWebsite
+                                        ? "text-green-700"
+                                        : "text-red-700"
+                                        }`}
+                                >
+                                    {task.companyName && task.companyWebsite
+                                        ? "Verified"
+                                        : "Not Verified"}
                                 </span>
                             </div>
 
@@ -152,7 +173,10 @@ export default async function TaskDetailsPage({ params }) {
                                 {description.split("\n").map((para, i) => (
                                     <p
                                         key={i}
-                                        className="text-sm sm:text-base text-gray-600 leading-relaxed bg-white border border-gray-100 rounded-lg p-3"
+                                        className="text-sm sm:text-base text-gray-600 leading-relaxed 
+                 bg-white border border-gray-100 rounded-lg p-1 
+                 break-words whitespace-pre-wrap
+                 max-h-[4.5rem] overflow-y-auto"
                                     >
                                         {para}
                                     </p>

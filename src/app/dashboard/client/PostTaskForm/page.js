@@ -4,8 +4,8 @@ import { authClient } from "@/lib/auth-client";
 import { PostTask } from "@/ServerActions/Task";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { 
-  ClipboardList, DollarSign, Calendar, Tag, 
+import {
+  ClipboardList, DollarSign, Calendar, Tag,
   Sparkles, Send, Info, ChevronDown, CheckCircle2, ArrowRight
 } from "lucide-react";
 import { Button, Dropdown, Label } from "@heroui/react";
@@ -50,7 +50,7 @@ const PostTaskForm = () => {
 
     try {
       setIsSubmitting(true);
-      const taskData = { ...formData, ClientId: user.id, clientname: user.name, clientemail: user.email };
+      const taskData = { ...formData, ClientId: user.id, clientname: user.name, clientemail: user.email, claintimage: user.image, companyWebsite: user.companyWebsite, companyName: user.companyName };
       const result = await PostTask({ path: "tasks", taskData });
       if (result?.error) throw new Error(result.error);
       toast.success("Task Published! 🚀");
@@ -70,9 +70,9 @@ const PostTaskForm = () => {
 
   return (
     <div className="h-screen w-full bg-[#f9fafb] overflow-hidden flex flex-col font-sans p-4 md:p-8">
-      
+
       <div className="max-w-7xl mx-auto w-full h-full flex flex-col">
-        
+
         {/* Header - Balanced */}
         <header className="flex items-center justify-between mb-6 shrink-0">
           <div className="flex items-center gap-4">
@@ -88,11 +88,11 @@ const PostTaskForm = () => {
 
         {/* Main Content Area */}
         <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* Form Side */}
           <form onSubmit={handleSubmit} className="lg:col-span-8 h-full flex flex-col bg-white border border-slate-200 rounded-[2rem] shadow-xl shadow-slate-100/50 overflow-hidden">
             <div className="flex-1 p-8 md:p-10 space-y-6 overflow-y-auto custom-scrollbar">
-              
+
               {/* Task Title */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Project Title</label>
@@ -113,8 +113,8 @@ const PostTaskForm = () => {
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Category</label>
                   <Dropdown>
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       className="w-full justify-between bg-slate-50 border-slate-200 text-sm h-[52px] rounded-xl font-medium text-slate-700 hover:bg-slate-100"
                     >
                       <div className="flex items-center gap-2">
@@ -124,8 +124,8 @@ const PostTaskForm = () => {
                       <ChevronDown size={16} className="text-slate-400" />
                     </Button>
                     <Dropdown.Popover className="min-w-[280px] rounded-2xl shadow-2xl border-slate-100">
-                      <Dropdown.Menu 
-                        selectionMode="single" 
+                      <Dropdown.Menu
+                        selectionMode="single"
                         onAction={(key) => handleCategoryChange(key.toString())}
                         className="p-2"
                       >
@@ -215,7 +215,7 @@ const PostTaskForm = () => {
           <div className="lg:col-span-4 hidden lg:flex flex-col gap-6 h-full overflow-hidden">
             <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white flex flex-col h-full relative overflow-hidden shadow-2xl">
               <Sparkles className="absolute top-6 right-6 text-amber-400 opacity-40 w-8 h-8" />
-              
+
               <div className="mb-10">
                 <h3 className="text-lg font-bold mb-2">Tips for Success</h3>
                 <p className="text-slate-400 text-sm">Follow these steps to get high-quality proposals quickly.</p>
@@ -246,7 +246,7 @@ const PostTaskForm = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-auto bg-white/5 rounded-[1.5rem] p-6 border border-white/10 flex items-start gap-3">
                 <Info size={18} className="text-amber-400 shrink-0" />
                 <p className="text-[11px] text-slate-300 leading-normal font-medium italic">

@@ -38,9 +38,9 @@ const TaskCard = ({ task }) => {
                 {task.category}
               </span>
 
-              <span className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-slate-600">
-                {task.type || "Remote"}
-              </span>
+              {task.type && <span className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                {task?.type}
+              </span>}
             </div>
 
             <div className="flex items-center gap-2">
@@ -81,8 +81,13 @@ const TaskCard = ({ task }) => {
 
           {/* Client */}
           <div className="mt-5 flex items-center gap-3 border-t border-slate-100 pt-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-sm font-bold text-slate-700 transition-all group-hover:border-blue-300 group-hover:bg-blue-50 group-hover:text-blue-600">
-              {task.clientname?.charAt(0)?.toUpperCase()}
+
+            <div className="h-10 w-10 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+              <img
+                src={task.claintimage || "/user.png"}
+                alt={task.clientname}
+                className="h-full w-full object-cover"
+              />
             </div>
 
             <div>
@@ -93,6 +98,7 @@ const TaskCard = ({ task }) => {
                 {task.clientname}
               </p>
             </div>
+
           </div>
 
           {/* Budget & Deadline */}
