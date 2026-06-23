@@ -60,14 +60,14 @@ export default function DashboardLayout({ children }) {
       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-slate-900"></div>
     </div>
   );
-  
+
   const menu = menuConfig[role] || [];
   const theme = themeConfig[role] || themeConfig.client;
 
   return (
-    <div className="h-screen flex flex-col md:flex-row bg-[#F9FAFB] overflow-hidden">
+    <div className="h-screen flex flex-col md:flex-row bg-[#F9FAFB] overflow-hidden max-w-12xl mx-auto">
 
-      {/* --- SMALL DEVICE: TOP NAV --- */}
+      {/*--- SMALL DEVICE: TOP NAV ---*/}
       <div className="md:hidden bg-white border-b z-50">
         <div className="flex items-center justify-between px-4 py-3">
           <span className={`font-black tracking-tighter ${theme.text}`}>HUB.</span>
@@ -75,17 +75,7 @@ export default function DashboardLayout({ children }) {
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
-        {/* Mobile Horizontal Menu */}
-        <div className="flex overflow-x-auto no-scrollbar px-4 pb-2 gap-2">
-          {menu.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link key={item.id} href={item.href} className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-xs font-bold transition-all ${isActive ? `${theme.bg} text-white shadow-md` : "bg-white text-slate-500 border"}`}>
-                <item.icon size={14} /> {item.name}
-              </Link>
-            );
-          })}
-        </div>
+
       </div>
 
       {/* --- MID DEVICE: OVERLAY SIDEBAR (TABLET) --- */}
@@ -132,17 +122,13 @@ export default function DashboardLayout({ children }) {
               <div className="flex items-center gap-3 overflow-hidden">
                 {/* Avatar */}
                 <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-200 border-2 border-white shadow-sm flex items-center justify-center">
-                  {User?.image ? (
-                    <img
-                      src={User.image}
-                      alt="user"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-[10px] font-bold">
-                      {User?.name?.charAt(0)}
-                    </span>
-                  )}
+                  User?.image ? (
+                  <img
+                    src={User.image}
+                    alt="user"
+                    className="w-full h-full object-cover"
+                  />
+                  )
                 </div>
 
                 {/* Text */}
@@ -158,7 +144,10 @@ export default function DashboardLayout({ children }) {
 
               {/* Logout Button */}
               <button
-                onClick={() => console.log("logout")}
+                onClick={async () => {
+                  await authClient.signOut();
+                  window.location.href = "/";
+                }}
                 className="p-2 rounded-xl hover:bg-red-50 transition"
                 title="Logout"
               >

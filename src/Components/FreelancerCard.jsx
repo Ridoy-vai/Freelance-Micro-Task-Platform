@@ -11,7 +11,7 @@ const FreelancerCard = ({ freelancer }) => {
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-paper/10">
                             <img
-                                src={freelancer?.avatar || "/default-avatar.png"}
+                                src={freelancer?.image || "/default-avatar.png"}
                                 alt={"Freelancer Avatar"}
                                 className="h-full w-full rounded-full object-cover"
                             />

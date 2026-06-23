@@ -2,6 +2,7 @@
 
 import { authClient } from "@/lib/auth-client";
 import { Postproposals } from "@/ServerActions/proposal";
+import { Button } from "@heroui/react";
 import { useState } from "react";
 
 export default function ProposalForm({ task }) {
@@ -76,7 +77,7 @@ export default function ProposalForm({ task }) {
                     required
                     value={form.freelancerEmail}
                     onChange={handleChange}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-paper placeholder:text-paper/30 focus:border-signal/50 focus:outline-none"
+                    className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
                     placeholder="you@example.com"
                 />
             </div>
@@ -97,7 +98,7 @@ export default function ProposalForm({ task }) {
                         required
                         value={form.proposedBudget}
                         onChange={handleChange}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-paper placeholder:text-paper/30 focus:border-signal/50 focus:outline-none"
+                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
                         placeholder="90"
                     />
                 </div>
@@ -116,7 +117,7 @@ export default function ProposalForm({ task }) {
                         required
                         value={form.estimatedDays}
                         onChange={handleChange}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-paper placeholder:text-paper/30 focus:border-signal/50 focus:outline-none"
+                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
                         placeholder="5"
                     />
                 </div>
@@ -136,18 +137,18 @@ export default function ProposalForm({ task }) {
                     rows={4}
                     value={form.message}
                     onChange={handleChange}
-                    className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-paper placeholder:text-paper/30 focus:border-signal/50 focus:outline-none"
+                    className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
                     placeholder="Briefly explain how you'd approach this task..."
                 />
             </div>
 
-            <button
+            <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-xl bg-signal py-3 text-sm font-semibold text-ink transition-transform duration-200 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0"
+                className="btn btn-success w-full rounded-xl"
             >
-                {isSubmitting ? "Submitting…" : "Submit proposal"}
-            </button>
+                {isSubmitting ? "Submitting..." : "Submit Proposal"}
+            </Button>
         </form>
     );
 }

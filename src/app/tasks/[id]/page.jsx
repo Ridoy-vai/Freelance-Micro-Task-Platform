@@ -4,6 +4,8 @@ import { GetTasksById } from "@/ServerActions/Task";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Briefcase, Calendar, DollarSign, MapPin, User, Clock, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 function formatDate(dateStr) {
     if (!dateStr) return "—";
@@ -33,82 +35,136 @@ export default async function TaskDetailsPage({ params }) {
     const { title, category, clientname, description, budget, deadline, status, alreadyApplied } = task;
 
     return (
-        <div className="relative min-h-screen bg-[#050505] py-12 lg:py-20">
+        <div className="relative min-h-screen bg-[#ffffff] py-12 lg:py-20">
             {/* Background Gradient Orbs */}
             <div className="pointer-events-none absolute left-1/4 top-0 h-[400px] w-[400px] rounded-full bg-signal/10 blur-[120px]" />
             <div className="pointer-events-none absolute right-1/4 bottom-0 h-[300px] w-[300px] rounded-full bg-sage/5 blur-[100px]" />
 
             <div className="relative mx-auto max-w-7xl px-6">
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
-                    
+
                     {/* Left Side: Task Content */}
-                    <div className="lg:col-span-8">
-                        <div className="flex items-center gap-3">
-                            <span className="flex items-center gap-1.5 rounded-full border border-sage/30 bg-sage/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-sage">
-                                <Briefcase size={10} /> {category || "Project"}
+                    {/*ljdsnakjfnlasjbfjasdbjasb*/}
+                    {/* Left Side: Task Content */}
+                    <div className="lg:col-span-8 bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm space-y-6">
+
+                        {/* TAGS */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-blue-600">
+                                <Briefcase size={11} /> {category || "Project"}
                             </span>
-                            <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-paper/60">
-                                <Clock size={10} /> Active
+
+                            <span className="flex items-center gap-1 rounded-full bg-green-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-green-600">
+                                <Clock size={11} /> {status}
                             </span>
                         </div>
 
-                        <h1 className="mt-6 font-display text-4xl leading-tight text-paper sm:text-5xl lg:text-6xl">
-                            {title}
-                        </h1>
+                        {/* TITLE */}
+                        <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 sm:p-4">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-snug">
+                                {title}
+                            </h1>
+                        </div>
 
-                        <div className="mt-6 flex flex-wrap items-center gap-6 text-paper/50">
+
+                        {/* CLIENT */}
+                        <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-gray-100 rounded-xl p-3 sm:p-4">
+
                             <div className="flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 border border-white/10">
-                                    <User size={14} className="text-paper/80" />
+
+                                <img
+                                    src={task.companyLogo || "/user.png"}
+                                    alt={clientname}
+                                    className="h-9 w-9 rounded-full object-cover border border-gray-200"
+                                />
+
+                                <div>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">
+                                        Client
+                                    </p>
+
+                                    <p className="text-sm font-semibold text-gray-900">
+                                        {clientname}
+                                    </p>
+
+                                    <a
+                                        href={task.companyWebsite}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
+                                    >
+                                        {task.companyName || "Company Name"}
+                                    </a>
                                 </div>
-                                <span className="text-sm">Posted by <span className="text-paper font-medium">{clientname}</span></span>
+
                             </div>
-                            <div className="flex items-center gap-2">
-                                < ShieldCheck size={16} className="text-signal" />
-                                <span className="text-sm font-medium text-signal">Verified Client</span>
+                            <div className="flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1">
+                                <ShieldCheck size={14} className="text-blue-500" />
+                                <span className="text-xs font-medium text-blue-700">
+                                    Verified
+                                </span>
                             </div>
+
                         </div>
 
-                        {/* Highlight Stats Card */}
-                        <div className="mt-10 grid grid-cols-1 gap-1 border-y border-white/10 py-8 sm:grid-cols-3">
-                            <div className="px-4 py-4 sm:border-r border-white/5">
-                                <p className="text-[10px] uppercase tracking-[0.2em] text-paper/40">Budget Range</p>
-                                <p className="mt-2 flex items-baseline gap-1 font-mono text-3xl font-bold text-paper">
-                                    <span className="text-lg text-signal">$</span>{budget}
+                        {/* STATS */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                    Budget
+                                </p>
+                                <p className="mt-1 text-lg font-bold text-gray-900">
+                                    <span className="text-green-600 mr-1">$</span>{budget}
                                 </p>
                             </div>
-                            <div className="px-4 py-4 sm:border-r border-white/5">
-                                <p className="text-[10px] uppercase tracking-[0.2em] text-paper/40">Expected Delivery</p>
-                                <p className="mt-2 font-mono text-2xl font-medium text-paper/90">
+
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                    Deadline
+                                </p>
+                                <p className="mt-1 text-sm font-semibold text-gray-800">
                                     {formatDate(deadline)}
                                 </p>
                             </div>
-                            <div className="px-4 py-4 uppercase tracking-widest">
-                                <p className="text-[10px] uppercase tracking-[0.2em] text-paper/40">Job Status</p>
-                                <div className="mt-2 flex items-center gap-2">
-                                    <div className="h-2 w-2 animate-pulse rounded-full bg-signal" />
-                                    <p className="font-mono text-2xl text-paper/90">{status}</p>
+
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                    Status
+                                </p>
+
+                                <div className="mt-1 flex items-center gap-1">
+                                    <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                    <p className="text-sm font-semibold text-gray-800 capitalize">
+                                        {status}
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Description Section */}
-                        <div className="mt-12">
-                            <h3 className="flex items-center gap-2 font-display text-xl text-paper">
+                        {/* DESCRIPTION */}
+                        <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 sm:p-5">
+                            <h3 className="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2">
                                 Project Overview
                             </h3>
-                            <div className="mt-4 max-w-3xl leading-relaxed text-paper/60 selection:bg-signal/30">
-                                {description.split('\n').map((para, i) => (
-                                    <p key={i} className="mb-4 text-lg">{para}</p>
+
+                            <div className="mt-3 space-y-3">
+                                {description.split("\n").map((para, i) => (
+                                    <p
+                                        key={i}
+                                        className="text-sm sm:text-base text-gray-600 leading-relaxed bg-white border border-gray-100 rounded-lg p-3"
+                                    >
+                                        {para}
+                                    </p>
                                 ))}
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                     {/* Right Side: Sticky Proposal Form */}
-                    <div className="lg:col-span-4">
-                        <div className="sticky top-12 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02] p-1 backdrop-blur-xl">
-                            <div className="rounded-[22px] bg-[#0A0A0A] p-6 lg:p-8">
+                    <div className="lg:col-span-4 bg-white border border-gray-200 shadow-sm rounded-2xl">
+                        <div className="sticky top-12 overflow-hidden rounded-3xl border border-white/10 bg-white p-1 backdrop-blur-xl">
+                            <div className="rounded-[22px] bg-[#ffffff] p-6 lg:p-8">
                                 <h2 className="flex items-center gap-2 font-display text-2xl text-paper">
                                     Interested?
                                 </h2>
@@ -123,7 +179,7 @@ export default async function TaskDetailsPage({ params }) {
                                 ) : alreadyApplied ? (
                                     <div className="mt-8 rounded-2xl border border-signal/20 bg-signal/5 p-6 text-center">
                                         <p className="text-sm text-paper/60">
-                                            You've already pitched for this task.
+                                            You have already pitched for this task.
                                         </p>
                                     </div>
                                 ) : (
