@@ -30,7 +30,7 @@ export default async function ProfilePage() {
   const id = sessionUser.id;
 
   // TODO: real API call
-  const res = await fetch(`http://localhost:5000/users/${id}`, { cache: "no-store" });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, { cache: "no-store" });
   const user = res.ok ? await res.json() : null;
 
   if (!user) {
