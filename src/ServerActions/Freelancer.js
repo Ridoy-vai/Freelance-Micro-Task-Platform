@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // User-এর সম্পূর্ণ data আনার জন্য
 export const GetUserById = async (id) => {

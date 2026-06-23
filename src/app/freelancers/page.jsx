@@ -19,7 +19,7 @@ const BrowseFreelancers = async ({ searchParams }) => {
     query.append("limit", limit);
 
     const res = await fetch(
-        `http://localhost:5000/freelancers?${query.toString()}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/freelancers?${query.toString()}`,
         { cache: "no-store" }
     );
     const data = res.ok ? await res.json() : { freelancers: [], totalItems: 0, totalPages: 1 };

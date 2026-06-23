@@ -43,7 +43,7 @@ const TaskActions = ({ task }) => {
         if (e) e.preventDefault();
         try {
             setIsUpdating(true);
-            const res = await fetch(`http://localhost:5000/updateclinttask/${taskId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/updateclinttask/${taskId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
@@ -67,7 +67,7 @@ const TaskActions = ({ task }) => {
     const handleDelete = async () => {
         try {
             setDeletingId(taskId);
-            const res = await fetch(`http://localhost:5000/deleteclinttask/${taskId}`, { 
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/deleteclinttask/${taskId}`, { 
                 method: "DELETE" 
             });
             const data = await res.json();
