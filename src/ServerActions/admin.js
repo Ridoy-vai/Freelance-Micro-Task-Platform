@@ -6,7 +6,7 @@ const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost
 
 
 
-export const GetAllUsers = async (page = 1, limite = 8) => {
+export const GetAllUsers = async (page = 1, limite = 10) => {
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/users?page=${page}&limite=${limite}`, {
         method: "GET",
         cache: "no-store",
@@ -37,7 +37,7 @@ export const ToggleUserBlock = async (id, isBlocked) => {
 
 
 // সব task আনার জন্য
-export const GetAllAdminTasks = async (page = 1, limite = 3) => {
+export const GetAllAdminTasks = async (page = 1, limite = 10) => {
     const { data: token } = await authClient.token();
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/tasks?page=${page}&limite=${limite}`, {
         method: "GET",
@@ -116,7 +116,7 @@ export const ToggleAdminTaskFeature = async (id, isFeatured) => {
 // const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export const GetOverviewUsers = async () => {
-    const response = await fetch(`${API_URL}/admin/users`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/users`, {
         method: "GET",
         cache: "no-store",
     });
@@ -140,7 +140,7 @@ export const GetOverviewTasks = async () => {
 };
 
 export const GetOverviewProposals = async () => {
-    const response = await fetch(`${API_URL}/admin/proposals`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/proposals`, {
         method: "GET",
         cache: "no-store",
     });
@@ -153,7 +153,7 @@ export const GetOverviewProposals = async () => {
 
 
 export const GetOverviewTasksRaw = async () => {
-    const response = await fetch(`${API_URL}/alltask`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/alltask`, {
         method: "GET",
         cache: "no-store",
     });
@@ -166,18 +166,22 @@ export const GetOverviewTasksRaw = async () => {
 
 
 
-// ServerActions/admin.js
 export const DeleteUser = async (id) => {
-  try {
-    const response = await fetch(`${process.env.BACKEND_URL}/api/admin/users/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-    
-    return await response.json(); // এটি সরাসরি {success, message} রিটার্ন করবে
-  } catch (error) {
-    return { success: false, message: "Network error" };
-  }
+    try {
+        // স্ল্যাশ চেক করার জন্য ট্রিম করে নিন
+        const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/admin/users/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            cache: "no-store" // ক্যাশ ডিলিট করে দিন
+        });
+
+        const data = await response.json();
+        console.log("Server Action Result:", data); // ব্রাউজারের কনসোলে নয়, টার্মিনালে চেক করুন
+        return data;
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        return { success: false, message: "Network error" };
+    }
 }

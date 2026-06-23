@@ -11,7 +11,7 @@ import { authClient } from "@/lib/auth-client";
 
 const menuConfig = {
   admin: [
-    { id: "overview", name: "Overview", icon: LayoutDashboard, href: "/dashboard/admin/overview" },
+    { id: "overview", name: "Overview", icon: LayoutDashboard, href: "/dashboard/admin" },
     { id: "users", name: "Users", icon: Users, href: "/dashboard/admin/users" },
     { id: "tasks", name: "Tasks", icon: FileText, href: "/dashboard/admin/tasks" },
     { id: "transactions", name: "Finance", icon: DollarSign, href: "/dashboard/admin/transactions" },
