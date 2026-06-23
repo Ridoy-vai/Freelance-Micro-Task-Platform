@@ -1,24 +1,10 @@
-import { authClient } from "@/lib/auth-client";
-
 const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// একটা reusable helper - প্রতিটা ফাংশনে আলাদা করে token নেওয়ার বদলে এটা ব্যবহার করো
-// optionalToken: server-side থেকে পাঠানো JWT (Server Component এ authClient.token() কাজ করে না)
-const getAuthHeader = async (optionalToken) => {
-    if (optionalToken) {
-        return { "Authorization": `Bearer ${optionalToken}` };
-    }
-    const { data: token } = await authClient.token();
-    return { "Authorization": `Bearer ${token?.token}` };
-};
-
 export const PostTask = async ({ path, taskData }) => {
-    const authHeader = await getAuthHeader();
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/${path}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            ...authHeader,
         },
         body: JSON.stringify(taskData)
     });
@@ -34,13 +20,11 @@ export const GetAllTasks = async (path, limit, skip, search = "", category = "")
     if (search) params.append("search", search);
     if (category) params.append("category", category);
 
-    const authHeader = await getAuthHeader();
-    const response = await fetch(`${NEXT_PUBLIC_API_URL}/${path}?${params.toString()}`, {
+    const response = await fetch(`https://freelance-micro-task-platform-serve.vercel.app/${path}?${params.toString()}`, {
         method: "GET",
         cache: "no-store",
         headers: {
             "Content-Type": "application/json",
-            ...authHeader,
         }
     });
     if (!response.ok) {
@@ -50,9 +34,7 @@ export const GetAllTasks = async (path, limit, skip, search = "", category = "")
     return response.json();
 };
 
-export const GetTasksByUser = async (path, clientId, page = 1, limit = 10, jwtToken) => {
-    const authHeader = await getAuthHeader(jwtToken);
-
+export const GetTasksByUser = async (path, clientId, page = 1, limit = 10) => {
     try {
         const response = await fetch(
             `${NEXT_PUBLIC_API_URL}/${path}/${clientId}?page=${page}&limit=${limit}`,
@@ -60,7 +42,6 @@ export const GetTasksByUser = async (path, clientId, page = 1, limit = 10, jwtTo
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    ...authHeader,
                 },
                 cache: "no-store",
             }
@@ -79,12 +60,10 @@ export const GetTasksByUser = async (path, clientId, page = 1, limit = 10, jwtTo
 };
 
 export const GetTasksById = async (path, id) => {
-    const authHeader = await getAuthHeader();
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/${path}/${id}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            ...authHeader,
         }
     });
     if (!response.ok) {
@@ -95,12 +74,10 @@ export const GetTasksById = async (path, id) => {
 };
 
 export const UpdateTask = async ({ path, taskData }) => {
-    const authHeader = await getAuthHeader();
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/${path}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            ...authHeader,
         },
         body: JSON.stringify(taskData)
     });
@@ -112,12 +89,10 @@ export const UpdateTask = async ({ path, taskData }) => {
 };
 
 export const DeleteTask = async (path) => {
-    const authHeader = await getAuthHeader();
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/${path}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
-            ...authHeader,
         }
     });
     if (!response.ok) {
