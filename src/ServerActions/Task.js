@@ -20,7 +20,7 @@ export const GetAllTasks = async (path, limit, skip, search = "", category = "")
     if (search) params.append("search", search);
     if (category) params.append("category", category);
 
-    const response = await fetch(`https://freelance-micro-task-platform-serve.vercel.app/${path}?${params.toString()}`, {
+    const response = await fetch(`${NEXT_PUBLIC_API_URL}/${path}?${params.toString()}`, {
         method: "GET",
         cache: "no-store",
         headers: {

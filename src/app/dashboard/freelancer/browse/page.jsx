@@ -4,8 +4,6 @@ import { GetAllTasks } from '@/ServerActions/Task';
 import Link from 'next/link';
 import React from 'react';
 
-export const dynamic = 'force-dynamic';
-
 const TASKS_PER_PAGE = 6;
 
 const FeaturedTasks = async () => {
