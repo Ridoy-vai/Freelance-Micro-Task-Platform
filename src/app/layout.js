@@ -27,8 +27,13 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col">
         <Navbar />
-        {children}
-         <ToastContainer position="top-right" autoClose={3000} />
+
+        {/* FIX HERE */}
+        <main className="flex-1 scroll-smooth">
+          {children}
+        </main>
+
+        <ToastContainer position="top-right" autoClose={3000} />
         <Footer />
       </body>
     </html>

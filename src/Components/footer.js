@@ -1,5 +1,6 @@
-// import { Github, Twitter, Linkedin, Mail } from "lucide-react";
+'use client'
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { IoIosMail, IoLogoLinkedin } from "react-icons/io";
@@ -33,6 +34,11 @@ const SOCIAL_LINKS = [
 ];
 
 const Footer = () => {
+
+    const pathname = usePathname();
+    if (pathname.includes("dashboard")) {
+        return null
+    }
     const year = new Date().getFullYear();
 
     return (

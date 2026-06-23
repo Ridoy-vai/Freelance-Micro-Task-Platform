@@ -29,7 +29,7 @@ const BrowseFreelancers = async ({ searchParams }) => {
     const FREELANCERS = data.freelancers || [];
 
     return (
-        <section className="bg-ink py-20 sm:py-24">
+        <section className="bg-ink py-20 mt-20 sm:py-24">
             <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12">
                 <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
                     <div>

@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Users, FileText, DollarSign, Plus, 
-  ClipboardList, Send, Briefcase, Clock, User, Menu, X, ChevronRight
+  LayoutDashboard, Users, FileText, DollarSign, Plus,
+  ClipboardList, Send, Briefcase, Clock, User, Menu, X, ChevronRight,
+  LogOut
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
@@ -37,6 +38,9 @@ const themeConfig = {
 };
 
 export default function DashboardLayout({ children }) {
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
+  console.log(user)
   const pathname = usePathname();
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -56,13 +60,13 @@ export default function DashboardLayout({ children }) {
       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-slate-900"></div>
     </div>
   );
-
+  
   const menu = menuConfig[role] || [];
   const theme = themeConfig[role] || themeConfig.client;
 
   return (
     <div className="h-screen flex flex-col md:flex-row bg-[#F9FAFB] overflow-hidden">
-      
+
       {/* --- SMALL DEVICE: TOP NAV --- */}
       <div className="md:hidden bg-white border-b z-50">
         <div className="flex items-center justify-between px-4 py-3">
@@ -88,7 +92,7 @@ export default function DashboardLayout({ children }) {
       {sidebarOpen && (
         <div className="md:fixed lg:hidden inset-0 bg-slate-900/40 backdrop-blur-sm z-40" onClick={() => setSidebarOpen(false)} />
       )}
-      
+
       {/* --- BIG DEVICE & MID DEVICE SIDEBAR --- */}
       <aside className={`
         fixed inset-y-0 left-0 z-50 w-72 bg-white border-r transform transition-transform duration-300 ease-in-out
@@ -96,19 +100,20 @@ export default function DashboardLayout({ children }) {
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         <div className="h-full flex flex-col p-6">
-          <div className="flex items-center gap-3 mb-10 px-2">
-            <div className={`w-10 h-10 rounded-xl ${theme.bg} flex items-center justify-center text-white font-bold`}>H</div>
-            <h2 className="text-xl font-black text-slate-800 tracking-tight">DASHBOARD</h2>
-          </div>
+          <Link href={"/"}>
+            <div className="flex items-center gap-3 mb-10 px-2">
+              <div className={`w-10 h-10 rounded-xl ${theme.bg} flex items-center justify-center text-white font-bold`}>H</div>
+              <h2 className="text-xl font-black text-slate-800 tracking-tight">DASHBOARD</h2>
+            </div>
+          </Link>
 
           <nav className="flex-1 space-y-1.5">
             {menu.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link key={item.id} href={item.href} onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center justify-between px-4 py-3.5 rounded-2xl group transition-all ${
-                    isActive ? `${theme.light} ${theme.text} font-bold` : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-                  }`}
+                  className={`flex items-center justify-between px-4 py-3.5 rounded-2xl group transition-all ${isActive ? `${theme.light} ${theme.text} font-bold` : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
@@ -121,13 +126,46 @@ export default function DashboardLayout({ children }) {
           </nav>
 
           <div className="mt-auto p-4 bg-slate-50 rounded-3xl border border-slate-100">
-             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden text-[10px] flex items-center justify-center">User</div>
-                <div className="overflow-hidden">
-                  <p className="text-sm font-bold text-slate-800 truncate">Account</p>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-widest">{role}</p>
+            <div className="flex items-center justify-between gap-3">
+
+              {/* User Info */}
+              <div className="flex items-center gap-3 overflow-hidden">
+                {/* Avatar */}
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-200 border-2 border-white shadow-sm flex items-center justify-center">
+                  {User?.image ? (
+                    <img
+                      src={User.image}
+                      alt="user"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-[10px] font-bold">
+                      {User?.name?.charAt(0)}
+                    </span>
+                  )}
                 </div>
-             </div>
+
+                {/* Text */}
+                <div className="overflow-hidden">
+                  <p className="text-sm font-bold text-slate-800 truncate">
+                    {user.name}
+                  </p>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-widest">
+                    {role}
+                  </p>
+                </div>
+              </div>
+
+              {/* Logout Button */}
+              <button
+                onClick={() => console.log("logout")}
+                className="p-2 rounded-xl hover:bg-red-50 transition"
+                title="Logout"
+              >
+                <LogOut size={18} className="text-red-500" />
+              </button>
+
+            </div>
           </div>
         </div>
       </aside>

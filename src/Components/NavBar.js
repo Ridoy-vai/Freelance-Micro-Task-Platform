@@ -9,6 +9,7 @@ import { Menu, X, ChevronDown, LogOut, User, Settings, LayoutDashboard, Bell, Se
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -21,6 +22,12 @@ export default function Navbar() {
 
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
+
+
+  if (pathname.includes("dashboard")) {
+    return null
+  }
+
 
   const handleSignout = async () => {
     await authClient.signOut({
@@ -58,21 +65,20 @@ export default function Navbar() {
   };
 
   return (
-    <nav 
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
-        scrolled 
-          ? "bg-white border-b border-slate-200 py-2 shadow-sm" 
-          : "bg-white/50 backdrop-blur-sm py-4"
-      }`}
+    <nav
+      className={`sticky top-0 left-0 right-0 z-100 transition-all duration-300 ${scrolled
+        ? "bg-white border-b border-slate-200 py-2 shadow-sm"
+        : "bg-white/50 backdrop-blur-sm py-4"
+        }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between gap-4">
-          
+
           {/* Logo Section */}
           <Link href="/" className="flex items-center gap-3 group shrink-0">
             <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-slate-200 bg-white p-0.5 shadow-sm transition-transform group-hover:scale-105">
-              <img 
-                src="https://img.magnific.com/premium-vector/eqh-logo-design-initial-letter-eqh-monogram-logo-using-hexagon-shape_1101554-16445.jpg?semt=ais_hybrid&w=740&q=80" 
+              <img
+                src="https://img.magnific.com/premium-vector/eqh-logo-design-initial-letter-eqh-monogram-logo-using-hexagon-shape_1101554-16445.jpg?semt=ais_hybrid&w=740&q=80"
                 alt="Logo"
                 className="h-full w-full object-cover rounded-lg"
               />
@@ -91,11 +97,10 @@ export default function Navbar() {
                 <Link
                   key={link.path}
                   href={link.path}
-                  className={`px-5 py-2 text-sm font-bold transition-all duration-200 rounded-full ${
-                    active 
-                      ? "text-slate-900 bg-slate-100" 
-                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                  }`}
+                  className={`px-5 py-2 text-sm font-bold transition-all duration-200 rounded-full ${active
+                    ? "text-slate-900 bg-slate-100"
+                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -195,9 +200,8 @@ export default function Navbar() {
                   key={link.path}
                   href={link.path}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
-                    isActive(link.path) ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
-                  }`}
+                  className={`block px-4 py-3 rounded-2xl text-sm font-bold transition-all ${isActive(link.path) ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -211,20 +215,20 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="mt-4 pt-4 border-t border-slate-100 space-y-1 px-1">
-                 {profileLinks.map((link) => (
-                    <Link
-                      key={link.path}
-                      href={link.path}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-2xl transition-all"
-                    >
-                      <link.icon size={18} />
-                      {link.name}
-                    </Link>
-                  ))}
-                  <button onClick={handleSignout} className="w-full flex items-center gap-3 px-4 py-3 text-rose-500 font-bold rounded-2xl hover:bg-rose-50">
-                    <LogOut size={18} /> Logout
-                  </button>
+                {profileLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    href={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-2xl transition-all"
+                  >
+                    <link.icon size={18} />
+                    {link.name}
+                  </Link>
+                ))}
+                <button onClick={handleSignout} className="w-full flex items-center gap-3 px-4 py-3 text-rose-500 font-bold rounded-2xl hover:bg-rose-50">
+                  <LogOut size={18} /> Logout
+                </button>
               </div>
             )}
           </div>
