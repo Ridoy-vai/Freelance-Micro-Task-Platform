@@ -14,13 +14,19 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    },
+  },
   user: {
     additionalFields: {
       role: {
         type: "string",
         required: true,      // রোল না থাকলে সাইনআপ হবে না
         input: true,         // এটিই ক্লায়েন্ট থেকে ইনপুট নেওয়ার অনুমতি দেয়
-        defaultValue: "freelancer", // কোনো রোল না দিলে ডিফল্ট এটা হবে
+        defaultValue: "client", // কোনো রোল না দিলে ডিফল্ট এটা হবে
       },
 
       // ---- Freelancer fields ----
@@ -83,6 +89,16 @@ export const auth = betterAuth({
   },
 
   plugins: [
-    jwt()
+    jwt({
+      jwt: {
+        definePayload: ({ user }) => {
+          return {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+          };
+        },
+      },
+    }),
   ],
 });

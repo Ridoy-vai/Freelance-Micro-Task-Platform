@@ -80,8 +80,10 @@ export default function LoginPage() {
         }
     };
 
-    const handleGoogleLogin = () => {
-        console.log("Google login clicked");
+    const handleGoogleLogin = async () => {
+        const data = await authClient.signIn.social({
+            provider: "google",
+        });
     };
 
 
