@@ -6,6 +6,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend,
     AreaChart, Area
 } from "recharts";
+import Link from "next/link";
 
 const STATUS_COLORS = {
     open: "#22c55e",
@@ -96,10 +97,12 @@ const DashboardHome = ({ tasks = [], clientId, userName }) => {
                     <p className="text-gray-500 max-w-sm mb-8">
                         It looks like you haven't posted any tasks. Start your journey by creating a new project today.
                     </p>
-                    <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold transition-all shadow-lg shadow-blue-200">
-                        <PlusCircle size={20} />
-                        Post Your First Task
-                    </button>
+                    <Link href={"/dashboard/client/PostTaskForm"}>
+                        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold transition-all shadow-lg shadow-blue-200">
+                            <PlusCircle size={20} />
+                            Post Your First Task
+                        </button>
+                    </Link>
                 </div>
             ) : (
                 <div className="space-y-8">
@@ -109,15 +112,15 @@ const DashboardHome = ({ tasks = [], clientId, userName }) => {
                             <h3 className="text-lg font-bold text-gray-800 mb-6">Task Status Distribution</h3>
                             <ResponsiveContainer width="100%" height={280}>
                                 <PieChart>
-                                    <Pie 
-                                        data={chartData} 
-                                        dataKey="value" 
-                                        nameKey="name" 
-                                        cx="50%" 
-                                        cy="50%" 
-                                        outerRadius={80} 
-                                        innerRadius={60} 
-                                        paddingAngle={8} 
+                                    <Pie
+                                        data={chartData}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        cx="50%"
+                                        cy="50%"
+                                        outerRadius={80}
+                                        innerRadius={60}
+                                        paddingAngle={8}
                                         label
                                     >
                                         {chartData.map((entry, index) => (
@@ -135,9 +138,9 @@ const DashboardHome = ({ tasks = [], clientId, userName }) => {
                             <ResponsiveContainer width="100%" height={280}>
                                 <BarChart data={chartData}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9ca3af', fontSize: 12}} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{fill: '#9ca3af', fontSize: 12}} allowDecimals={false} />
-                                    <Tooltip cursor={{ fill: '#f9fafb' }} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} allowDecimals={false} />
+                                    <Tooltip cursor={{ fill: '#f9fafb' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
                                     <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={45}>
                                         {chartData.map((entry, index) => (
                                             <Cell key={`bar-${index}`} fill={STATUS_COLORS[entry.name.toLowerCase()] || STATUS_COLORS.unknown} />
@@ -165,7 +168,7 @@ const DashboardHome = ({ tasks = [], clientId, userName }) => {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} interval={0} angle={-15} textAnchor="end" />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} tickFormatter={(value) => `$${value}`} />
-                                <Tooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
                                 <Area type="monotone" dataKey="budget" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorBudget)" />
                             </AreaChart>
                         </ResponsiveContainer>

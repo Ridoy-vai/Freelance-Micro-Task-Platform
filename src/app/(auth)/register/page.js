@@ -125,21 +125,21 @@ export default function RegisterPage() {
 
         const roleFields = isFreelancer
             ? {
-                  title: formValues.title,
-                  category: formValues.category,
-                  hourlyRate: formValues.hourlyRate ? Number(formValues.hourlyRate) : undefined,
-                  location: formValues.location,
-                  skills: formValues.skills
-                      .split(",")
-                      .map((s) => s.trim())
-                      .filter(Boolean),
-                  bio: formValues.bio,
-              }
+                title: formValues.title,
+                category: formValues.category,
+                hourlyRate: formValues.hourlyRate ? Number(formValues.hourlyRate) : undefined,
+                location: formValues.location,
+                skills: formValues.skills
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean),
+                bio: formValues.bio,
+            }
             : {
-                  companyName: formValues.companyName,
-                  industry: formValues.industry,
-                  companyWebsite: formValues.companyWebsite || undefined,
-              };
+                companyName: formValues.companyName,
+                industry: formValues.industry,
+                companyWebsite: formValues.companyWebsite || undefined,
+            };
 
         const { data, error } = await authClient.signUp.email({
             ...basePayload,
@@ -156,8 +156,10 @@ export default function RegisterPage() {
         router.push("/");
     };
 
-    const handleGoogleSignup = () => {
-        console.log("Google signup clicked — always becomes role: client");
+    const handleGoogleSignup = async () => {
+        const data = await authClient.signIn.social({
+            provider: "google",
+        });
     };
 
     return (
@@ -326,14 +328,12 @@ export default function RegisterPage() {
                                             ].map((rule) => (
                                                 <li
                                                     key={rule.id}
-                                                    className={`flex items-center gap-2 text-xs transition-colors ${
-                                                        rule.passed ? "text-sage" : "text-paper/40"
-                                                    }`}
+                                                    className={`flex items-center gap-2 text-xs transition-colors ${rule.passed ? "text-sage" : "text-paper/40"
+                                                        }`}
                                                 >
                                                     <span
-                                                        className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] transition-colors ${
-                                                            rule.passed ? "bg-sage text-ink" : "border border-paper/25"
-                                                        }`}
+                                                        className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] transition-colors ${rule.passed ? "bg-sage text-ink" : "border border-paper/25"
+                                                            }`}
                                                     >
                                                         {rule.passed ? "✓" : ""}
                                                     </span>
@@ -351,11 +351,10 @@ export default function RegisterPage() {
                                     </legend>
                                     <div className="grid grid-cols-2 gap-3">
                                         <label
-                                            className={`relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${
-                                                role === "client"
-                                                    ? "border-signal bg-signal/10 text-paper shadow-[0_0_0_1px_theme(colors.signal/30)]"
-                                                    : "border-paper/10 bg-paper/[0.02] text-paper/55 hover:border-paper/20 hover:bg-paper/[0.04]"
-                                            }`}
+                                            className={`relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${role === "client"
+                                                ? "border-signal bg-signal/10 text-paper shadow-[0_0_0_1px_theme(colors.signal/30)]"
+                                                : "border-paper/10 bg-paper/[0.02] text-paper/55 hover:border-paper/20 hover:bg-paper/[0.04]"
+                                                }`}
                                         >
                                             {role === "client" && (
                                                 <CheckCircle2 className="absolute right-2 top-2 h-4 w-4 text-signal" />
@@ -368,11 +367,10 @@ export default function RegisterPage() {
                                         </label>
 
                                         <label
-                                            className={`relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${
-                                                role === "freelancer"
-                                                    ? "border-signal bg-signal/10 text-paper shadow-[0_0_0_1px_theme(colors.signal/30)]"
-                                                    : "border-paper/10 bg-paper/[0.02] text-paper/55 hover:border-paper/20 hover:bg-paper/[0.04]"
-                                            }`}
+                                            className={`relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${role === "freelancer"
+                                                ? "border-signal bg-signal/10 text-paper shadow-[0_0_0_1px_theme(colors.signal/30)]"
+                                                : "border-paper/10 bg-paper/[0.02] text-paper/55 hover:border-paper/20 hover:bg-paper/[0.04]"
+                                                }`}
                                         >
                                             {role === "freelancer" && (
                                                 <CheckCircle2 className="absolute right-2 top-2 h-4 w-4 text-signal" />

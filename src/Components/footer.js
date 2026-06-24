@@ -1,13 +1,13 @@
 'use client'
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaGithub } from "react-icons/fa";
+import { FaFacebook, FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { IoIosMail, IoLogoLinkedin } from "react-icons/io";
 
 const FOOTER_LINKS = {
     forClients: [
-        { label: "Post a Task", href: "/post-task" },
+        { label: "Post a Task", href: "/" },
         { label: "Browse Freelancers", href: "/freelancers" },
         { label: "How It Works", href: "/how-it-works" },
         { label: "Pricing", href: "/pricing" },
@@ -27,10 +27,10 @@ const FOOTER_LINKS = {
 };
 
 const SOCIAL_LINKS = [
-    { icon: FaGithub, href: "https://github.com", label: "GitHub" },
-    { icon: FaXTwitter, href: "https://twitter.com", label: "Twitter" },
-    { icon: IoLogoLinkedin, href: "https://linkedin.com", label: "LinkedIn" },
-    { icon: IoIosMail, href: "mailto:support@tasknest.com", label: "Email" },
+    { icon: FaGithub, href: "https://github.com/Ridoy-vai", label: "GitHub" },
+    { icon: FaFacebook, href: "https://web.facebook.com/md.sahariyar.ridoy", label: "Facebook" },
+    { icon: IoLogoLinkedin, href: "www.linkedin.com/in/md-shahriar-ridoy-vai", label: "LinkedIn" },
+    { icon: IoIosMail, href: "mailto:mdsahariyarridoy@gmail.com", label: "Email" },
 ];
 
 const Footer = () => {
