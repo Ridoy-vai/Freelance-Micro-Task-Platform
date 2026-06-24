@@ -20,7 +20,7 @@ const DashboardHome = ({ tasks = [], clientId, userName }) => {
     // Budget Calculation
     const totalBookedBudget = tasks
         .filter((task) => task.status === "booked" || task.status === "submited")
-        .reduce((sum, task) => sum + Number(task.budget || 0), 0);
+        .reduce((sum, task) => sum + Number(task.proposedBudget || 0), 0);
 
     // Status Count
     const statusCounts = tasks.reduce((acc, task) => {

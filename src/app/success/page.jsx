@@ -8,6 +8,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL
 // Mirrors the old client-side handleAccept, run server-side right after
 // Stripe confirms payment: mark the proposal accepted, then the task booked.
 async function acceptProposalAfterPayment(proposalId) {
+  // consol.log(proposalId)
   if (!proposalId) return
 
   try {
@@ -40,6 +41,21 @@ async function acceptProposalAfterPayment(proposalId) {
   } catch (error) {
     console.log('Error booking task:', error)
   }
+
+  try {
+    const taskRes = await fetch(`${API_URL}/proposalTaskid/${proposalId}`)
+    const taskData = await taskRes.json()
+    const taskId = taskData.taskId
+
+    const statusRes = await fetch(`${API_URL}/reject-pending/${taskId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      // body: JSON.stringify({ status: 'booked' }),
+    })
+    await statusRes.json()
+  } catch (error) {
+    console.log('Error booking task:', error)
+  }
 }
 
 // Saves a payment record in PaymentsCollection, guarded by session_id
@@ -59,7 +75,7 @@ async function savePaymentRecord(sessionId, metadata, customerEmail) {
         ProposedId: metadata.ProposedId,
         price: metadata.price,
         title: metadata.title,
-        FreelancerId:metadata.FreelancerId
+        FreelancerId: metadata.FreelancerId
       }),
     })
     const result = await res.json()
@@ -90,7 +106,7 @@ export default async function Success({ searchParams }) {
   }
 
   if (status === 'complete') {
-    const { title, Freelancer, price, ProposedId,FreelancerId } = metadata
+    const { title, Freelancer, price, ProposedId, FreelancerId } = metadata
 
     // Payment confirmed -> mark proposal as accepted + task as booked
     await acceptProposalAfterPayment(ProposedId)

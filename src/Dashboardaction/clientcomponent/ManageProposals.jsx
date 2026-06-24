@@ -6,11 +6,12 @@ import { Calendar, CheckCircle, XCircle, Loader2 } from "lucide-react";
 const ManageProposals = ({ proposals: myproposals = [] }) => {
   const [proposals, setProposals] = useState(myproposals);
   const [actionId, setActionId] = useState(null);
-
+ console.log("my prpposals", myproposals)
   // Backend already status: "pending" diye filter kore dicche, tai extra filter lagbe na
 
   // Reject
   const handleReject = async (id) => {
+    console.log("..........." ,id)
     try {
       setActionId(id);
 
