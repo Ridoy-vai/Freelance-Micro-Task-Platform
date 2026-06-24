@@ -5,9 +5,12 @@ import { GetTasksByUser } from "@/ServerActions/Task";
 // import DashboardHome from "./page";
 import { redirect } from "next/navigation"; // redirect ইম্পোর্ট করুন
 import DashboardHome from "@/Dashboardoverview/DashboardHome";
+import { requireRole } from "@/lib/role-check-access";
 // import DashboardHome from "@/app/dashboard/freelancer/overview/page";
 
 const ClientDashboardPage = async () => {
+    const role = await requireRole(["client"]);
+// const session = await requireRole(["client", "freelancer"]);
     const session = await auth.api.getSession({ headers: await headers() });
 
     // ১. ভ্যালিডেশন: সেশন বা ইউজার না থাকলে লগইন পেজে পাঠিয়ে দাও

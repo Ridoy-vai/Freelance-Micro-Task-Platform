@@ -3,10 +3,12 @@ import { headers } from "next/headers";
 import { Receipt } from "lucide-react";
 import { GetFreelancerTransactions } from "@/ServerActions/Freelancer";
 import { PaginationControlled } from "@/Components/PaginationControlled";
+import { requireRole } from "@/lib/role-check-access";
 
 export const dynamic = 'force-dynamic';
 
 const page = async ({ searchParams }) => {
+    await requireRole(["freelancer"]);
     const params = await searchParams;
     const currentPage = Number(params?.page) || 1;
     const itemsPerPage = 10;

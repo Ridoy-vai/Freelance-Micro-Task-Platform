@@ -126,61 +126,123 @@ const AdminOverviewDashboard = ({ users = [], tasks = [], payments = [], proposa
                                     <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 600 }} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+
+                            {/* graph paper style grid - both directions */}
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+
+                            <XAxis
+                                dataKey="date"
+                                axisLine={{ stroke: '#e2e8f0' }}
+                                tickLine={false}
+                                tick={{ fontSize: 10, fontWeight: 600 }}
+                            />
+
+                            <YAxis
+                                yAxisId="left"
+                                axisLine={{ stroke: '#e2e8f0' }}
+                                tickLine={false}
+                                tick={{ fontSize: 10 }}
+                            />
+
+                            <YAxis
+                                yAxisId="right"
+                                orientation="right"
+                                axisLine={{ stroke: '#e2e8f0' }}
+                                tickLine={false}
+                                tick={{ fontSize: 10 }}
+                                tickFormatter={(value) => `${value / 1000}k`}
+                            />
+
                             <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '12px' }} />
-                            <Area type="monotone" dataKey="Revenue" stroke="#22c55e" strokeWidth={3} fill="url(#colorRev)" />
-                            <Area type="monotone" dataKey="Clients" stroke="#3b82f6" strokeWidth={2} fill="transparent" />
-                            <Area type="monotone" dataKey="Freelancers" stroke="#6366f1" strokeWidth={2} fill="transparent" />
+
+                            <Area
+                                yAxisId="right"
+                                type="monotone"
+                                dataKey="Revenue"
+                                stroke="#22c55e"
+                                strokeWidth={3}
+                                fill="url(#colorRev)"
+                            />
+                            <Area
+                                yAxisId="left"
+                                type="monotone"
+                                dataKey="Clients"
+                                stroke="#3b82f6"
+                                strokeWidth={2}
+                                fill="transparent"
+                            />
+                            <Area
+                                yAxisId="left"
+                                type="monotone"
+                                dataKey="Freelancers"
+                                stroke="#6366f1"
+                                strokeWidth={2}
+                                fill="transparent"
+                            />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
             </div>
 
             {/* Distribution Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                <div className="bg-white p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm">
-                    <h3 className="text-base md:text-lg font-bold text-gray-800 mb-4 md:mb-6">User Base</h3>
-                    <div className="h-[250px] md:h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={[
-                                        { name: "Clients", value: clientsCount },
-                                        { name: "Freelancers", value: freelancersCount }
-                                    ]}
-                                    cx="50%" cy="50%" innerRadius="60%" outerRadius="80%" paddingAngle={10} dataKey="value"
-                                >
-                                    <Cell fill="#3b82f6" />
-                                    <Cell fill="#6366f1" />
-                                </Pie>
-                                <Tooltip cornerRadius={12} />
-                                <Legend wrapperStyle={{ fontSize: '12px' }} />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+    <div className="bg-white p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm">
+        <h3 className="text-base md:text-lg font-bold text-gray-800 mb-4 md:mb-6">User Base</h3>
+        <div className="h-[250px] md:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                    <Pie
+                        data={[
+                            { name: "Clients", value: clientsCount },
+                            { name: "Freelancers", value: freelancersCount }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius="60%"
+                        outerRadius="80%"
+                        paddingAngle={8}
+                        cornerRadius={12}
+                        dataKey="value"
+                        label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                        labelLine={false}
+                    >
+                        <Cell fill="#f97316" />
+                        <Cell fill="#06b6d4" />
+                    </Pie>
+                    <Tooltip
+                        cornerRadius={12}
+                        formatter={(value, name, props) => {
+                            const total = clientsCount + freelancersCount;
+                            const percent = total ? ((value / total) * 100).toFixed(1) : 0;
+                            return [`${value} (${percent}%)`, name];
+                        }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} />
+                </PieChart>
+            </ResponsiveContainer>
+        </div>
+    </div>
 
-                <div className="bg-white p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm">
-                    <h3 className="text-base md:text-lg font-bold text-gray-800 mb-4 md:mb-6 text-center lg:text-left">Task Lifecycle</h3>
-                    <div className="h-[250px] md:h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={lifecycleData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontWeight: 600, fontSize: 10 }} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
-                                <Tooltip cursor={{ fill: '#f8fafc' }} />
-                                <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={40}>
-                                    {lifecycleData.map((entry, index) => (
-                                        <Cell key={`bar-${index}`} fill={entry.color} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
+    <div className="bg-white p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm">
+        <h3 className="text-base md:text-lg font-bold text-gray-800 mb-4 md:mb-6 text-center lg:text-left">Task Lifecycle</h3>
+        <div className="h-[250px] md:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={lifecycleData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="name" axisLine={{ stroke: '#e2e8f0' }} tickLine={false} tick={{ fontWeight: 600, fontSize: 10 }} />
+                    <YAxis axisLine={{ stroke: '#e2e8f0' }} tickLine={false} tick={{ fontSize: 10 }} />
+                    <Tooltip cursor={{ fill: '#f8fafc' }} />
+                    <Bar dataKey="value" radius={[10, 10, 10, 10]} barSize={36}>
+                        {lifecycleData.map((entry, index) => {
+                            const colors = ["#f97316", "#06b6d4", "#8b5cf6", "#ec4899", "#22c55e", "#eab308"];
+                            return <Cell key={`bar-${index}`} fill={colors[index % colors.length]} />;
+                        })}
+                    </Bar>
+                </BarChart>
+            </ResponsiveContainer>
+        </div>
+    </div>
+</div>
 
             {/* Bottom Quick Summary - Responsive Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">

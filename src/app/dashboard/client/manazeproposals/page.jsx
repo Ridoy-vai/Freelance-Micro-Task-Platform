@@ -1,5 +1,6 @@
 import ManageProposals from '@/Dashboardaction/clientcomponent/ManageProposals';
 import { auth } from '@/lib/auth';
+import { requireRole } from '@/lib/role-check-access';
 import { GetPendingProposalsByClient } from '@/ServerActions/proposal';
 import { headers } from 'next/headers';
 import React from 'react';
@@ -7,6 +8,7 @@ import React from 'react';
 export const dynamic = 'force-dynamic';
 
 const page = async () => {
+    await requireRole(["client"]);
     const session = await auth.api.getSession({
         headers: await headers(),
     });

@@ -1,5 +1,6 @@
 
 import TaskCard from '@/Components/TaskCard';
+import { requireRole } from '@/lib/role-check-access';
 import { GetAllTasks } from '@/ServerActions/Task';
 import Link from 'next/link';
 import React from 'react';
@@ -7,6 +8,7 @@ import React from 'react';
 const TASKS_PER_PAGE = 6;
 
 const FeaturedTasks = async () => {
+    await requireRole(["freelancer"]);
     const limit = TASKS_PER_PAGE;
 
     const { tasks: TASKS } = await GetAllTasks('tasks', limit, 0);

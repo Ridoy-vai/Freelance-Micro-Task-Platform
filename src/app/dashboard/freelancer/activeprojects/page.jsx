@@ -5,10 +5,12 @@ import { GetActiveProposals } from "@/ServerActions/proposal";
 import { headers } from "next/headers";
 import { Briefcase, Zap, ArrowRight } from "lucide-react"; // Added modern icons
 import Link from "next/link";
+import { requireRole } from "@/lib/role-check-access";
 
 export const dynamic = 'force-dynamic';
 
 const MyActiveProjects = async ({ searchParams }) => {
+  await requireRole(["freelancer"]);
   const params = await searchParams;
   const currentPage = Number(params?.page) || 1;
   const itemsPerPage = 10;

@@ -5,29 +5,34 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, FileText, DollarSign, Plus,
   ClipboardList, Send, Briefcase, Clock, User, Menu, X, ChevronRight,
-  LogOut
+  LogOut,
+  SearchCode,
+  MonitorDot,
+  ChartSpline,
+  UserRoundPen
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
 const menuConfig = {
   admin: [
-    { id: "overview", name: "Overview", icon: LayoutDashboard, href: "/dashboard/admin" },
+    { id: "overview", name: "Overview", icon: ChartSpline, href: "/dashboard/admin" },
     { id: "users", name: "Users", icon: Users, href: "/dashboard/admin/users" },
     { id: "tasks", name: "Tasks", icon: FileText, href: "/dashboard/admin/tasks" },
     { id: "transactions", name: "Finance", icon: DollarSign, href: "/dashboard/admin/transactions" },
   ],
   client: [
-    { id: "overview", name: "Dashboard", icon: LayoutDashboard, href: "/dashboard/client" },
+    { id: "overview", name: "Dashboard", icon: ChartSpline, href: "/dashboard/client" },
     { id: "post", name: "Post Task", icon: Plus, href: "/dashboard/client/PostTaskForm" },
     { id: "tasks", name: "My Tasks", icon: ClipboardList, href: "/dashboard/client/MyTasks" },
     { id: "proposals", name: "Proposals", icon: FileText, href: "/dashboard/client/manazeproposals" },
   ],
   freelancer: [
-    { id: "overview", name: "Overview", icon: LayoutDashboard, href: "/dashboard/freelancer" },
-    { id: "browse", name: "Browse", icon: Briefcase, href: "/dashboard/freelancer/browse" },
-    { id: "active", name: "active", icon: Briefcase, href: "/dashboard/freelancer/activeprojects" },
+    { id: "overview", name: "Overview", icon: ChartSpline, href: "/dashboard/freelancer" },
+    { id: "browse", name: "Browse", icon: SearchCode, href: "/dashboard/freelancer/browse" },
+    { id: "active", name: "Active Projects", icon: MonitorDot, href: "/dashboard/freelancer/activeprojects" },
     { id: "proposals", name: "My Proposals", icon: Send, href: "/dashboard/freelancer/myproposals" },
     { id: "earnings", name: "Earnings", icon: DollarSign, href: "/dashboard/freelancer/myearnings" },
+    { id: "eaditprofile", name: "Eadit Profile", icon: UserRoundPen, href: "/dashboard/freelancer/eaditprofile" },
   ],
 };
 
@@ -70,9 +75,22 @@ export default function DashboardLayout({ children }) {
       {/*--- SMALL DEVICE: TOP NAV ---*/}
       <div className="md:hidden bg-white border-b z-50">
         <div className="flex items-center justify-between px-4 py-3">
-          <span className={`font-black tracking-tighter ${theme.text}`}>HUB.</span>
+          {/* Logo Section */}
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
+            <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-slate-200 bg-white p-0.5 shadow-sm transition-transform group-hover:scale-105">
+              <img
+                src="https://img.magnific.com/premium-vector/eqh-logo-design-initial-letter-eqh-monogram-logo-using-hexagon-shape_1101554-16445.jpg?semt=ais_hybrid&w=740&q=80"
+                alt="Logo"
+                className="h-full w-full object-cover rounded-lg"
+              />
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="text-xl font-black tracking-tighter text-slate-900 leading-none">TaskNest</h1>
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-amber-600">Marketplace</p>
+            </div>
+          </Link>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 bg-slate-100 rounded-lg">
-            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            {sidebarOpen ? <X size={20} /> : <LayoutDashboard size={20} />}
           </button>
         </div>
 
@@ -90,10 +108,18 @@ export default function DashboardLayout({ children }) {
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         <div className="h-full flex flex-col p-6">
-          <Link href={"/"}>
-            <div className="flex items-center gap-3 mb-10 px-2">
-              <div className={`w-10 h-10 rounded-xl ${theme.bg} flex items-center justify-center text-white font-bold`}>H</div>
-              <h2 className="text-xl font-black text-slate-800 tracking-tight">DASHBOARD</h2>
+          {/* Logo Section */}
+          <Link href="/" className="flex items-center gap-3 group shrink-0 mb-5">
+            <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-slate-200 bg-white p-0.5 shadow-sm transition-transform group-hover:scale-105">
+              <img
+                src="https://img.magnific.com/premium-vector/eqh-logo-design-initial-letter-eqh-monogram-logo-using-hexagon-shape_1101554-16445.jpg?semt=ais_hybrid&w=740&q=80"
+                alt="Logo"
+                className="h-full w-full object-cover rounded-lg"
+              />
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="text-xl font-black tracking-tighter text-slate-900 leading-none">TaskNest</h1>
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-amber-600">Marketplace</p>
             </div>
           </Link>
 
@@ -164,7 +190,7 @@ export default function DashboardLayout({ children }) {
         {/* Tablet Menu Trigger */}
         <div className="hidden md:flex lg:hidden absolute top-6 left-6 z-30">
           <button onClick={() => setSidebarOpen(true)} className="p-3 bg-white shadow-xl rounded-2xl border border-slate-100 text-slate-600">
-            <Menu size={20} />
+            <LayoutDashboard size={20} />
           </button>
         </div>
 

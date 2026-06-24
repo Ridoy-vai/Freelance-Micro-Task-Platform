@@ -8,8 +8,10 @@ import { GetFreelancerTransactions } from "@/ServerActions/Freelancer";
 import { GetActiveProposals, GetProposalById } from "@/ServerActions/proposal";
 import { headers } from "next/headers";
 import FreelancerDashboardHome from "@/Dashboardoverview/FreelancerDashboardHome";
+import { requireRole } from "@/lib/role-check-access";
 
 const FreelancerDashboardPage = async () => {
+    await requireRole(["freelancer"]);
     const session = await auth.api.getSession({ headers: await headers() });
     const user = session?.user;
 

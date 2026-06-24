@@ -5,10 +5,12 @@ import { GetProposalById } from "@/ServerActions/proposal";
 import ProposalActions from "@/Dashboardaction/freelancercomponent/ProposalActions";
 import { PaginationControlled } from "@/Components/PaginationControlled";
 import Link from "next/link";
+import { requireRole } from "@/lib/role-check-access";
 
 export const dynamic = 'force-dynamic';
 
 const MyProposals = async ({ searchParams }) => {
+  await requireRole(["freelancer"]);
   const params = await searchParams;
   const currentPage = Number(params?.page) || 1;
   const itemsPerPage = 5;

@@ -4,11 +4,13 @@ import { Calendar, DollarSign } from 'lucide-react';
 import TaskActions from "@/Dashboardaction/clientcomponent/TaskActions";
 import { PaginationControlled } from "@/Components/PaginationControlled";
 import { GetTasksByUser } from "@/ServerActions/Task";
+import { requireRole } from "@/lib/role-check-access";
 
 export const dynamic = 'force-dynamic';
 // import { clienttaskeadit } from "@/modals/clienttaskeadit";
 
 const MyTasksPage = async ({ searchParams }) => {
+    await requireRole(["client"]);
     const params = await searchParams;
     const currentPage = Number(params?.page) || 1;
     const itemsPerPage = 10;

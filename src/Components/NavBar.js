@@ -27,6 +27,9 @@ export default function Navbar() {
   if (pathname.includes("dashboard")) {
     return null
   }
+  if (pathname.includes("unauthorized")) {
+    return null
+  }
 
 
   const handleSignout = async () => {

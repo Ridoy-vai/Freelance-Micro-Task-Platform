@@ -1,15 +1,14 @@
 import AdminOverviewDashboard from "@/Dashboardoverview/AdminOverviewDashboard";
 import { auth } from "@/lib/auth";
+import { requireRole } from "@/lib/role-check-access";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 // import AdminOverviewDashboard from "./overview/page";
 // import AdminOverviewDashboard from "./AdminOverviewDashboard";
 
 const AdminPage = async () => {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session || session.user.role !== "admin") {
-        redirect("/login");
-    }
+    const session = await requireRole(["admin"]);
+    // const session = await requireRole(["client", "freelancer"]);
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -27,10 +26,10 @@ const AdminPage = async () => {
 
     return (
         <AdminOverviewDashboard
-            users={users || []} 
-            tasks={tasks || []} 
-            payments={payments || []} 
-            proposals={proposals || []} 
+            users={users || []}
+            tasks={tasks || []}
+            payments={payments || []}
+            proposals={proposals || []}
         />
     );
 };
