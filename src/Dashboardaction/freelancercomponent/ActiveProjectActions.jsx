@@ -2,16 +2,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { WithForm } from "@/modals/freelancerSubmissionModal";
-import {   updateProposalStatus } from "@/ServerActions/proposal";
+import { updateProposalStatus } from "@/ServerActions/proposal";
 import { IncrementSubmissionCount } from "@/ServerActions/Freelancer";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-const ActiveProjectActions = ({ proposalId, freelancerId }) => {
+const ActiveProjectActions = ({ proposalId, freelancerId, taskId }) => {
+    console.log("llllllllllllllllllllllllllll", taskId)
     const [submittingId, setSubmittingId] = useState(null);
     const router = useRouter();
 
     const markAsSubmitted = async (id, extraData = {}) => {
+        console.log(extraData)
         setSubmittingId(id);
         try {
             await updateProposalStatus(
@@ -21,23 +23,6 @@ const ActiveProjectActions = ({ proposalId, freelancerId }) => {
                 extraData.submitionMessage
             );
 
-            const res = await fetch(`${API_URL}/updatetaskstatus/${id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    status: "submited",
-                    isSubmit: true,
-                    ...extraData,
-                }),
-            });
-
-            if (!res.ok) {
-                throw new Error("Task status update failed");
-            }
-
-            await res.json();
-
-            // 👇 notun: profile e submission counter increment kora
             if (freelancerId) {
                 await IncrementSubmissionCount(freelancerId);
             }
@@ -51,7 +36,7 @@ const ActiveProjectActions = ({ proposalId, freelancerId }) => {
         }
     };
 
-    return <WithForm id={proposalId} onSubmitSuccess={markAsSubmitted} />;
+    return <WithForm id={proposalId} taskId={taskId} onSubmitSuccess={markAsSubmitted} />;
 };
 
 export default ActiveProjectActions;

@@ -143,6 +143,7 @@ const MyActiveProjects = async ({ searchParams }) => {
                   <ActiveProjectActions 
                     proposalId={p._id} 
                     freelancerId={p.FreelancerId} 
+                    taskId={p.taskId} 
                   />
                 </td>
               </tr>

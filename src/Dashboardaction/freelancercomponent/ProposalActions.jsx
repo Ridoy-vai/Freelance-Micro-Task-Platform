@@ -3,12 +3,15 @@
 import { deleteProposal } from "@/ServerActions/proposal";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Loader2, Trash2 } from "lucide-react"; // Added Trash icon
+import { Loader2, Trash2 } from "lucide-react";
 import { AlertDialog, Button } from "@heroui/react";
 
-const ProposalActions = ({ proposalId }) => {
+const ProposalActions = ({ proposalId, status }) => {
   const [deleting, setDeleting] = useState(false);
   const router = useRouter();
+
+  const deletableStatuses = ["pending", "rejected", "submited"];
+  const canDelete = deletableStatuses.includes(status);
 
   const handleDelete = async () => {
     try {
@@ -31,11 +34,11 @@ const ProposalActions = ({ proposalId }) => {
   return (
     <AlertDialog>
       {/* TRIGGER BUTTON */}
-      <Button 
-        variant="light" 
-        color="danger" 
-        isIconOnly 
-        className="hover:bg-red-50"
+      <Button
+        variant="light"
+        color="danger"
+        isIconOnly
+        className="hover:bg-red-500 bg-red-300"
         title="Delete Proposal"
       >
         <Trash2 size={18} />
@@ -45,17 +48,25 @@ const ProposalActions = ({ proposalId }) => {
         <AlertDialog.Container>
           <AlertDialog.Dialog className="sm:max-w-[420px]">
             <AlertDialog.CloseTrigger />
-            
+
             <AlertDialog.Header>
               <AlertDialog.Icon status="danger" />
               <AlertDialog.Heading>Withdraw Proposal?</AlertDialog.Heading>
             </AlertDialog.Header>
 
             <AlertDialog.Body>
-              <p className="text-gray-600">
-                Are you sure you want to delete this proposal? This action 
-                will permanently remove your application and cannot be undone.
-              </p>
+              {!canDelete ? (
+                <p className="text-amber-600 font-medium">
+                  This proposal has already been processed by the Client and
+                  can no longer be withdrawn.
+                </p>
+              ) : (
+                <p className="text-gray-600">
+                  Are you sure you want to delete this proposal? This action
+                  will permanently remove your application and cannot be
+                  undone.
+                </p>
+              )}
             </AlertDialog.Body>
 
             <AlertDialog.Footer>
@@ -65,11 +76,11 @@ const ProposalActions = ({ proposalId }) => {
               </Button>
 
               {/* CONFIRM DELETE BUTTON */}
-              <Button 
-                onPress={handleDelete} // Triggers the delete function
+              <Button
+                onPress={handleDelete}
                 variant="danger"
                 isLoading={deleting}
-                disabled={deleting}
+                isDisabled={deleting || !canDelete}
                 className="min-w-[120px]"
               >
                 {deleting ? "Deleting..." : "Yes, Delete"}

@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { FileText, Search, PlusCircle, ExternalLink } from "lucide-react"; // Added ExternalLink icon
+import { FileText, Search, PlusCircle, ExternalLink } from "lucide-react";
 import { GetProposalById } from "@/ServerActions/proposal";
 import ProposalActions from "@/Dashboardaction/freelancercomponent/ProposalActions";
 import { PaginationControlled } from "@/Components/PaginationControlled";
@@ -56,7 +56,7 @@ const MyProposals = async ({ searchParams }) => {
         <p className="text-gray-500 mb-8 max-w-sm mx-auto leading-relaxed">
           It looks like you haven't applied for any projects yet. Start exploring available tasks to find your next big opportunity!
         </p>
-        <Link 
+        <Link
           href="/tasks"
           className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
         >
@@ -113,25 +113,34 @@ const MyProposals = async ({ searchParams }) => {
                 <td className="px-6 py-5 text-sm text-gray-600">{p.estimatedDays} Days</td>
 
                 <td className="px-6 py-5">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    p.status === 'accepted' ? 'bg-green-100 text-green-700' : 
-                    p.status === 'rejected' ? 'bg-red-100 text-red-700' : 
-                    'bg-amber-100 text-amber-700'
-                  }`}>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${p.status === 'accepted' ? 'bg-green-100 text-green-700' :
+                      p.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                        'bg-amber-100 text-amber-700'
+                    }`}>
                     {p.status}
                   </span>
                 </td>
 
-                {/* NEW SUBMISSION LINK COLUMN */}
+                {/* SUBMISSION LINK COLUMN */}
                 <td className="px-6 py-5">
-                  <div className="flex items-center gap-1.5 text-blue-600 cursor-pointer hover:underline text-sm font-medium">
-                    <span>View Link</span>
-                    <ExternalLink size={14} />
-                  </div>
+                  {p.status === "submited" && p.submitionLink ? (
+                    <a
+                      href={p.submitionLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={p.submitionLink}
+                      className="flex items-center gap-1.5 text-blue-600 hover:underline text-sm font-medium max-w-[200px] truncate"
+                    >
+                      <span className="truncate">{p.submitionLink}</span>
+                      <ExternalLink size={14} className="shrink-0" />
+                    </a>
+                  ) : (
+                    <span className="text-gray-400 text-sm">Not submitted yet</span>
+                  )}
                 </td>
 
                 <td className="px-6 py-5 text-right">
-                  <ProposalActions proposalId={p._id} />
+                  <ProposalActions proposalId={p._id} status={p.status} />
                 </td>
               </tr>
             ))}
