@@ -7,6 +7,11 @@ import React from 'react';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: "Manaze Proposals | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
+
 const page = async () => {
     await requireRole(["client"]);
     const session = await auth.api.getSession({

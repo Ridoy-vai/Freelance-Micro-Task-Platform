@@ -18,7 +18,10 @@ import {
 import { EditProfileModal } from "@/modals/clientprophilupdate";
 
 export const dynamic = 'force-dynamic';
-
+export const metadata = {
+  title: "My Prophil | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 export default async function ProfilePage() {
   const session = await auth.api.getSession({
     headers: await headers(),

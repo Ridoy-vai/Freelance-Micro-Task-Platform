@@ -8,6 +8,10 @@ import Link from "next/link";
 import { requireRole } from "@/lib/role-check-access";
 
 export const dynamic = 'force-dynamic';
+export const metadata = {
+  title: "Active Project | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 
 const MyActiveProjects = async ({ searchParams }) => {
   await requireRole(["freelancer"]);
@@ -140,10 +144,10 @@ const MyActiveProjects = async ({ searchParams }) => {
                   </span>
                 </td>
                 <td className="px-6 py-5 text-right">
-                  <ActiveProjectActions 
-                    proposalId={p._id} 
-                    freelancerId={p.FreelancerId} 
-                    taskId={p.taskId} 
+                  <ActiveProjectActions
+                    proposalId={p._id}
+                    freelancerId={p.FreelancerId}
+                    taskId={p.taskId}
                   />
                 </td>
               </tr>

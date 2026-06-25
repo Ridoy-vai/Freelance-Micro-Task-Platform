@@ -6,7 +6,10 @@ import { PaginationControlled } from "@/Components/PaginationControlled";
 import { requireRole } from "@/lib/role-check-access";
 
 export const dynamic = 'force-dynamic';
-
+export const metadata = {
+  title: "My Earning | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view Earning details, budgets, submission links, and proposal status in one place.",
+};
 const page = async ({ searchParams }) => {
     await requireRole(["freelancer"]);
     const params = await searchParams;

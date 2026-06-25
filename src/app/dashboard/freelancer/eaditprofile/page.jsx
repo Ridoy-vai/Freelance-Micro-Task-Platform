@@ -35,7 +35,9 @@ const initialClientForm = {
   companyWebsite: "",
 };
 
+
 export default function EditProfilePage() {
+  
   const { data: session, isPending: sessionPending } = authClient.useSession();
   const user = session?.user;
   const role = user?.role; // "freelancer" | "client"

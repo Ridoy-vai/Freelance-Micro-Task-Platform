@@ -6,7 +6,10 @@ import Link from 'next/link';
 import React from 'react';
 
 const TASKS_PER_PAGE = 6;
-
+export const metadata = {
+  title: "Brows Task | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 const FeaturedTasks = async () => {
     await requireRole(["freelancer"]);
     const limit = TASKS_PER_PAGE;

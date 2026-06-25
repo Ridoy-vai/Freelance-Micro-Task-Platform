@@ -3,7 +3,10 @@ import { requireRole } from "@/lib/role-check-access";
 import { GetAllAdminTasks } from "@/ServerActions/admin";
 
 export const dynamic = 'force-dynamic';
-
+export const metadata = {
+  title: "Admin  Task | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 const AdminTasksPage = async ({ searchParams }) => {
     const session = await requireRole(["admin"]);
 // const session = await requireRole(["client", "freelancer"]);

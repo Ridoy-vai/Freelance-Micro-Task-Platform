@@ -17,7 +17,10 @@ import { headers } from "next/headers";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const dynamic = "force-dynamic";
-
+export const metadata = {
+  title: "Freelancer | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 export default async function FreelancerProfilePage({ params }) {
   const { id } = await params;
   const session = await auth.api.getSession({

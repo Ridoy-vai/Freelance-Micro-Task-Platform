@@ -1,6 +1,9 @@
 import { XCircle, ArrowLeft, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
-
+export const metadata = {
+  title: "Pament Cancle | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 export default async function Cancel({ searchParams }) {
   const { ProposedId } = await searchParams
 

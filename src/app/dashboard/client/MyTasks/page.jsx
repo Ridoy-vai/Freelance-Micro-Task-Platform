@@ -7,8 +7,10 @@ import { GetTasksByUser } from "@/ServerActions/Task";
 import { requireRole } from "@/lib/role-check-access";
 
 export const dynamic = 'force-dynamic';
-// import { clienttaskeadit } from "@/modals/clienttaskeadit";
-
+export const metadata = {
+  title: "My Tasks | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 const MyTasksPage = async ({ searchParams }) => {
     await requireRole(["client"]);
     const params = await searchParams;

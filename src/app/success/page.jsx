@@ -4,7 +4,10 @@ import { CheckCircle2, ArrowRight, Receipt } from 'lucide-react'
 import Link from 'next/link'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
-
+export const metadata = {
+  title: "Success Tranjection | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 // Mirrors the old client-side handleAccept, run server-side right after
 // Stripe confirms payment: mark the proposal accepted, then the task booked.
 async function acceptProposalAfterPayment(proposalId) {

@@ -4,7 +4,10 @@ import { PaginationControlled } from '@/Components/PaginationControlled';
 import React from 'react';
 
 export const dynamic = 'force-dynamic';
-
+export const metadata = {
+  title: "Freelancer | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 const BrowseFreelancers = async ({ searchParams }) => {
     const params = await searchParams;
     const search = params?.search || "";

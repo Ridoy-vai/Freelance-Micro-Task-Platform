@@ -1,6 +1,9 @@
 // app/blocked/page.jsx
 import { ShieldOff } from "lucide-react";
-
+export const metadata = {
+  title: "Acount Blocked | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 export default function BlockedPage() {
     return (
         <section className="flex min-h-screen items-center justify-center bg-ink px-6 py-16">

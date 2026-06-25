@@ -7,7 +7,10 @@ import { redirect } from "next/navigation"; // redirect ইম্পোর্ট
 import DashboardHome from "@/Dashboardoverview/DashboardHome";
 import { requireRole } from "@/lib/role-check-access";
 // import DashboardHome from "@/app/dashboard/freelancer/overview/page";
-
+export const metadata = {
+  title: "Overview | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
 const ClientDashboardPage = async () => {
     const role = await requireRole(["client"]);
 // const session = await requireRole(["client", "freelancer"]);

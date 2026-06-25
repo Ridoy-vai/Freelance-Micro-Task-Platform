@@ -24,7 +24,10 @@ export default async function TaskDetailsPage({ params }) {
     const { id } = await params;
     let task = await GetTasksById("tasksid", id, user.id);
     console.log(task)
-
+export const metadata = {
+  title: "My Proposals | TaskNest",
+  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
     if (!task) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center uppercase tracking-widest text-paper/40">
