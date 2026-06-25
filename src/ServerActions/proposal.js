@@ -100,6 +100,7 @@ export const updateProposalStatus = async (id, status, submitionLink, submitionM
 };
 
 export const deleteProposal = async (id) => {
+    console.log("delete ", id)
     const res = await fetch(`${API_URL}/proposals/${id}`, {
         method: "DELETE",
     });

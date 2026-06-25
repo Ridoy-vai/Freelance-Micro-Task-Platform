@@ -58,9 +58,13 @@ export const GetTasksByUser = async (path, clientId, page = 1, limit = 10) => {
         return { tasks: [], totalItems: 0, totalPages: 1, currentPage: page };
     }
 };
+//????????????????????????????????????????? ok
+export const GetTasksById = async (path, id, freelancerId) => {
+    const url = freelancerId
+        ? `${NEXT_PUBLIC_API_URL}/${path}/${id}?freelancerId=${freelancerId}`
+        : `${NEXT_PUBLIC_API_URL}/${path}/${id}`;
 
-export const GetTasksById = async (path, id) => {
-    const response = await fetch(`${NEXT_PUBLIC_API_URL}/${path}/${id}`, {
+    const response = await fetch(url, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

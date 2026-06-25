@@ -22,7 +22,7 @@ export default async function TaskDetailsPage({ params }) {
     if (!user) redirect("/");
 
     const { id } = await params;
-    let task = await GetTasksById("tasksid", id);
+    let task = await GetTasksById("tasksid", id, user.id);
     console.log(task)
 
     if (!task) {
@@ -203,7 +203,7 @@ export default async function TaskDetailsPage({ params }) {
                                 ) : alreadyApplied ? (
                                     <div className="mt-8 rounded-2xl border border-signal/20 bg-signal/5 p-6 text-center">
                                         <p className="text-sm text-paper/60">
-                                            You have already pitched for this task.
+                                            You have already aplaied for this task.
                                         </p>
                                     </div>
                                 ) : (
