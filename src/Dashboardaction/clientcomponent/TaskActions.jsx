@@ -12,6 +12,7 @@ const TaskActions = ({ task }) => {
     if (!task) return null;
 
     const taskId = task._id;
+    const isEditable = task.status === "open";
     const [deletingId, setDeletingId] = useState(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -86,8 +87,17 @@ const TaskActions = ({ task }) => {
             
             {/* Edit Button */}
             <button
-                onClick={() => setIsEditModalOpen(true)}
-                className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition"
+                onClick={() => {
+                    if (!isEditable) return;
+                    setIsEditModalOpen(true);
+                }}
+                disabled={!isEditable}
+                title={!isEditable ? "Only tasks with 'open' status can be edited" : "Edit task"}
+                className={`p-2 rounded-lg transition ${
+                    isEditable
+                        ? "text-blue-500 hover:bg-blue-50 cursor-pointer"
+                        : "text-slate-300 cursor-not-allowed"
+                }`}
             >
                 <Edit size={18} />
             </button>

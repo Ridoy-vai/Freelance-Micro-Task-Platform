@@ -1,31 +1,21 @@
 import FreelancerCard from '@/Components/FreelancerCard';
-// import FreelancerFilters from '@/Components/FreelancerFilters';
-import { PaginationControlled } from '@/Components/PaginationControlled';
 import { UserX } from 'lucide-react';
 import React from 'react';
 
-const BrowseFreelancers = async ({ searchParams }) => {
-    const params = await searchParams;
-    const search = params?.search || "";
-    const minBudgetFrom = params?.minBudgetFrom || "";
-    const minBudgetTo = params?.minBudgetTo || "";
-    const page = Number(params?.page) || 1;
-    const limit = 9; // 9 fits nicely as a 3-column grid; adjust if the grid layout changes
+const FeaturedFreelancers = async () => {
+    const limit = 6;
 
-    const query = new URLSearchParams();
-    if (search) query.append("search", search);
-    if (minBudgetFrom) query.append("minBudgetFrom", minBudgetFrom);
-    if (minBudgetTo) query.append("minBudgetTo", minBudgetTo);
-    query.append("page", page);
-    query.append("limit", limit);
-
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/freelancers?${query.toString()}`,
-        { cache: "no-store" }
-    );
-    const data = res.ok ? await res.json() : { freelancers: [], totalItems: 0, totalPages: 1 };
-
-    const FREELANCERS = data.freelancers || [];
+    let FREELANCERS = [];
+    // console.log(FREELANCERS)
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/featured-freelancers?limit=${limit}`, {
+            cache: 'no-store'
+        });
+        const data = await res.json();
+        FREELANCERS = data.freelancers || [];
+    } catch (error) {
+        console.error("Error fetching featured freelancers:", error);
+    }
 
     return (
         <section className="bg-ink py-20 sm:py-24">
@@ -36,14 +26,10 @@ const BrowseFreelancers = async ({ searchParams }) => {
                             Trusted by clients
                         </span>
                         <h2 className="mt-2 font-display text-3xl text-paper sm:text-4xl">
-                            Browse freelancers
+                            Top rated freelancers
                         </h2>
                     </div>
-                    <button className="text-sm font-semibold text-paper/60 transition-colors hover:text-signal">
-                        Total freelancers : {data.totalItems}
-                    </button>
                 </div>
-
 
                 <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {FREELANCERS.length > 0 ? (
@@ -59,16 +45,14 @@ const BrowseFreelancers = async ({ searchParams }) => {
                                 No freelancers found
                             </h3>
                             <p className="mt-1 max-w-xs text-sm text-paper/50">
-                                Try adjusting your search or budget filters to see more results.
+                                Check back soon, new freelancers are joining regularly.
                             </p>
                         </div>
                     )}
                 </div>
-
-                
             </div>
         </section>
     );
 };
 
-export default BrowseFreelancers;
+export default FeaturedFreelancers;

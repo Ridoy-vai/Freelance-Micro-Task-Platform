@@ -1,12 +1,21 @@
 import TaskCard from '@/Components/TaskCard';
-import { GetAllTasks } from '@/ServerActions/Task';
 import { PackageOpen } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
 const FeaturedTasks = async () => {
     const limit = 6;
-    const { tasks: TASKS } = await GetAllTasks('tasks', limit, 0);
+
+    let TASKS = [];
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/featured-tasks?limit=${limit}`, {
+            cache: 'no-store'
+        });
+        const data = await res.json();
+        TASKS = data.tasks || [];
+    } catch (error) {
+        console.error("Error fetching featured tasks:", error);
+    }
 
     return (
         <section className="bg-ink py-24 sm:py-28">
