@@ -47,7 +47,7 @@ const Footer = () => {
     const year = new Date().getFullYear();
 
     return (
-        <footer className="bg-ink border-t border-paper/10">
+        <footer className="bg-ink border-t border-paper/10 bg-gray-300">
             <div className="mx-auto max-w-7xl px-6 py-12 sm:py-16 lg:px-8 lg:py-20">
                 
                 {/* Main Grid Structure */}

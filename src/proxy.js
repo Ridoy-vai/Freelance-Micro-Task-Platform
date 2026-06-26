@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
+import { auth } from "@/lib/auth"; // adjust path to your better-auth instance
 
 const ROLE_ROUTES = {
   "/dashboard/admin": ["admin"],
@@ -8,24 +8,34 @@ const ROLE_ROUTES = {
 };
 
 const PROTECTED_PREFIX = "/dashboard";
+const AUTH_ROUTES = ["/login", "/register"];
 
 export async function proxy(request) {
   const { pathname } = request.nextUrl;
+
+  const session = await auth.api.getSession({
+    headers: request.headers,
+  });
+
+  // Logged-in users shouldn't access /login or /register
+  if (AUTH_ROUTES.includes(pathname)) {
+    if (session) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
+  }
 
   if (!pathname.startsWith(PROTECTED_PREFIX)) {
     return NextResponse.next();
   }
 
-  const sessionCookie = getSessionCookie(request);
-
-  if (!sessionCookie) {
+  if (!session) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-
-  const userRole = getRoleFromSessionCookie(sessionCookie);
+  const userRole = session.user?.role ?? null;
 
   if (userRole) {
     for (const [routePrefix, allowedRoles] of Object.entries(ROLE_ROUTES)) {
@@ -33,7 +43,8 @@ export async function proxy(request) {
       const roleNotAllowed = !allowedRoles.includes(userRole);
 
       if (isThisRouteRoleRestricted && roleNotAllowed) {
-        return NextResponse.redirect(new URL("/unauthorized", request.url));
+        const ownDashboard = `/dashboard/${userRole}`;
+        return NextResponse.redirect(new URL(ownDashboard, request.url));
       }
     }
   }
@@ -41,22 +52,6 @@ export async function proxy(request) {
   return NextResponse.next();
 }
 
-function getRoleFromSessionCookie(cookieValue) {
-  try {
-    const payloadPart = cookieValue.split(".")[1];
-    if (!payloadPart) return null;
-
-    const decoded = JSON.parse(
-      Buffer.from(payloadPart, "base64").toString("utf-8")
-    );
-
-    return decoded.role ?? null;
-  } catch (error) {
-    console.error("Failed to decode session cookie:", error);
-    return null;
-  }
-}
-
 export const config = {
-  matcher: ["/dashboard/:path*", "/profile"],
+  matcher: ["/dashboard/:path*", "/profile", "/login", "/register"],
 };
