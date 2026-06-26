@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { FileText, Search, PlusCircle, ExternalLink } from "lucide-react";
+import { FileText, Search, PlusCircle, ExternalLink, LogIn, ShieldAlert } from "lucide-react";
 import { GetProposalById } from "@/ServerActions/proposal";
 import ProposalActions from "@/Dashboardaction/freelancercomponent/ProposalActions";
 import { PaginationControlled } from "@/Components/PaginationControlled";
@@ -12,12 +12,13 @@ export const metadata = {
   title: "My Proposals | TaskNest",
   description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
 };
+
 const MyProposals = async ({ searchParams }) => {
 
   await requireRole(["freelancer"]);
   const params = await searchParams;
   const currentPage = Number(params?.page) || 1;
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -27,9 +28,21 @@ const MyProposals = async ({ searchParams }) => {
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center text-center px-8 py-20 bg-white rounded-2xl border border-gray-200 shadow-sm">
-        <p className="text-lg font-semibold text-gray-900">Access Denied</p>
-        <p className="text-gray-500 mt-2">Please login to view your submitted proposals.</p>
+      <div className="flex flex-col items-center justify-center text-center px-6 py-20 bg-white rounded-2xl border-2 border-dashed border-gray-200">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-50">
+          <ShieldAlert size={36} className="text-red-400" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900">Access Denied</h3>
+        <p className="mt-2 max-w-sm text-sm text-gray-500">
+          Please login to view your submitted proposals.
+        </p>
+        <Link
+          href="/login"
+          className="mt-8 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
+        >
+          <LogIn size={18} />
+          Log in
+        </Link>
       </div>
     );
   }

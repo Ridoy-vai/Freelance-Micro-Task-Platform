@@ -14,11 +14,9 @@ const EarningPage = ({ searchParams: searchParamsPromise }) => {
     const [loading, setLoading] = useState(true);
     const [copiedId, setCopiedId] = useState(null);
 
-    // ১. সেশন এবং সার্চ প্যারামস হ্যান্ডেল করা
     const { data: session, isPending: sessionPending } = authClient.useSession();
     const user = session?.user;
 
-    // ২. ডেটা ফেচ করা
     const fetchData = async () => {
         if (!user) return;
         
@@ -48,7 +46,6 @@ const EarningPage = ({ searchParams: searchParamsPromise }) => {
         if (!sessionPending) fetchData();
     }, [sessionPending, searchParamsPromise]);
 
-    // ৩. কপি ফাংশন
     const handleCopy = async (id) => {
         try {
             await navigator.clipboard.writeText(id);
@@ -60,7 +57,6 @@ const EarningPage = ({ searchParams: searchParamsPromise }) => {
         }
     };
 
-    // ৪. সাহায্যকারী ফাংশনসমূহ
     const totalEarning = transactions.reduce((sum, t) => sum + (Number(t.price) || 0), 0);
 
     const formatDate = (dateValue) => {
@@ -148,7 +144,7 @@ const EarningPage = ({ searchParams: searchParamsPromise }) => {
 
                     <div className="p-4 border-t bg-gray-50/30">
                         <PaginationControlled
-                            currentPage={Number(totalPages.currentPage) || 1} // আপনার প্রপস অনুযায়ী অ্যাডজাস্ট করুন
+                            currentPage={Number(totalPages.currentPage) || 1} 
                             totalPages={totalPages}
                             totalItems={totalItems}
                             itemsPerPage={10}

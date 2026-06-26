@@ -44,7 +44,7 @@ const FreelancerFilters = ({
         return () => clearTimeout(timer);
     }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Budget range debounce (দুইটা ইনপুট একসাথে আপডেট হয়)
+    // Budget range debounce 
     useEffect(() => {
         const timer = setTimeout(() => {
             if (minFrom !== defaultMinBudgetFrom || minTo !== defaultMinBudgetTo) {
@@ -75,7 +75,7 @@ const FreelancerFilters = ({
                     type="number"
                     value={minFrom}
                     onChange={(e) => setMinFrom(e.target.value)}
-                    placeholder="Min budget from"
+                    placeholder="Min budget"
                     className="w-full sm:w-36 bg-paper/5 border border-paper/15 rounded-xl px-4 py-2.5 text-paper placeholder:text-paper/40 outline-none focus:ring-2 ring-signal/30 transition"
                 />
                 <span className="text-paper/40 text-sm">to</span>
@@ -83,7 +83,7 @@ const FreelancerFilters = ({
                     type="number"
                     value={minTo}
                     onChange={(e) => setMinTo(e.target.value)}
-                    placeholder="Min budget to"
+                    placeholder="Max budget"
                     className="w-full sm:w-36 bg-paper/5 border border-paper/15 rounded-xl px-4 py-2.5 text-paper placeholder:text-paper/40 outline-none focus:ring-2 ring-signal/30 transition"
                 />
             </div>

@@ -17,24 +17,25 @@ const STATUS_COLORS = {
 
 const DashboardHome = ({ tasks = [], clientId, userName }) => {
 
-    // Budget Calculation
+    // Sum up the proposed budget for tasks that are booked or already submitted
     const totalBookedBudget = tasks
         .filter((task) => task.status === "booked" || task.status === "submited")
         .reduce((sum, task) => sum + Number(task.proposedBudget || 0), 0);
 
-    // Status Count
+    // Count how many tasks fall under each status (open, booked, submited, etc.)
     const statusCounts = tasks.reduce((acc, task) => {
         const status = task.status || "unknown";
         acc[status] = (acc[status] || 0) + 1;
         return acc;
     }, {});
 
+    // Convert status counts into chart-friendly data with capitalized labels
     const chartData = Object.entries(statusCounts).map(([name, value]) => ({
-        name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize first letter
+        name: name.charAt(0).toUpperCase() + name.slice(1),
         value,
     }));
 
-    // Data for Detailed Chart (Based on Budget)
+    // Build per-task budget data for the detailed chart, truncating long titles
     const detailedChartData = tasks.map(t => ({
         name: t.title.length > 15 ? t.title.substring(0, 12) + "..." : t.title,
         budget: Number(t.budget) || 0,

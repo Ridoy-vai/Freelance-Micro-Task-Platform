@@ -1,7 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 
 
-// সব client + freelancer user আনার জন্য
 const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 
@@ -19,7 +18,7 @@ export const GetAllUsers = async (page = 1, limite = 10) => {
 };
 
 
-// Block / Unblock টগল করার জন্য
+// Block / Unblock 
 export const ToggleUserBlock = async (id, isBlocked) => {
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/users/${id}/block`, {
         method: "PATCH",
@@ -36,7 +35,6 @@ export const ToggleUserBlock = async (id, isBlocked) => {
 };
 
 
-// সব task আনার জন্য
 export const GetAllAdminTasks = async (page = 1, limite = 10) => {
     const { data: token } = await authClient.token();
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/tasks?page=${page}&limite=${limite}`, {
@@ -69,7 +67,7 @@ export const GetAllTransactions = async (page = 1, limite = 10) => {
     return response.json();
 };
 
-// Task delete করার জন্য
+// Task delete 
 export const DeleteAdminTask = async (id) => {
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/tasks/${id}`, {
         method: "DELETE",
@@ -81,7 +79,7 @@ export const DeleteAdminTask = async (id) => {
     return response.json();
 };
 
-// Status পরিবর্তন করার জন্য
+// To change the status
 export const UpdateAdminTaskStatus = async (id, status) => {
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/tasks/${id}/status`, {
         method: "PATCH",
@@ -97,7 +95,7 @@ export const UpdateAdminTaskStatus = async (id, status) => {
     return response.json();
 };
 
-// Feature / Unfeature টগল করার জন্য
+// To toggle Feature / Unfeature
 export const ToggleAdminTaskFeature = async (id, isFeatured) => {
     const response = await fetch(`${NEXT_PUBLIC_API_URL}/admin/tasks/${id}/feature`, {
         method: "PATCH",
@@ -168,17 +166,17 @@ export const GetOverviewTasksRaw = async () => {
 
 export const DeleteUser = async (id) => {
     try {
-        // স্ল্যাশ চেক করার জন্য ট্রিম করে নিন
+        // Trim to check for slash
         const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/admin/users/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
-            cache: "no-store" // ক্যাশ ডিলিট করে দিন
+            cache: "no-store" // Delete the cache
         });
 
         const data = await response.json();
-        console.log("Server Action Result:", data); // ব্রাউজারের কনসোলে নয়, টার্মিনালে চেক করুন
+        console.log("Server Action Result:", data); // Check in the terminal, not the browser console
         return data;
     } catch (error) {
         console.error("Fetch Error:", error);

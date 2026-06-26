@@ -1,25 +1,28 @@
 "use client";
 
 import React, { useState } from "react";
-import { Calendar, DollarSign, CheckCircle, XCircle } from "lucide-react";
+import { Calendar, DollarSign, CheckCircle, XCircle, Inbox } from "lucide-react";
+import { toast } from "react-toastify";
 
 const MyProposals = ({ initialProposals = [] }) => {
   const [proposals, setProposals] = useState(initialProposals);
 
-  // Accept
+  // Marks a proposal as accepted in local state.
+  // TODO: replace with a real PATCH/POST request to persist the status change in MongoDB
   const handleAccept = (id) => {
     setProposals((prev) =>
       prev.map((p) => (p._id === id ? { ...p, status: "accepted" } : p))
     );
-    // TODO: replace with real PATCH/POST to update status in MongoDB
+    toast.success("Proposal accepted");
   };
 
-  // Reject
+  // Marks a proposal as rejected in local state.
+  // TODO: replace with a real PATCH/POST request to persist the status change in MongoDB
   const handleReject = (id) => {
     setProposals((prev) =>
       prev.map((p) => (p._id === id ? { ...p, status: "rejected" } : p))
     );
-    // TODO: replace with real PATCH/POST to update status in MongoDB
+    toast.success("Proposal rejected");
   };
 
   return (
@@ -106,8 +109,18 @@ const MyProposals = ({ initialProposals = [] }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-10 text-gray-500">
-                  No proposals found.
+                <td colSpan="6" className="py-16">
+                  <div className="flex flex-col items-center justify-center text-center">
+                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-50">
+                      <Inbox size={28} className="text-gray-300" />
+                    </div>
+                    <h3 className="text-base font-semibold text-gray-700">
+                      No proposals found
+                    </h3>
+                    <p className="mt-1 max-w-xs text-sm text-gray-400">
+                      Proposals submitted by freelancers will appear here.
+                    </p>
+                  </div>
                 </td>
               </tr>
             )}

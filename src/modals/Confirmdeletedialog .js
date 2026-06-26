@@ -26,9 +26,8 @@ const ConfirmDeleteDialog = ({
                         </AlertDialog.Header>
                         <AlertDialog.Body>
                             <p>
-                                এটি <strong>{itemLabel || "এই item"}</strong> এবং এর সম্পূর্ণ
-                                ডাটা স্থায়ীভাবে ডিলিট করে দেবে। এই কাজটি আর ফিরিয়ে নেওয়া যাবে
-                                না।
+                                This will permanently delete <strong>{itemLabel || "this item"}</strong> and
+                                all of its data. This action cannot be undone.
                             </p>
                         </AlertDialog.Body>
                         <AlertDialog.Footer>

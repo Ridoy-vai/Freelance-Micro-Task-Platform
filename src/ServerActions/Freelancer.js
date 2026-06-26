@@ -1,6 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// User-এর সম্পূর্ণ data আনার জন্য
 export const GetUserById = async (id) => {
     const response = await fetch(`${API_URL}/users/${id}`, {
         method: "GET",
@@ -13,7 +12,7 @@ export const GetUserById = async (id) => {
     return response.json();
 };
 
-// Freelancer profile update করার জন্য
+// Freelancer profile update 
 export const UpdateFreelancerProfile = async (id, payload) => {
     const response = await fetch(`${API_URL}/users/${id}/profile`, {
         method: "PATCH",

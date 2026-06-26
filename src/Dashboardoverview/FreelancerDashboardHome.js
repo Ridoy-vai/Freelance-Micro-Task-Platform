@@ -15,11 +15,10 @@ const COLORS = {
 };
 
 const FreelancerDashboardHome = ({ userName, transactionData, activeData, proposalsData }) => {
-console.log(activeData,"tttttttttttttt")
-    // ১. ক্যালকুলেশন: টোটাল আর্নিং
+    // 1. Calculation: Total Earnings
     const totalEarned = transactionData.reduce((sum, item) => sum + Number(item.price || 0), 0);
 
-    // ২. প্রপোজাল স্ট্যাটাস ডিস্ট্রিবিউশন
+    // 2. Proposal status distribution
     const proposalStats = proposalsData.reduce((acc, p) => {
         const status = p.status || "pending";
         acc[status] = (acc[status] || 0) + 1;
@@ -31,7 +30,7 @@ console.log(activeData,"tttttttttttttt")
         value
     }));
 
-    // ৩. আর্নিং ট্রেন্ড চার্ট ডাটা (Transactions এর ওপর ভিত্তি করে)
+    // 3. Earnings trend chart data (based on transactions)
     const earningsTrend = transactionData.map((t, i) => ({
         name: `Trx ${i + 1}`,
         amount: Number(t.price)

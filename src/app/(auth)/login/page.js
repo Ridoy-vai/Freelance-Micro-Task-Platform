@@ -2,10 +2,14 @@
 
 import { authClient } from "@/lib/auth-client";
 import { GetUserById } from "@/ServerActions/Freelancer";
-import { Eye, EyeOff, Sparkles, TriangleAlert } from "lucide-react";
+import { Eye, EyeOff, Sparkles, TriangleAlert, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
+// React Toastify
+import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/react-toastify.css';
 
 const inputClass =
     "w-full rounded-xl border border-paper/10 bg-paper/[0.04] px-4 py-3 text-sm text-paper placeholder:text-paper/30 transition-colors duration-150 focus:border-signal focus:bg-paper/[0.06] focus:outline-none focus:ring-2 focus:ring-signal/20";
@@ -36,7 +40,6 @@ export default function LoginPage() {
         setError("");
         setIsSubmitting(true);
 
-        // ✅ callback URL added (only this part added)
         const callbackUrl =
             typeof window !== "undefined"
                 ? new URLSearchParams(window.location.search).get("callbackUrl")
@@ -50,7 +53,9 @@ export default function LoginPage() {
             });
 
             if (loginError) {
-                setError(loginError.message || "Login ব্যর্থ হয়েছে, আবার চেষ্টা করুন।");
+                const errorMsg = loginError.message || "Login failed. Please check your credentials.";
+                setError(errorMsg);
+                toast.error(errorMsg);
                 setIsSubmitting(false);
                 return;
             }
@@ -62,33 +67,43 @@ export default function LoginPage() {
 
                 if (userDoc?.isBlocked) {
                     await authClient.signOut();
+                    toast.warning("Access denied. Your account has been blocked.");
                     router.push("/blocked");
                     return;
                 } else {
-                    router.push(callbackUrl || "/"); // ✅ changed
+                    toast.success("Welcome back! Login successful.");
+                    router.push(callbackUrl || "/");
                     return;
                 }
             }
 
-            router.push(callbackUrl || "/"); // ✅ changed
+            toast.success("Login successful.");
+            router.push(callbackUrl || "/");
 
         } catch (err) {
             console.error(err);
-            setError("কিছু একটা সমস্যা হয়েছে, আবার চেষ্টা করুন।");
+            const genericError = "Something went wrong. Please try again later.";
+            setError(genericError);
+            toast.error(genericError);
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const handleGoogleLogin = async () => {
-        const data = await authClient.signIn.social({
-            provider: "google",
-        });
+        try {
+            await authClient.signIn.social({
+                provider: "google",
+            });
+        } catch (err) {
+            toast.error("Google login failed.");
+        }
     };
-
 
     return (
         <section className="relative min-h-screen overflow-hidden bg-ink px-4 py-12 sm:px-6 sm:py-16">
+            <ToastContainer theme="dark" position="bottom-right" />
+            
             {/* Ambient glow accents */}
             <div className="pointer-events-none absolute -top-32 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-signal/20 blur-[120px]" />
             <div className="pointer-events-none absolute bottom-0 right-0 h-64 w-64 rounded-full bg-sage/10 blur-[100px]" />
@@ -119,7 +134,7 @@ export default function LoginPage() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div>
                             <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                Email
+                                Email Address
                             </label>
                             <input
                                 id="email"
@@ -148,7 +163,7 @@ export default function LoginPage() {
                                     type={showPassword ? "text" : "password"}
                                     autoComplete="current-password"
                                     className={`${inputClass} pr-11 ${errors.password ? errorInputClass : ""}`}
-                                    placeholder="••••••••"
+                                    placeholder="Enter your valid password"
                                     {...register("password", { required: "Password is required" })}
                                 />
                                 <button
@@ -163,7 +178,7 @@ export default function LoginPage() {
                             <FieldError message={errors.password?.message} />
 
                             <div className="mt-2 text-right">
-                                <a href="/forgot-password" className="text-xs font-medium text-paper/40 hover:text-signal">
+                                <a href="/forgot-password" className="text-xs font-medium text-paper/40 hover:text-signal transition-colors">
                                     Forgot password?
                                 </a>
                             </div>
@@ -172,22 +187,29 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isSubmitting || !isValid}
-                            className="w-full rounded-xl bg-signal py-3 text-sm font-semibold text-ink shadow-lg shadow-signal/20 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-signal/30 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+                            className="flex w-full items-center cursor-pointer bg-blue-600 justify-center gap-2 rounded-xl bg-signal py-3 text-sm font-bold text-ink shadow-lg shadow-signal/20 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-signal/30 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
                         >
-                            {isSubmitting ? "Logging in…" : "Log in"}
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 size={16} className="animate-spin" />
+                                    Logging in…
+                                </>
+                            ) : (
+                                "Log in"
+                            )}
                         </button>
                     </form>
 
                     <div className="mt-7 flex items-center gap-3">
                         <div className="h-px flex-1 bg-paper/10" />
-                        <span className="text-xs text-paper/30">or</span>
+                        <span className="text-[10px] uppercase tracking-widest text-paper/30">or</span>
                         <div className="h-px flex-1 bg-paper/10" />
                     </div>
 
                     <button
                         type="button"
                         onClick={handleGoogleLogin}
-                        className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-paper/15 bg-paper/[0.02] py-3 text-sm font-semibold text-paper transition-colors duration-200 hover:border-paper/25 hover:bg-paper/[0.06]"
+                        className="mt-6 flex w-full items-center justify-center cursor-pointer gap-3 rounded-xl border border-paper/15 bg-paper/[0.02] py-3 text-sm font-semibold text-paper transition-all duration-200 hover:border-paper/25 hover:bg-paper/[0.06] active:scale-[0.98]"
                     >
                         <svg viewBox="0 0 24 24" className="h-4 w-4">
                             <path

@@ -20,17 +20,18 @@ const ConfirmBlockDialog = ({ user, onConfirm, onClose }) => {
                             />
                             <AlertDialog.Heading>
                                 {user?.isBlocked
-                                    ? "User-কে আনব্লক করবেন?"
-                                    : "User-কে ব্লক করবেন?"}
+                                    ? "Unblock this user?"
+                                    : "Block this user?"}
                             </AlertDialog.Heading>
                         </AlertDialog.Header>
                         <AlertDialog.Body>
                             <p>
-                                আপনি <strong>{user?.name || "এই user"}</strong> (
-                                {user?.email})-কে{" "}
-                                {user?.isBlocked ? "আনব্লক" : "ব্লক"} করতে চলেছেন।{" "}
+                                You are about to{" "}
+                                {user?.isBlocked ? "unblock" : "block"}{" "}
+                                <strong>{user?.name || "this user"}</strong> (
+                                {user?.email}).{" "}
                                 {!user?.isBlocked &&
-                                    "ব্লক হলে এই user platform-এ লগইন করতে পারবে না।"}
+                                    "Once blocked, this user will not be able to log in to the platform."}
                             </p>
                         </AlertDialog.Body>
                         <AlertDialog.Footer>

@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { GetTasksById } from "@/ServerActions/Task";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { Briefcase, Calendar, DollarSign, MapPin, User, Clock, ShieldCheck } from "lucide-react";
+import { Briefcase, Calendar, DollarSign, MapPin, User, Clock, ShieldCheck, SearchX } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,23 +16,48 @@ function formatDate(dateStr) {
     });
 }
 
+export const metadata = {
+    title: "Details Task | TaskNest",
+    description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+};
+
 export default async function TaskDetailsPage({ params }) {
     const session = await auth.api.getSession({ headers: await headers() });
     const user = session?.user;
     if (!user) redirect("/");
 
     const { id } = await params;
+    // Fetch the task along with whether the current user has already applied to it
     let task = await GetTasksById("tasksid", id, user.id);
-    console.log(task)
-export const metadata = {
-  title: "My Proposals | TaskNest",
-  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
-};
+
     if (!task) {
         return (
-            <div className="flex min-h-[60vh] items-center justify-center uppercase tracking-widest text-paper/40">
-                Task not found
-            </div>
+            <section className="flex min-h-[70vh] items-center justify-center bg-[#ffffff] px-6">
+                <div className="text-center">
+                    <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-50">
+                        <SearchX size={36} className="text-red-400" />
+                    </div>
+
+                    <span className="font-mono text-[11px] uppercase tracking-widest text-gray-400">
+                        404 — Not Found
+                    </span>
+
+                    <h1 className="mt-3 text-3xl font-bold text-gray-900 sm:text-4xl">
+                        Task Not Found
+                    </h1>
+
+                    <p className="mx-auto mt-4 max-w-sm text-sm text-gray-500">
+                        This task may have been removed, closed, or the link is incorrect.
+                    </p>
+
+                    <Link
+                        href="/tasks"
+                        className="mt-8 inline-flex items-center justify-center rounded-xl bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-gray-800"
+                    >
+                        Back to Tasks
+                    </Link>
+                </div>
+            </section>
         );
     }
 
@@ -40,19 +65,17 @@ export const metadata = {
 
     return (
         <div className="relative min-h-screen bg-[#ffffff] py-12 lg:py-20">
-            {/* Background Gradient Orbs */}
+            {/* Background gradient orbs */}
             <div className="pointer-events-none absolute left-1/4 top-0 h-[400px] w-[400px] rounded-full bg-signal/10 blur-[120px]" />
             <div className="pointer-events-none absolute right-1/4 bottom-0 h-[300px] w-[300px] rounded-full bg-sage/5 blur-[100px]" />
 
             <div className="relative mx-auto max-w-7xl px-6">
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
 
-                    {/* Left Side: Task Content */}
-                    {/*ljdsnakjfnlasjbfjasdbjasb*/}
-                    {/* Left Side: Task Content */}
+                    {/* Left side: Task content */}
                     <div className="lg:col-span-8 bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm space-y-6">
 
-                        {/* TAGS */}
+                        {/* Tags */}
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-blue-600">
                                 <Briefcase size={11} /> {category || "Project"}
@@ -63,15 +86,14 @@ export const metadata = {
                             </span>
                         </div>
 
-                        {/* TITLE */}
+                        {/* Title */}
                         <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 sm:p-4">
                             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-snug">
                                 {title}
                             </h1>
                         </div>
 
-
-                        {/* CLIENT */}
+                        {/* Client */}
                         <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-gray-100 rounded-xl p-3 sm:p-4">
 
                             <div className="flex items-center gap-2">
@@ -131,7 +153,7 @@ export const metadata = {
 
                         </div>
 
-                        {/* STATS */}
+                        {/* Stats */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
 
                             <div className="rounded-xl border border-gray-100 bg-gray-50 p-3">
@@ -166,7 +188,7 @@ export const metadata = {
                             </div>
                         </div>
 
-                        {/* DESCRIPTION */}
+                        {/* Description */}
                         <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 sm:p-5">
                             <h3 className="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2">
                                 Project Overview
@@ -188,7 +210,8 @@ export const metadata = {
                         </div>
 
                     </div>
-                    {/* Right Side: Sticky Proposal Form */}
+
+                    {/* Right side: Sticky proposal form */}
                     <div className="lg:col-span-4 bg-white border border-gray-200 shadow-sm rounded-2xl">
                         <div className="sticky top-12 overflow-hidden rounded-3xl border border-white/10 bg-white p-1 backdrop-blur-xl">
                             <div className="rounded-[22px] bg-[#ffffff] p-6 lg:p-8">
@@ -206,7 +229,7 @@ export const metadata = {
                                 ) : alreadyApplied ? (
                                     <div className="mt-8 rounded-2xl border border-signal/20 bg-signal/5 p-6 text-center">
                                         <p className="text-sm text-paper/60">
-                                            You have already aplaied for this task.
+                                            You have already applied for this task.
                                         </p>
                                     </div>
                                 ) : (

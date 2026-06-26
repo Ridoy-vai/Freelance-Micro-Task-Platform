@@ -16,8 +16,8 @@ export function WithForm({ id, onSubmitSuccess }) {
     const handleFormSubmit = async () => {
         setLoading(true);
         try {
-            // মূল update logic parent-এ delegate করলাম, যাতে
-            // button click এবং modal submit — দুই জায়গায় logic duplicate না হয়
+            // Delegated the main update logic to the parent, so that
+            // button click and modal submit don't duplicate logic in two places
             await onSubmitSuccess(id, {
                 submitionLink: formData.submitionLink,
                 submitionMessage: formData.submitionMessage,
@@ -39,7 +39,7 @@ export function WithForm({ id, onSubmitSuccess }) {
                         <Modal.Header>
                             <Modal.Heading>Submission Details</Modal.Heading>
                             <p className="mt-1.5 text-sm leading-5 text-muted">
-                                Submission link এবং message দিন।
+                                Provide the submission link and message.
                             </p>
                         </Modal.Header>
                         <Modal.Body className="p-6">
@@ -57,7 +57,7 @@ export function WithForm({ id, onSubmitSuccess }) {
                                     <TextField className="w-full" name="submitionMessage" variant="secondary">
                                         <Label>Message</Label>
                                         <Input
-                                            placeholder="Submission details লিখুন"
+                                            placeholder="Enter submission details"
                                             value={formData.submitionMessage}
                                             onChange={handleChange}
                                         />

@@ -17,7 +17,6 @@ const TaskActions = ({ task }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
 
-    // ক্যাটাগরি অপশনগুলো
     const categories = [
         "Web Development",
         "Graphic Design",
@@ -34,7 +33,6 @@ const TaskActions = ({ task }) => {
         deadline: task.deadline || "",
     });
 
-    // ড্রপডাউন থেকে ক্যাটাগরি পরিবর্তন করার ফাংশন
     const handleCategoryChange = (key) => {
         setFormData(prev => ({ ...prev, category: key }));
     };

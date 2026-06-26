@@ -1,20 +1,22 @@
 import FreelancerCard from '@/Components/FreelancerCard';
 import FreelancerFilters from '@/Components/FreelancerFilters';
 import { PaginationControlled } from '@/Components/PaginationControlled';
+import { UserX } from 'lucide-react';
 import React from 'react';
 
 export const dynamic = 'force-dynamic';
 export const metadata = {
-  title: "Freelancer | TaskNest",
-  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+  title: "Freelancers | TaskNest",
+  description: "Browse skilled freelancers on TaskNest. Search and filter by budget to find the right talent for your project.",
 };
+
 const BrowseFreelancers = async ({ searchParams }) => {
     const params = await searchParams;
     const search = params?.search || "";
     const minBudgetFrom = params?.minBudgetFrom || "";
     const minBudgetTo = params?.minBudgetTo || "";
     const page = Number(params?.page) || 1;
-    const limit = 9; // grid 3 column hisebe 9 valo lagbe, change korte parba
+    const limit = 9; // 9 fits nicely as a 3-column grid; adjust if the grid layout changes
 
     const query = new URLSearchParams();
     if (search) query.append("search", search);
@@ -60,9 +62,17 @@ const BrowseFreelancers = async ({ searchParams }) => {
                             <FreelancerCard key={freelancer._id} freelancer={freelancer} />
                         ))
                     ) : (
-                        <p className="col-span-full text-center text-paper/60 py-10">
-                            কোনো freelancer পাওয়া যায়নি।
-                        </p>
+                        <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+                            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/[0.04]">
+                                <UserX size={28} className="text-paper/30" />
+                            </div>
+                            <h3 className="text-base font-semibold text-paper/80">
+                                No freelancers found
+                            </h3>
+                            <p className="mt-1 max-w-xs text-sm text-paper/50">
+                                Try adjusting your search or budget filters to see more results.
+                            </p>
+                        </div>
                     )}
                 </div>
 

@@ -10,7 +10,6 @@ export const metadata = {
 };
 const AdminTransactionsPage = async ({ searchParams }) => {
   const session = await requireRole(["admin"]);
-  // const session = await requireRole(["client", "freelancer"]);
   const params = await searchParams;
   const currentPage = Number(params?.page) || 1;
 

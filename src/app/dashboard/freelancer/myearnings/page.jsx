@@ -1,15 +1,17 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { Receipt } from "lucide-react";
+import { Receipt, ShieldAlert, LogIn } from "lucide-react";
 import { GetFreelancerTransactions } from "@/ServerActions/Freelancer";
 import { PaginationControlled } from "@/Components/PaginationControlled";
 import { requireRole } from "@/lib/role-check-access";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 export const metadata = {
-  title: "My Earning | TaskNest",
-  description: "Track the status of all your submitted task proposals on TaskNest — view Earning details, budgets, submission links, and proposal status in one place.",
+  title: "My Earnings | TaskNest",
+  description: "Track all your earnings on TaskNest — view completed task payments, amounts, dates, and transaction details in one place.",
 };
+
 const page = async ({ searchParams }) => {
     await requireRole(["freelancer"]);
     const params = await searchParams;
@@ -24,8 +26,21 @@ const page = async ({ searchParams }) => {
 
     if (!user) {
         return (
-            <div className="bg-white p-8 rounded-2xl border text-center text-gray-400">
-                Please login to view your transactions.
+            <div className="flex flex-col items-center justify-center text-center px-6 py-20 bg-white rounded-2xl border-2 border-dashed border-gray-200">
+                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-50">
+                    <ShieldAlert size={36} className="text-red-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Access Denied</h3>
+                <p className="mt-2 max-w-sm text-sm text-gray-500">
+                    Please login to view your transactions.
+                </p>
+                <Link
+                    href="/login"
+                    className="mt-8 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
+                >
+                    <LogIn size={18} />
+                    Log in
+                </Link>
             </div>
         );
     }
@@ -37,7 +52,6 @@ const page = async ({ searchParams }) => {
     });
 
     const transactions = Array.isArray(result?.transactions) ? result.transactions : [];
-    console.log(transactions,"to earning page")
     const totalPages = result?.totalPages || 1;
     const totalItems = result?.totalItems || 0;
 
@@ -61,9 +75,9 @@ const page = async ({ searchParams }) => {
             <div className="p-4 border-b flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-800">My Earnings</h2>
                 <div className="text-right">
-                    <p className="text-sm text-gray-500">{totalItems} টি transaction</p>
+                    <p className="text-sm text-gray-500">{totalItems} transactions</p>
                     <p className="text-sm font-semibold text-green-600">
-                        এই পেজের মোট: ${totalEarning.toLocaleString()}
+                        Page total: ${totalEarning.toLocaleString()}
                     </p>
                 </div>
             </div>
@@ -129,10 +143,10 @@ const page = async ({ searchParams }) => {
                         <Receipt size={26} className="text-green-600" />
                     </div>
                     <p className="text-base font-medium text-gray-900 mb-1.5">
-                        এখনো কোনো earning হয়নি
+                        No earnings yet
                     </p>
                     <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
-                        কোনো task এর payment সম্পন্ন হলে এখানে দেখা যাবে।
+                        Completed task payments will appear here.
                     </p>
                 </div>
             )}

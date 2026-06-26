@@ -9,18 +9,21 @@ import {
   Clock,
   DollarSign,
   Tag,
+  UserX,
 } from "lucide-react";
 import RatingWidget from "@/Components/RatingWidget";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Freelancer | TaskNest",
-  description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
+  title: "Freelancer Profile | TaskNest",
+  description: "View this freelancer's profile on TaskNest — skills, hourly rate, completed jobs, ratings, and reviews in one place.",
 };
+
 export default async function FreelancerProfilePage({ params }) {
   const { id } = await params;
   const session = await auth.api.getSession({
@@ -29,14 +32,34 @@ export default async function FreelancerProfilePage({ params }) {
 
   const user = session?.user;
 
+  // Fetch the freelancer's public profile data by user ID
   const res = await fetch(`${API_URL}/users/${id}`, {
     cache: "no-store",
   });
 
   if (!res.ok) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <p className="text-slate-500 font-medium text-lg">Freelancer not found</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
+        <div className="text-center">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
+            <UserX size={36} className="text-slate-400" />
+          </div>
+
+          <h1 className="text-2xl font-bold text-slate-900">
+            Freelancer Not Found
+          </h1>
+
+          <p className="mx-auto mt-3 max-w-sm text-sm text-slate-500">
+            This profile may have been removed or the link is incorrect.
+          </p>
+
+          <Link
+            href="/freelancers"
+            className="mt-8 inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-slate-800"
+          >
+            Back to Freelancers
+          </Link>
+        </div>
       </div>
     );
   }

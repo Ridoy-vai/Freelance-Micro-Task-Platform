@@ -1,30 +1,24 @@
-// app/dashboard/client/page.jsx
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { GetTasksByUser } from "@/ServerActions/Task";
-// import DashboardHome from "./page";
-import { redirect } from "next/navigation"; // redirect ইম্পোর্ট করুন
+import { redirect } from "next/navigation";
 import DashboardHome from "@/Dashboardoverview/DashboardHome";
 import { requireRole } from "@/lib/role-check-access";
-// import DashboardHome from "@/app/dashboard/freelancer/overview/page";
 export const metadata = {
   title: "Overview | TaskNest",
   description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
 };
 const ClientDashboardPage = async () => {
     const role = await requireRole(["client"]);
-// const session = await requireRole(["client", "freelancer"]);
     const session = await auth.api.getSession({ headers: await headers() });
 
-    // ১. ভ্যালিডেশন: সেশন বা ইউজার না থাকলে লগইন পেজে পাঠিয়ে দাও
     if (!session || !session.user) {
-        redirect("/login"); // আপনার লগইন পেজের পাথ অনুযায়ী পরিবর্তন করুন
+        redirect("/login"); 
     }
 
     const clientId = session.user.id;
     const userName = session.user.name;
 
-    // ২. সেশন থাকলে ডাটা ফেচ করো
     const data = await GetTasksByUser("my-tasks", clientId, 1, 50);
     
     const tasks = data?.tasks || [];

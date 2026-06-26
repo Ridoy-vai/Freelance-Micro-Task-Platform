@@ -5,10 +5,16 @@ import SearchAndFilter from '@/Components/SearchAndFilter';
 import { GetAllTasks } from '@/ServerActions/Task';
 import { ClipboardList } from 'lucide-react';
 import React from 'react';
+// import { metadata } from '../layout';
 
 export const dynamic = 'force-dynamic';
 
 const TASKS_PER_PAGE = 9;
+
+export const metadata = {
+    title: "Browse Tasks | TaskNest",
+    description: "Explore active freelance tasks on TaskNest. Search and filter by category to find the right project for your skills.",
+};
 
 const TaskPage = async ({ searchParams }) => {
     const params = await searchParams;

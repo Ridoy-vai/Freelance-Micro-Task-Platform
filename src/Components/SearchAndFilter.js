@@ -18,6 +18,8 @@ const SearchAndFilter = ({ defaultSearch = "", defaultCategory = "" }) => {
 
     const [search, setSearch] = useState(defaultSearch);
 
+    // Updates a single URL query param (adding it if a value is given, removing
+    // it if not) and pushes the new URL so the page re-fetches with the filter applied.
     const updateParams = useCallback(
         (key, value) => {
             const params = new URLSearchParams(searchParams.toString());
@@ -33,6 +35,8 @@ const SearchAndFilter = ({ defaultSearch = "", defaultCategory = "" }) => {
         [router, pathname, searchParams]
     );
 
+    // Debounce the search input: wait 500ms after the user stops typing before
+    // syncing it to the URL, and skip the update if it already matches the current value.
     useEffect(() => {
         const timer = setTimeout(() => {
             if (search !== defaultSearch) {
@@ -43,6 +47,7 @@ const SearchAndFilter = ({ defaultSearch = "", defaultCategory = "" }) => {
         return () => clearTimeout(timer);
     }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Category changes apply immediately, no debounce needed
     const handleCategoryChange = (e) => {
         updateParams("category", e.target.value);
     };

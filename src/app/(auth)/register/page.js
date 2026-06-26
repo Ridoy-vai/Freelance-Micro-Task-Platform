@@ -22,6 +22,8 @@ const errorInputClass = "border-rose-500/60 focus:border-rose-500 focus:ring-ros
 
 const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
 
+const RequiredMark = () => <span className="text-rose-500 ml-1">*</span>;
+
 function FieldError({ message }) {
     if (!message) return null;
     return <p className="mt-1.5 text-xs text-rose-400">{message}</p>;
@@ -72,7 +74,7 @@ export default function RegisterPage() {
         if (!file) return;
 
         if (!IMGBB_API_KEY) {
-            setFormError("Image upload configured nai. NEXT_PUBLIC_IMGBB_API_KEY set koro.");
+            setFormError("Image upload configured mising.");
             return;
         }
 
@@ -99,7 +101,7 @@ export default function RegisterPage() {
             setImagePreview(imageUrl);
         } catch (error) {
             console.error("Image upload error:", error);
-            setFormError("ছবি আপলোড করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।");
+            setFormError("Image uploading Faild");
         } finally {
             setIsUploadingImage(false);
         }
@@ -194,11 +196,10 @@ export default function RegisterPage() {
 
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start lg:gap-8">
-                            {/* Left column — base account fields */}
                             <div className="space-y-4">
                                 <div>
                                     <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                        Name
+                                        Name <RequiredMark />
                                     </label>
                                     <input
                                         id="name"
@@ -213,7 +214,7 @@ export default function RegisterPage() {
 
                                 <div>
                                     <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                        Email
+                                        Email <RequiredMark />
                                     </label>
                                     <input
                                         id="email"
@@ -232,7 +233,6 @@ export default function RegisterPage() {
                                     <FieldError message={errors.email?.message} />
                                 </div>
 
-                                {/* 👇 Image upload — URL input theke file upload e bodla hoyeche */}
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-paper/80">
                                         Profile photo <span className="text-paper/40">(optional)</span>
@@ -283,13 +283,12 @@ export default function RegisterPage() {
                                             />
                                         </label>
                                     )}
-                                    {/* hidden field jeta react-hook-form e value hold kore */}
                                     <input type="hidden" {...register("image")} />
                                 </div>
 
                                 <div>
                                     <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                        Password
+                                        Password <RequiredMark />
                                     </label>
                                     <div className="relative">
                                         <input
@@ -297,7 +296,7 @@ export default function RegisterPage() {
                                             type={showPassword ? "text" : "password"}
                                             autoComplete="new-password"
                                             className={`${inputClass} pr-11 ${errors.password ? errorInputClass : ""}`}
-                                            placeholder="••••••••"
+                                            placeholder="At least 6 characters one capital & one lowercase letter"
                                             {...register("password", {
                                                 required: "Password is required",
                                                 minLength: { value: 6, message: "At least 6 characters" },
@@ -312,7 +311,6 @@ export default function RegisterPage() {
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword((prev) => !prev)}
-                                            aria-label={showPassword ? "Hide password" : "Show password"}
                                             className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-paper/40 transition-colors hover:text-signal"
                                         >
                                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -328,13 +326,9 @@ export default function RegisterPage() {
                                             ].map((rule) => (
                                                 <li
                                                     key={rule.id}
-                                                    className={`flex items-center gap-2 text-xs transition-colors ${rule.passed ? "text-sage" : "text-paper/40"
-                                                        }`}
+                                                    className={`flex items-center gap-2 text-xs transition-colors ${rule.passed ? "text-sage" : "text-paper/40"}`}
                                                 >
-                                                    <span
-                                                        className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] transition-colors ${rule.passed ? "bg-sage text-ink" : "border border-paper/25"
-                                                            }`}
-                                                    >
+                                                    <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] transition-colors ${rule.passed ? "bg-sage text-ink" : "border border-paper/25"}`}>
                                                         {rule.passed ? "✓" : ""}
                                                     </span>
                                                     {rule.label}
@@ -344,48 +338,28 @@ export default function RegisterPage() {
                                     )}
                                 </div>
 
-                                {/* 👇 Role select — checkmark icon jukto kora hoyeche selected card e */}
                                 <fieldset>
                                     <legend className="mb-2 block text-sm font-medium text-paper/80">
-                                        I want to
+                                        I want to <RequiredMark />
                                     </legend>
                                     <div className="grid grid-cols-2 gap-3">
-                                        <label
-                                            className={`relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${role === "client"
-                                                ? "border-signal bg-signal/10 text-paper shadow-[0_0_0_1px_theme(colors.signal/30)]"
-                                                : "border-paper/10 bg-paper/[0.02] text-paper/55 hover:border-paper/20 hover:bg-paper/[0.04]"
-                                                }`}
-                                        >
-                                            {role === "client" && (
-                                                <CheckCircle2 className="absolute right-2 top-2 h-4 w-4 text-signal" />
-                                            )}
+                                        <label className={`relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${role === "client" ? "border-signal bg-signal/10 text-paper" : "border-paper/10 bg-paper/[0.02] text-paper/55 hover:border-paper/20"}`}>
+                                            {role === "client" && <CheckCircle2 className="absolute right-2 top-2 h-4 w-4 text-signal" />}
                                             <input type="radio" value="client" className="sr-only" {...register("role")} />
-                                            <Building2
-                                                className={`h-4 w-4 ${role === "client" ? "text-signal" : "text-paper/40"}`}
-                                            />
+                                            <Building2 className={`h-4 w-4 ${role === "client" ? "text-signal" : "text-paper/40"}`} />
                                             Hire freelancers
                                         </label>
 
-                                        <label
-                                            className={`relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${role === "freelancer"
-                                                ? "border-signal bg-signal/10 text-paper shadow-[0_0_0_1px_theme(colors.signal/30)]"
-                                                : "border-paper/10 bg-paper/[0.02] text-paper/55 hover:border-paper/20 hover:bg-paper/[0.04]"
-                                                }`}
-                                        >
-                                            {role === "freelancer" && (
-                                                <CheckCircle2 className="absolute right-2 top-2 h-4 w-4 text-signal" />
-                                            )}
+                                        <label className={`relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-4 py-3.5 text-center text-sm font-medium transition-all duration-150 ${role === "freelancer" ? "border-signal bg-signal/10 text-paper" : "border-paper/10 bg-paper/[0.02] text-paper/55 hover:border-paper/20"}`}>
+                                            {role === "freelancer" && <CheckCircle2 className="absolute right-2 top-2 h-4 w-4 text-signal" />}
                                             <input type="radio" value="freelancer" className="sr-only" {...register("role")} />
-                                            <Briefcase
-                                                className={`h-4 w-4 ${role === "freelancer" ? "text-signal" : "text-paper/40"}`}
-                                            />
+                                            <Briefcase className={`h-4 w-4 ${role === "freelancer" ? "text-signal" : "text-paper/40"}`} />
                                             Work as a freelancer
                                         </label>
                                     </div>
                                 </fieldset>
                             </div>
 
-                            {/* Right column — role-specific fields (অপরিবর্তিত) */}
                             <div className="space-y-4">
                                 {isFreelancer && (
                                     <div className="space-y-4 rounded-2xl border border-sage/20 bg-sage/[0.04] p-4 sm:p-5">
@@ -396,39 +370,31 @@ export default function RegisterPage() {
 
                                         <div>
                                             <label htmlFor="title" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                                Professional title
+                                                Professional title <RequiredMark />
                                             </label>
                                             <input
                                                 id="title"
                                                 type="text"
                                                 className={`${inputClass} ${errors.title ? errorInputClass : ""}`}
                                                 placeholder="e.g. Frontend Developer"
-                                                {...register("title", {
-                                                    required: isFreelancer ? "Title is required" : false,
-                                                })}
+                                                {...register("title", { required: isFreelancer ? "Title is required" : false })}
                                             />
                                             <FieldError message={errors.title?.message} />
                                         </div>
 
                                         <div>
                                             <label htmlFor="category" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                                Category
+                                                Category <RequiredMark />
                                             </label>
                                             <select
                                                 id="category"
                                                 className={`${inputClass} appearance-none ${errors.category ? errorInputClass : ""}`}
                                                 defaultValue=""
-                                                {...register("category", {
-                                                    required: isFreelancer ? "Pick a category" : false,
-                                                })}
+                                                {...register("category", { required: isFreelancer ? "Pick a category" : false })}
                                             >
-                                                <option value="" disabled className="bg-ink">
-                                                    Select a category
-                                                </option>
+                                                <option value="" disabled className="bg-ink">Select a category</option>
                                                 {FREELANCER_CATEGORIES.map((cat) => (
-                                                    <option key={cat} value={cat} className="bg-ink">
-                                                        {cat}
-                                                    </option>
+                                                    <option key={cat} value={cat} className="bg-ink">{cat}</option>
                                                 ))}
                                             </select>
                                             <FieldError message={errors.category?.message} />
@@ -437,7 +403,7 @@ export default function RegisterPage() {
                                         <div className="grid grid-cols-2 gap-3">
                                             <div>
                                                 <label htmlFor="hourlyRate" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                                    Hourly rate ($)
+                                                    Hourly rate ($) <RequiredMark />
                                                 </label>
                                                 <input
                                                     id="hourlyRate"
@@ -445,9 +411,9 @@ export default function RegisterPage() {
                                                     min="0"
                                                     className={`${inputClass} ${errors.hourlyRate ? errorInputClass : ""}`}
                                                     placeholder="25"
-                                                    {...register("hourlyRate", {
+                                                    {...register("hourlyRate", { 
                                                         required: isFreelancer ? "Required" : false,
-                                                        min: { value: 0, message: "Must be 0 or more" },
+                                                        min: { value: 0, message: "Must be 0 or more" }
                                                     })}
                                                 />
                                                 <FieldError message={errors.hourlyRate?.message} />
@@ -455,16 +421,14 @@ export default function RegisterPage() {
 
                                             <div>
                                                 <label htmlFor="location" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                                    Location
+                                                    Location <RequiredMark />
                                                 </label>
                                                 <input
                                                     id="location"
                                                     type="text"
                                                     className={`${inputClass} ${errors.location ? errorInputClass : ""}`}
                                                     placeholder="City, Country"
-                                                    {...register("location", {
-                                                        required: isFreelancer ? "Required" : false,
-                                                    })}
+                                                    {...register("location", { required: isFreelancer ? "Required" : false })}
                                                 />
                                                 <FieldError message={errors.location?.message} />
                                             </div>
@@ -507,32 +471,28 @@ export default function RegisterPage() {
 
                                         <div>
                                             <label htmlFor="companyName" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                                Company name
+                                                Company name <RequiredMark />
                                             </label>
                                             <input
                                                 id="companyName"
                                                 type="text"
                                                 className={`${inputClass} ${errors.companyName ? errorInputClass : ""}`}
                                                 placeholder="Your company name"
-                                                {...register("companyName", {
-                                                    required: isClient ? "Company name is required" : false,
-                                                })}
+                                                {...register("companyName", { required: isClient ? "Company name is required" : false })}
                                             />
                                             <FieldError message={errors.companyName?.message} />
                                         </div>
 
                                         <div>
                                             <label htmlFor="industry" className="mb-1.5 block text-sm font-medium text-paper/80">
-                                                Industry
+                                                Industry <RequiredMark />
                                             </label>
                                             <input
                                                 id="industry"
                                                 type="text"
                                                 className={`${inputClass} ${errors.industry ? errorInputClass : ""}`}
                                                 placeholder="e.g. E-commerce, Healthcare"
-                                                {...register("industry", {
-                                                    required: isClient ? "Industry is required" : false,
-                                                })}
+                                                {...register("industry", { required: isClient ? "Industry is required" : false })}
                                             />
                                             <FieldError message={errors.industry?.message} />
                                         </div>
@@ -557,13 +517,13 @@ export default function RegisterPage() {
                         <button
                             type="submit"
                             disabled={isSubmitting || !isValid || isUploadingImage}
-                            className="mt-7 w-full rounded-xl bg-signal py-3 text-sm font-semibold text-ink shadow-lg shadow-signal/20 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-signal/30 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+                            className="mt-7 w-full rounded-xl bg-blue-600 cursor-pointer bg-signal py-3 text-sm font-semibold text-ink shadow-lg shadow-signal/20 transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-40"
                         >
                             {isSubmitting ? "Creating account…" : "Create account"}
                         </button>
                     </form>
 
-                    <div className="mx-auto mt-7 max-w-sm">
+                    <div className="mx-auto mt-7 max-w-sm text-center">
                         <div className="flex items-center gap-3">
                             <div className="h-px flex-1 bg-paper/10" />
                             <span className="text-xs text-paper/30">or</span>
@@ -573,31 +533,16 @@ export default function RegisterPage() {
                         <button
                             type="button"
                             onClick={handleGoogleSignup}
-                            className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-paper/15 bg-paper/[0.02] py-3 text-sm font-semibold text-paper transition-colors duration-200 hover:border-paper/25 hover:bg-paper/[0.06]"
+                            className="mt-6 flex w-full items-center bg-white/20 cursor-pointer justify-center gap-3 rounded-xl border border-paper/15 bg-paper/[0.02] py-3 text-sm font-semibold text-paper hover:bg-paper/[0.06]"
                         >
                             <svg viewBox="0 0 24 24" className="h-4 w-4">
-                                <path
-                                    fill="#4285F4"
-                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.07 5.07 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
-                                />
-                                <path
-                                    fill="#34A853"
-                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.67-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A10.99 10.99 0 0012 23z"
-                                />
-                                <path
-                                    fill="#FBBC05"
-                                    d="M5.84 14.1A6.6 6.6 0 015.5 12c0-.73.12-1.43.34-2.1V7.06H2.18A10.99 10.99 0 001 12c0 1.77.42 3.45 1.18 4.94l3.66-2.84z"
-                                />
-                                <path
-                                    fill="#EA4335"
-                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"
-                                />
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.07 5.07 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.67-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A10.99 10.99 0 0012 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.1A6.6 6.6 0 015.5 12c0-.73.12-1.43.34-2.1V7.06H2.18A10.99 10.99 0 001 12c0 1.77.42 3.45 1.18 4.94l3.66-2.84z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/>
                             </svg>
                             Sign up with Google
                         </button>
-                        <p className="mt-3 text-center text-xs text-paper/30">
-                            Signing up with Google creates a client account.
-                        </p>
                     </div>
                 </div>
             </div>

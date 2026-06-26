@@ -7,8 +7,9 @@ import {
   UpdateAdminTaskStatus,
   ToggleAdminTaskFeature,
 } from "@/ServerActions/admin";
-import { Loader2, Star, Trash2 } from "lucide-react";
+import { Loader2, Star, Trash2, ClipboardX } from "lucide-react";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 const STATUS_OPTIONS = ["open", "booked", "submited"];
 
@@ -17,7 +18,8 @@ const AdminTaskTable = ({ tasks: initialTasks, currentPage, totalPages, totalIte
   const [actionId, setActionId] = useState(null);
   const [taskToDelete, setTaskToDelete] = useState(null);
 
-  // 👇 eta add koro — page change hole prop er sathe local state sync hobe
+  // Keep local state in sync with the prop whenever the page changes
+  // (e.g. navigating to a different pagination page fetches new initialTasks)
   useEffect(() => {
     setTasks(initialTasks);
   }, [initialTasks]);
@@ -30,11 +32,11 @@ const AdminTaskTable = ({ tasks: initialTasks, currentPage, totalPages, totalIte
       if (result?.success) {
         setTasks((prev) => prev.filter((t) => t._id !== id));
       } else {
-        alert(result?.message || "Task delete করা যায়নি");
+        toast.error(result?.message || "Failed to delete task");
       }
     } catch (error) {
       console.error("Error deleting task:", error);
-      alert("Server error, আবার চেষ্টা করুন");
+      toast.error("Server error, please try again");
     } finally {
       setActionId(null);
       setTaskToDelete(null);
@@ -51,11 +53,11 @@ const AdminTaskTable = ({ tasks: initialTasks, currentPage, totalPages, totalIte
           prev.map((t) => (t._id === id ? { ...t, status } : t))
         );
       } else {
-        alert(result?.message || "Status পরিবর্তন করা যায়নি");
+        toast.error(result?.message || "Failed to update status");
       }
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Server error, আবার চেষ্টা করুন");
+      toast.error("Server error, please try again");
     } finally {
       setActionId(null);
     }
@@ -75,11 +77,11 @@ const AdminTaskTable = ({ tasks: initialTasks, currentPage, totalPages, totalIte
           )
         );
       } else {
-        alert(result?.message || "Feature পরিবর্তন করা যায়নি");
+        toast.error(result?.message || "Failed to update feature");
       }
     } catch (error) {
       console.error("Error toggling feature:", error);
-      alert("Server error, আবার চেষ্টা করুন");
+      toast.error("Server error, please try again");
     } finally {
       setActionId(null);
     }
@@ -89,7 +91,7 @@ const AdminTaskTable = ({ tasks: initialTasks, currentPage, totalPages, totalIte
     <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
       <div className="p-4 border-b flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-800">Task Management</h2>
-        <p className="text-sm text-gray-500">{tasks.length} টি task</p>
+        <p className="text-sm text-gray-500">{tasks.length} tasks</p>
       </div>
 
       <div className="overflow-x-auto">
@@ -183,8 +185,18 @@ const AdminTaskTable = ({ tasks: initialTasks, currentPage, totalPages, totalIte
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center py-10 text-gray-500">
-                  কোনো task পাওয়া যায়নি।
+                <td colSpan="7" className="py-16">
+                  <div className="flex flex-col items-center justify-center text-center">
+                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-50">
+                      <ClipboardX size={28} className="text-gray-300" />
+                    </div>
+                    <h3 className="text-base font-semibold text-gray-700">
+                      No tasks found
+                    </h3>
+                    <p className="mt-1 max-w-xs text-sm text-gray-400">
+                      There are currently no tasks to display here.
+                    </p>
+                  </div>
                 </td>
               </tr>
             )}
@@ -203,7 +215,7 @@ const AdminTaskTable = ({ tasks: initialTasks, currentPage, totalPages, totalIte
 
       <ConfirmDeleteDialog
         item={taskToDelete}
-        title="Task স্থায়ীভাবে ডিলিট করবেন?"
+        title="Delete this task permanently?"
         itemLabel={taskToDelete?.title}
         onConfirm={handleDelete}
         onClose={() => setTaskToDelete(null)}

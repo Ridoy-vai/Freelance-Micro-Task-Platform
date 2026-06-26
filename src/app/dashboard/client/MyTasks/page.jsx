@@ -49,7 +49,7 @@ const MyTasksPage = async ({ searchParams }) => {
         <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
             <div className="p-4 border-b flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-800">My Tasks</h2>
-                <p className="text-sm text-gray-500">{totalItems} টি task</p>
+                <p className="text-sm text-gray-500">{totalItems} task</p>
             </div>
 
             <div className="overflow-x-auto">

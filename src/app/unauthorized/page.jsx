@@ -29,8 +29,8 @@ export default function UnauthorizedPage() {
                     Access Denied
                 </h1>
                 <p className="text-ink-500 mb-8">
-                    তোমার এই page access করার permission নেই। যদি এটা ভুল মনে হয়, সঠিক
-                    account দিয়ে আবার login করো বা dashboard এ ফিরে যাও।
+                    You don't have permission to access this page. If this seems wrong,
+                    try logging in with the correct account or head back home.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">

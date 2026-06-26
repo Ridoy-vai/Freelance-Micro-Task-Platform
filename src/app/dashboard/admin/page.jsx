@@ -3,16 +3,12 @@ import { auth } from "@/lib/auth";
 import { requireRole } from "@/lib/role-check-access";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-// import AdminOverviewDashboard from "./overview/page";
-// import AdminOverviewDashboard from "./AdminOverviewDashboard";
 export const metadata = {
   title: "Admin Overview | TaskNest",
   description: "Track the status of all your submitted task proposals on TaskNest — view client details, budgets, submission links, and proposal status in one place.",
 };
 const AdminPage = async () => {
     const session = await requireRole(["admin"]);
-    // const session = await requireRole(["client", "freelancer"]);
-
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     const [usersRes, tasksRes, paymentsRes, proposalsRes] = await Promise.all([

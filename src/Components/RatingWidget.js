@@ -17,20 +17,20 @@ const RatingWidget = ({ freelancerId, user }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-
-
     const clientId = user?.id;
     const clientName = user?.name;
 
     const handleSubmit = async () => {
         if (rating === 0) return;
-      
+
+        // Require login before posting a review; redirect back here after login
         if (!user) {
             toast.error("Please login first");
             router.push(`/login?callbackUrl=${window.location.pathname}`);
             return;
         }
 
+        // Only clients (or admins on their behalf) are allowed to leave reviews
         if (user.role !== "client" && user.role !== "admin") {
             setError("Only client can post review");
             toast.error("Only client can post review");
@@ -64,7 +64,7 @@ const RatingWidget = ({ freelancerId, user }) => {
 
         } catch (err) {
             console.error("Review submit error:", err);
-            setError("Review জমা দিতে সমস্যা হয়েছে, আবার চেষ্টা করুন");
+            setError("Failed to submit review, please try again");
             toast.error("Failed to submit review");
         } finally {
             setLoading(false);

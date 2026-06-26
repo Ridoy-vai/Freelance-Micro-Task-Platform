@@ -1,6 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Error({ error, reset }) {
     useEffect(() => {
@@ -26,13 +27,14 @@ export default function Error({ error, reset }) {
                         className="rounded-xl border border-white/15 bg-signal px-6 py-3 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-signal/90"
                     >
                         Try again
+                    </button>
 
+                    <Link
                         href="/"
                         className="rounded-xl border border-white/15 bg-white/[0.02] px-6 py-3 text-sm font-semibold text-paper transition-colors duration-200 hover:bg-white/[0.06]"
-
+                    >
                         Go home
-
-                    </button>
+                    </Link>
                 </div>
             </div>
         </section>

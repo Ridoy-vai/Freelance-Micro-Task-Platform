@@ -60,9 +60,8 @@ export default function HeroBanner() {
   const user = session?.user;
   const [ref, inView] = useInView();
   const [tasks, setTasks] = useState([]);
-  console.log(tasks)
 
-
+  // Fetch the latest tasks client-side to populate the animated scrolling feed on the right
   useEffect(() => {
     const fetchTasks = async () => {
       try {

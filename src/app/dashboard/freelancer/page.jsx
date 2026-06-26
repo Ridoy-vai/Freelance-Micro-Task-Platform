@@ -17,7 +17,6 @@ const FreelancerDashboardPage = async () => {
 
     if (!user) redirect("/login");
 
-    // ৩টি এপিআই থেকে ডাটা আনা
     const transactions = await GetFreelancerTransactions({ freelancerId: user.id, page: 1, limit: 50 });
     const activeProposals = await GetActiveProposals({ freelancerId: user.id, page: 1, limit: 50 });
     const allProposals = await GetProposalById({ path: "myProposals", freelancerId: user.id, page: 1, limit: 50 });

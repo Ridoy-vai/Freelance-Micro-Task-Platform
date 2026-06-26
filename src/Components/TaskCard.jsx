@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import React from "react";
 
@@ -22,9 +21,6 @@ const TaskCard = ({ task }) => {
   return (
     <Link href={`/tasks/${task._id}`} className="group block h-full">
       <div className="relative h-full overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-500 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl">
-
-        {/* Top Accent Line */}
-        {/* <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-emerald-500" /> */}
 
         {/* Hover Glow */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 via-transparent to-emerald-50/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -155,4 +151,3 @@ const TaskCard = ({ task }) => {
 };
 
 export default TaskCard;
-

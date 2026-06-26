@@ -1,5 +1,6 @@
 import TaskCard from '@/Components/TaskCard';
 import { GetAllTasks } from '@/ServerActions/Task';
+import { PackageOpen } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
@@ -36,11 +37,25 @@ const FeaturedTasks = async () => {
                 </div>
 
                 {/* Grid */}
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {TASKS.map((task) => (
-                        <TaskCard key={task._id} task={task} />
-                    ))}
-                </div>
+                {TASKS.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        {TASKS.map((task) => (
+                            <TaskCard key={task._id} task={task} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-white/10 py-20 text-center">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/[0.04]">
+                            <PackageOpen size={28} className="text-paper/30" />
+                        </div>
+                        <h3 className="text-base font-semibold text-paper/80">
+                            No featured tasks yet
+                        </h3>
+                        <p className="mt-1 max-w-xs text-sm text-paper/50">
+                            Check back soon, new tasks are posted regularly.
+                        </p>
+                    </div>
+                )}
             </div>
         </section>
     );

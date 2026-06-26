@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Pencil, Upload, X, Loader2 } from "lucide-react";
 import { Button, Input, Label, Modal, Surface, TextField } from "@heroui/react";
 import { UpdateUserProfile } from "@/ServerActions/Freelancer";
+import { toast } from "react-toastify";
 // import { UpdateUserProfile } from "@/ServerActions/user";
 
 const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
@@ -42,7 +43,8 @@ export function EditProfileModal({ user }) {
         if (!file) return;
 
         if (!IMGBB_API_KEY) {
-            setError("Image upload configured nai.");
+            setError("Image upload is not configured.");
+            toast.error("Image upload is not configured.");
             return;
         }
 
@@ -69,7 +71,8 @@ export function EditProfileModal({ user }) {
             setImagePreview(data.data.url);
         } catch (err) {
             console.error("Image upload error:", err);
-            setError("ছবি আপলোড করতে সমস্যা হয়েছে।");
+            setError("Failed to upload image.");
+            toast.error("Failed to upload image.");
         } finally {
             setIsUploadingImage(false);
         }
@@ -104,10 +107,11 @@ export function EditProfileModal({ user }) {
         setIsSaving(false);
 
         if (result?.success) {
-            alert("Updated successfully");
+            toast.success("Updated successfully");
             router.refresh();
         } else {
             setError(result?.message || "Update failed");
+            toast.error(result?.message || "Update failed");
         }
     };
 
@@ -125,7 +129,7 @@ export function EditProfileModal({ user }) {
                         <Modal.Header>
                             <Modal.Heading>Edit Profile</Modal.Heading>
                             <p className="mt-1.5 text-sm leading-5 text-muted">
-                                তোমার প্রোফাইল তথ্য আপডেট করো।
+                                Update your profile information.
                             </p>
                         </Modal.Header>
                         <Modal.Body className="p-6">
