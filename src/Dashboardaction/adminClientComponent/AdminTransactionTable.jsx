@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PaginationControlled } from "@/Components/PaginationControlled";
 import { Receipt, Copy, Check } from "lucide-react";
+import { toast } from "react-toastify";
 
 const AdminTransactionTable = ({ transactions, currentPage, totalPages, totalItems }) => {
   const [copiedId, setCopiedId] = useState(null);
@@ -26,9 +27,10 @@ const AdminTransactionTable = ({ transactions, currentPage, totalPages, totalIte
     try {
       await navigator.clipboard.writeText(sessionId);
       setCopiedId(sessionId);
+      toast.success("Session ID copied!");
       setTimeout(() => setCopiedId(null), 1500);
     } catch (error) {
-      console.error("Copy failed:", error);
+      toast.error("Failed to copy Session ID");
     }
   };
 
@@ -37,9 +39,9 @@ const AdminTransactionTable = ({ transactions, currentPage, totalPages, totalIte
       <div className="p-4 border-b flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-800">Transactions</h2>
         <div className="text-right">
-          <p className="text-sm text-gray-500">{totalItems} টি transaction</p>
+          <p className="text-sm text-gray-500">{totalItems} transactions</p>
           <p className="text-sm font-semibold text-green-600">
-            এই পেজের মোট: ${totalRevenue.toLocaleString()}
+            Page total: ${totalRevenue.toLocaleString()}
           </p>
         </div>
       </div>
@@ -87,7 +89,7 @@ const AdminTransactionTable = ({ transactions, currentPage, totalPages, totalIte
                     <td className="p-4">
                       <button
                         onClick={() => handleCopy(t.session_id)}
-                        title="Session ID কপি করুন"
+                        title="Copy Session ID"
                         className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 font-mono group"
                       >
                         <span className="truncate max-w-[140px]">{t.session_id}</span>
@@ -119,10 +121,10 @@ const AdminTransactionTable = ({ transactions, currentPage, totalPages, totalIte
             <Receipt size={26} className="text-green-600" />
           </div>
           <p className="text-base font-medium text-gray-900 mb-1.5">
-            এখনো কোনো transaction হয়নি
+            No transactions yet
           </p>
           <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
-            কোনো payment সফলভাবে সম্পন্ন হলে এখানে দেখা যাবে।
+            Once a payment is completed successfully, it will appear here.
           </p>
         </div>
       )}

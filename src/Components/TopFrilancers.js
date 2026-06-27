@@ -19,7 +19,7 @@ const FeaturedFreelancers = async () => {
 
     return (
         <section className="bg-ink py-20 sm:py-24">
-            <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12 bg">
+            <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12 bg-white/200">
                 <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
                     <div>
                         <span className="font-mono text-[11px] uppercase tracking-widest text-sage">
